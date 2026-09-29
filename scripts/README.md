@@ -31,6 +31,7 @@ This directory houses the production-tested shell and PowerShell automation scri
   - [14. `reinstall-worker-node.sh`](#14-reinstall-worker-nodesh)
   - [15. `emergency-etcd-single-member.sh`](#15-emergency-etcd-single-membersh)
 - [Cross-References & Architectural Documentation Mapping](#cross-references--architectural-documentation-mapping)
+- [YouTube Automation Video Shorts & Quick References](#youtube-automation-video-shorts--quick-references)
 
 ---
 
@@ -707,3 +708,20 @@ Each automation script maps directly to dedicated architectural documentation mo
 | **Canary Upgrades & Lifecycle** | `pre-upgrade-health-check.sh`<br/>`automated-cluster-upgrade.sh` | [`docs/07-day2-operations/04-lifecycle-and-upgrades.md`](../docs/07-day2-operations/04-lifecycle-and-upgrades.md)<br/>[`docs/07-day2-operations/05-automated-upgrades.md`](../docs/07-day2-operations/05-automated-upgrades.md) | [`configs/day2/`](../configs/day2/) |
 | **Disaster Recovery & OADP** | `etcd-backup.sh`<br/>`test-oadp-restore.sh` | [`docs/08-backup-dr-and-rebuild/01-etcd-backup-restore.md`](../docs/08-backup-dr-and-rebuild/01-etcd-backup-restore.md)<br/>[`docs/08-backup-dr-and-rebuild/02-oadp-vs-velero-deepdive.md`](../docs/08-backup-dr-and-rebuild/02-oadp-vs-velero-deepdive.md) | [`configs/day2/oadp-dpa-cr.yaml`](../configs/day2/oadp-dpa-cr.yaml) |
 | **Emergency Runbooks** | `recover-expired-certs.sh`<br/>`helper-ssh-jump.sh`<br/>`replace-control-plane-node.sh`<br/>`reinstall-worker-node.sh`<br/>`emergency-etcd-single-member.sh` | [`docs/09-emergency-runbooks/README.md`](../docs/09-emergency-runbooks/README.md)<br/>[`docs/09-emergency-runbooks/01-expired-certs-recovery.md`](../docs/09-emergency-runbooks/01-expired-certs-recovery.md)<br/>[`docs/09-emergency-runbooks/02-helper-node-access-and-jumping.md`](../docs/09-emergency-runbooks/02-helper-node-access-and-jumping.md)<br/>[`docs/09-emergency-runbooks/03-node-reinstallation-and-replacement.md`](../docs/09-emergency-runbooks/03-node-reinstallation-and-replacement.md)<br/>[`docs/09-emergency-runbooks/04-etcd-quorum-loss-recovery.md`](../docs/09-emergency-runbooks/04-etcd-quorum-loss-recovery.md) | [`configs/helper-node/`](../configs/helper-node/) |
+
+---
+
+## YouTube Automation Video Shorts & Quick References
+
+Technical, 60-to-90 second field walkthroughs demonstrating these automation scripts in real-world scenarios are published on the **[Nubenetes YouTube Channel (@nubenetes)](https://www.youtube.com/@nubenetes)**:
+
+| Script / Tool | YouTube Short Video Title | Duration | Watch Link |
+| :--- | :--- | :---: | :---: |
+| [`preflight-check.sh`](preflight-check.sh) | [How OpenShift Automated Preflight Scripts Bulletproof Cluster Installations](https://www.youtube.com/shorts/UucLub-i270) | `1:02` | [▶️ Watch](https://www.youtube.com/shorts/UucLub-i270) |
+| [`etcd-backup.sh`](etcd-backup.sh) | [How to Automate OpenShift etcd Snapshots and Retention Policies with Bash](https://www.youtube.com/shorts/o0hq2INBw1E) | `1:08` | [▶️ Watch](https://www.youtube.com/shorts/o0hq2INBw1E) |
+| [`emergency-etcd-single-member.sh`](emergency-etcd-single-member.sh) | [How Emergency Scripts Resurrect Dead OpenShift Clusters After Quorum Failure](https://www.youtube.com/shorts/r2OhAxZU5gs) | `1:25` | [▶️ Watch](https://www.youtube.com/shorts/r2OhAxZU5gs) |
+| [`test-oadp-restore.sh`](test-oadp-restore.sh) | [How to Automate OpenShift Disaster Recovery Drills with OADP and Kopia](https://www.youtube.com/shorts/5Jkl6h7uOgA) | `1:08` | [▶️ Watch](https://www.youtube.com/shorts/5Jkl6h7uOgA) |
+| [`replace-control-plane-node.sh`](replace-control-plane-node.sh) | [How to Automate OpenShift Master Node Replacement Without Downtime](https://www.youtube.com/shorts/XgkB-eDbl_U) | `0:58` | [▶️ Watch](https://www.youtube.com/shorts/XgkB-eDbl_U) |
+| [`automated-cluster-upgrade.sh`](automated-cluster-upgrade.sh) | [How OpenShift Canary Upgrades Protect Workloads with Automated SLO Gates](https://www.youtube.com/shorts/gN_-IyABljE) | `1:27` | [▶️ Watch](https://www.youtube.com/shorts/gN_-IyABljE) |
+
+*For complete end-to-end masterclasses and architecture podcasts, see the repository [Root Multimedia Catalog](../README.md#ai-generated-multimedia-series-youtube).*
