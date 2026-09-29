@@ -15,6 +15,7 @@ OpenShift 4.20 provides deep, platform-native integrations across on-premises ba
 | **AWS** | Cloud IPI / Private VPC | AWS EBS / EFS CSI | Yes (EC2 Auto Scaling) | STS / IRSA short-lived tokens |
 | **Azure** | Cloud IPI / Private VNet | Azure Managed Disk CSI | Yes (Azure VMSS) | Azure Workload Identity Federation |
 | **GCP** | Cloud IPI / Shared VPC | Google Compute Engine PD | Yes (GCP MIG) | GCP Workload Identity & PSC |
+| **Microsoft Hyper-V** | Agent-Based / PowerShell UPI | ODF / Local VHDX / SMB CSI | Manual / External IaC | Gen 2 UEFI, MicrosoftUEFICACert, MAC Spoofing |
 
 ---
 [Back to Global Navigation](../00-navigation.md)
