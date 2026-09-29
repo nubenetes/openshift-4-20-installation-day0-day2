@@ -8,7 +8,7 @@ Standard Multi-Node HA is the gold standard for enterprise production environmen
 
 ```mermaid
 flowchart TD
-    subgraph ControlPlane["Dedicated Control Plane (3 Nodes - Non-Schedulable)"]
+    subgraph ControlPlane[" Dedicated Control Plane (3 Masters) "]
         M1["master-0<br/>etcd-0"]
         M2["master-1<br/>etcd-1"]
         M3["master-2<br/>etcd-2"]

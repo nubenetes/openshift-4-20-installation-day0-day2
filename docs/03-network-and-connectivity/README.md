@@ -19,12 +19,12 @@ Network architecture is the most common source of installation failure. OpenShif
 
 ```mermaid
 flowchart TD
-    subgraph HostNetwork["Node Physical / Underlay Network (192.168.10.0/24)"]
+    subgraph HostNetwork[" Node Underlay Network (192.168.10.0/24) "]
         eth0["Bonded Primary NIC (MTU 9000 Jumbo or 1500)"]
     end
 
-    subgraph OVNOverlay["OVN-Kubernetes Geneve Overlay (ClusterNetwork: 10.128.0.0/14)"]
-        GeneveTunnel["Geneve Encapsulation (UDP 6081) - Overhead 100 bytes (MTU 8900 or 1400)"]
+    subgraph OVNOverlay[" OVN-Kubernetes Geneve Overlay (10.128.0.0/14) "]
+        GeneveTunnel["Geneve Overlay Tunnel (UDP 6081)<br/>Overhead: 100 Bytes | MTU: 1400 or 8900"]
         Pod1["Pod A (10.128.2.14)"]
         Pod2["Pod B (10.128.4.88)"]
         GeneveTunnel <--> Pod1

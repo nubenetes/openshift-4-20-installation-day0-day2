@@ -21,14 +21,14 @@ OpenShift 4.20 supports four distinct installation paradigms. Selecting the prop
 
 ```mermaid
 flowchart TD
-    Start[Select Provisioning Paradigm] --> Q1{Are you deploying to Public Cloud AWS/Azure/GCP?}
-    Q1 -- Yes --> Q1A{Does CloudOps allow cloud API access to create VPC/LBs?}
+    Start[Select Provisioning Paradigm] --> Q1{"Target is Public Cloud<br/>AWS / Azure / GCP?"}
+    Q1 -- Yes --> Q1A{"CloudOps allows<br/>Cloud API<br/>Automation?"}
     Q1A -- Yes --> IPI[Installer Provisioned Infrastructure - IPI]
     Q1A -- No --> UPICloud[UPI in Cloud Pre-Existing VPC]
 
-    Q1 -- No --> Q2{Are you deploying 10+ clusters at the edge?}
+    Q1 -- No --> Q2{"Fleet Scale<br/>10+ Edge Sites?"}
     Q2 -- Yes --> ZTP[Zero Touch Provisioning ZTP via ACM + TALM]
-    Q2 -- No --> Q3{Do you have Bare Metal or VMware/Nutanix/KVM?}
+    Q2 -- No --> Q3{"On-Premises Platform<br/>Bare Metal or Virtual?"}
     Q3 -- Yes --> ABI[Agent-Based Installer - ABI<br/>Recommended On-Prem Paradigm]
     Q3 -- No --> UPI[Legacy UPI with Bootstrap Node]
 ```

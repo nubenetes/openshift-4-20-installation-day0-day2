@@ -33,27 +33,39 @@ Use this interactive logic flow to determine the optimal installation method and
 
 ```mermaid
 flowchart TD
-    Start([Evaluate OpenShift 4.20 Deployment Scenario]) --> Env{Target Infrastructure Type?}
-    
-    %% Public Cloud Branch
-    Env -- Public Cloud<br/>AWS / Azure / GCP / OCI --> CloudSec{Cloud Security Governance?}
-    CloudSec -- Full Cloud Automation Allowed --> CloudIPI[Cloud IPI with STS / Workload Identity<br/>Private VPC/VNet, Internal NLB/ALB]
-    CloudSec -- Pre-existing Restricted Subnets --> CloudUPI[Cloud UPI with Manual Credentials<br/>Pre-created VPC, Route53/CloudDNS]
-    
-    %% On-Premises Branch
-    Env -- On-Premises<br/>Bare Metal / Hypervisors --> Scale{Deployment Scale & Location?}
-    
-    Scale -- Single Edge Node / Far Edge --> SNO[Single Node OpenShift - SNO<br/>Agent-Based Installer / ISO Boot]
-    Scale -- Constrained 3-Node Hardware --> Compact[3-Node Compact Converged<br/>Masters schedulable with local ODF Ceph]
-    Scale -- Central Core + Remote Branches --> RW[Central Master Nodes + Remote Workers over WAN]
-    Scale -- Fleet Scale 10+ Distributed Sites --> ZTP[Zero Touch Provisioning - ZTP<br/>ACM + TALM + GitOps SiteConfig]
-    Scale -- Enterprise Production Data Center --> DCPlatform{Hypervisor or Bare Metal?}
-    
-    DCPlatform -- Bare Metal Physical Servers --> ABI_BM[Agent-Based Installer ABI<br/>Redfish Virtual Media / Bonded NMState]
-    DCPlatform -- VMware vSphere 8.x / 9.x --> ABI_VMW[vSphere IPI or Agent-Based Installer<br/>vSphere CSI + NSX / Integrated VIPs]
-    DCPlatform -- Nutanix AHV --> NutanixIPI[Nutanix IPI with Prism Central<br/>Nutanix CSI + Flow]
-    DCPlatform -- KVM / OpenStack RHOSO --> KVM_IPI[OpenStack IPI / RHOSO or KVM ABI]
-    DCPlatform -- Microsoft Hyper-V / Azure Stack HCI --> HyperV[Hyper-V Gen2 ABI / UPI<br/>PowerShell Automation + MAC Spoofing]
+    Start(["OpenShift 4.20 Architecture Decision Tree"]) --> TargetEnv{"Target<br/>Infrastructure<br/>Environment?"}
+
+    %% Main Routing Branches
+    TargetEnv -->|"Public Cloud"| CloudSecurity{"Cloud Security<br/>& IAM Policy?"}
+    TargetEnv -->|"Edge & Distributed"| EdgeScale{"Edge Topology<br/>& Footprint?"}
+    TargetEnv -->|"Enterprise Datacenter"| DCPlatform{"Datacenter<br/>Platform Type?"}
+
+    subgraph CloudFlow [" 1. Public Cloud Deployments "]
+        CloudSecurity -->|"API Automation Allowed"| CloudIPI["Cloud IPI (Automated)<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>• AWS / Azure / GCP / OCI<br/>• STS / Workload Identity<br/>• Private Subnets & Internal LBs"]
+        CloudSecurity -->|"Strict Network Governance"| CloudUPI["Cloud UPI (Manual)<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>• Pre-created Enterprise VPC / VNet<br/>• Manual Cloud Credential Mode<br/>• Dedicated SecOps Route Tables"]
+    end
+
+    subgraph EdgeFlow [" 2. Edge & Distributed Topologies "]
+        EdgeScale -->|"1 Node (Far Edge)"| SNO["Single Node OpenShift (SNO)<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>• Control Plane + Workloads Collocated<br/>• Minimal Footprint (16-32GB RAM)<br/>• Autonomous Agent ISO Boot"]
+        
+        EdgeScale -->|"3 Nodes (Branch/ROBO)"| Compact["3-Node Compact Converged<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>• Schedulable Master Nodes<br/>• Collocated ODF Ceph Storage<br/>• High Availability (1 Node Quorum Loss)"]
+        
+        EdgeScale -->|"Distributed Compute"| RemoteWorkers["Remote Worker Nodes (WAN)<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>• Central 3-Node Core Control Plane<br/>• Remote Worker Nodes at Edge Sites<br/>• Latency-Tuned Kubelet Heartbeats"]
+        
+        EdgeScale -->|"Fleet Scale (10+ Sites)"| ZTP["Zero Touch Provisioning (ZTP)<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>• ACM 2.12+ Fleet Hub & TALM<br/>• Declarative GitOps SiteConfig CRDs<br/>• Out-of-Band Redfish BMC Provisioning"]
+    end
+
+    subgraph DCFlow [" 3. On-Premises Datacenter Platforms "]
+        DCPlatform -->|"Physical Hardware"| BM["Bare Metal Deployments<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>• Agent-Based Installer (ABI)<br/>• Dell iDRAC / HPE iLO Redfish<br/>• Bonded NMState LACP Interfaces"]
+        
+        DCPlatform -->|"VMware vSphere"| VMW["VMware vSphere 8.x / 9.x<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>• vSphere IPI or Agent-Based (ABI)<br/>• VMware vSphere CSI & vSAN Storage<br/>• Automated DRS Anti-Affinity Rules"]
+        
+        DCPlatform -->|"Nutanix HCI"| Nutanix["Nutanix AHV HCI<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>• Nutanix IPI via Prism Central<br/>• Nutanix CSI Block & File Volumes<br/>• Flow Microsegmentation Policies"]
+        
+        DCPlatform -->|"KVM / OpenStack"| OpenStack["KVM & RHOSO OpenStack<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>• OpenStack IPI / RHOSO Cinder CSI<br/>• KVM Libvirt Agent-Based ISO<br/>• Open-source Cloud Infrastructure"]
+        
+        DCPlatform -->|"Microsoft Hyper-V"| HyperV["Microsoft Hyper-V / Azure Stack HCI<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>• Generation 2 (Gen 2) UEFI VMs<br/>• MicrosoftUEFICertificateAuthority CA<br/>• MAC Address Spoofing for VIPs"]
+    end
 ```
 
 ---

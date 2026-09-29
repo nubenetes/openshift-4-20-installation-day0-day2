@@ -9,10 +9,10 @@ Day 2 operations define the ongoing maintenance, observability, compliance enfor
 ```mermaid
 flowchart TD
     D2[OpenShift 4.20 Day 2 Operations] --> Obs[1. Observability: Thanos, UWM, LokiStack, OpenTelemetry]
-    D2 --> Sec[2. Security & Compliance: Compliance Operator, CIS, FileIntegrity]
-    D2 --> GitOps[3. GitOps Foundation: OpenShift GitOps ArgoCD v3+, ESO]
-    D2 --> Upgrades[4. Lifecycle & Upgrades: EUS Channels, Paused MCPs, Canaries]
-    D2 --> AutoUpgrades[5. Automated Upgrades: Pre-flight Audit, etcd Snapshot, Air-Gap]
+    D2 --> Sec["2. Security & Compliance<br/>• Compliance Operator (CIS & NIST)<br/>• File Integrity Operator (AIDE)<br/>• Security Context Constraints"]
+    D2 --> GitOps["3. GitOps Foundation<br/>• OpenShift GitOps (ArgoCD v3+)<br/>• App-of-Apps Pattern<br/>• External Secrets Operator (ESO)"]
+    D2 --> Upgrades["4. Lifecycle & Upgrades<br/>• EUS Channels (4.18 -> 4.20)<br/>• Paused MCP Canary Rollouts<br/>• Controlled Node Draining"]
+    D2 --> AutoUpgrades["5. Automated Upgrades<br/>• Pre-Upgrade Health Audit<br/>• Mandatory Pre-Upgrade etcd Snapshot<br/>• Air-Gapped oc-mirror v2 Upgrades"]
 ```
 
 ---

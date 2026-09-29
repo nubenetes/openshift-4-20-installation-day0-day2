@@ -8,14 +8,14 @@ For mission-critical Tier-0 applications, single-cluster backup is insufficient.
 
 ```mermaid
 flowchart TD
-    subgraph MetroDR["Metro-DR (Synchronous Replication - RPO = 0)"]
+    subgraph MetroDR[" Metro-DR (Synchronous Storage Sync - RPO = 0) "]
         SiteA["Primary Site (< 5ms RTT Latency)"] <-->|Ceph Sync Replication| SiteB["Secondary Site"]
         Arbiter["Third Location: Tiebreaker Arbiter"]
         SiteA -.-> Arbiter
         SiteB -.-> Arbiter
     end
 
-    subgraph RegionalDR["Regional-DR (Asynchronous Replication - RPO = Minutes)"]
+    subgraph RegionalDR[" Regional-DR (Async Mirroring - RPO=Minutes) "]
         PrimaryRegion["Region Alpha (e.g. Frankfurt)"] -->|ODF Async Mirroring| DRRegion["Region Beta (e.g. Dublin)"]
         ACMHub["ACM Fleet Hub"] -->|RamenDR Operator: Automates Failover| PrimaryRegion
         ACMHub -->|RamenDR Operator: Automates Failover| DRRegion
