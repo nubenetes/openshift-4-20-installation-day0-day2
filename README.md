@@ -5,8 +5,13 @@
 [![Status](https://img.shields.io/badge/Status-Production--Ready-brightgreen.svg)]()
 [![Target Date](https://img.shields.io/badge/Current%20State-September%202026-blueviolet.svg)]()
 [![License](https://img.shields.io/badge/License-Apache%202.0-yellow.svg)](LICENSE)
+[![AI-Generated](https://img.shields.io/badge/Generated%20by-Gemini%203.8%20Flash-9cf.svg?logo=google&logoColor=white)]()
 
 An exhaustive, state-of-the-art reference architecture, installation handbook, automation toolkit, and Day 0/1/2 operational guide for **Red Hat OpenShift Container Platform (OCP) 4.20** across all physical bare-metal, on-prem hypervisors, public clouds, connected, proxy-restricted, and air-gapped environments.
+
+> [!IMPORTANT]
+> **Architecture Reference & Non-Live Environment Disclaimer**:
+> This repository, along with its architecture matrices, configuration manifests, and automation scripts, was generated using **Gemini 3.8 Flash**. It has **not yet been tested in a live cluster environment**; it is designed to serve as a dense, comprehensive **enterprise architecture reference and implementation blueprint** up to date as of September 2026. Always validate and tailor all manifests, network CIDRs, and scripts within a staging environment before executing in production.
 
 ---
 
