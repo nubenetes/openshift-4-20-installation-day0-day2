@@ -4,39 +4,33 @@ OpenShift 4.20 on Microsoft Azure supports self-managed IPI/UPI clusters deploye
 
 ---
 
-## Azure Architecture & Workload Identity
+## End-to-End Step-by-Step Implementation Procedure
 
-OpenShift 4.20 integrates natively with **Azure Workload Identity Federation**, removing the requirement to store client secrets in the cluster:
+### Step 1: Resource Group & VNet Preparation
+1. Create a Resource Group (e.g. `rg-ocp-network`) and Virtual Network (`vnet-ocp-prod`).
+2. Create dedicated subnets:
+   - `snet-control-plane` (`/27` minimum).
+   - `snet-compute` (`/24` or larger).
 
-```mermaid
-flowchart LR
-    subgraph AzureCloud["Microsoft Azure Cloud"]
-        EntraID["Microsoft Entra ID (Azure AD)"]
-        ARM["Azure Resource Manager (ARM)"]
-        UAMI["User-Assigned Managed Identity"]
-    end
+### Step 2: Azure Workload Identity Federation Setup
+1. Extract Azure credential requests:
+   ```bash
+   oc adm release extract --credentials-requests --cloud=azure --to=./credrequests quay.io/openshift-release-dev/ocp-release:4.20.0-x86_64
+   ```
+2. Use `ccoctl` to create User-Assigned Managed Identities and configure federated OIDC credentials against Microsoft Entra ID.
 
-    subgraph OCPCluster["OpenShift 4.20 Cluster"]
-        CCO["Cloud Credential Operator"]
-        OIDC["OpenShift OIDC Issuer"]
-    end
+### Step 3: Configure install-config.yaml
+1. Specify `credentialsMode: Manual`, `publish: Internal`, resource group, and subnet names (see [`configs/ipi-cloud/azure-install-config.yaml`](../../configs/ipi-cloud/azure-install-config.yaml)).
 
-    OIDC -.->|Federated Identity Credential| EntraID
-    EntraID --> UAMI
-    UAMI -->|RBAC Permitted Actions| ARM
-```
+### Step 4: Execute Automated Installation
+1. Generate manifests and copy `ccoctl` secrets into manifests directory.
+2. Run installation:
+   ```bash
+   openshift-install create cluster --dir=./azure-cluster --log-level=info
+   ```
 
----
-
-## Key Azure Configuration Highlights
-1. **Pre-Existing Virtual Network (VNet)**:
-   - Control plane subnet: `/27` minimum (recommended `/24`).
-   - Compute subnet: `/24` or `/23` to prevent IP exhaustion during scale-out.
-2. **Azure Accelerated Networking**:
-   - Enable Accelerated Networking (SR-IOV) on all VM sizes to achieve sub-millisecond network latency and high throughput.
-3. **Storage Classes**:
-   - `managed-csi` (Premium_LRS) for primary low-latency workloads.
-   - `azure-file-csi` for multi-read/write file systems.
+### Step 5: Post-Install Accelerated Networking Verification
+1. Ensure all Azure VMs report Accelerated Networking (SR-IOV) enabled for optimal throughput.
 
 ---
 [Next: Google Cloud Platform (GCP)](07-gcp.md) • [Back to Platforms Index](README.md)

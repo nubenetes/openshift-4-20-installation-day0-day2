@@ -30,14 +30,60 @@ sequenceDiagram
 
 ---
 
-## Essential Components of Pure GitOps Rebuilds
+## End-to-End Step-by-Step Implementation Procedure
 
-1. **All Cluster Configurations in Git**:
-   - MachineConfigs, IngressControllers, OAuth, StorageClasses, and Operators declared in Kustomize / Helm.
-2. **Zero In-Cluster State in Day 0/1**:
-   - No manual `oc create` commands executed directly on the cluster.
-3. **Decoupled Persistent Data**:
-   - Database PVs backed up to external S3 object stores via OADP, ready to be mounted during step 5 of the recovery pipeline.
+### Step 1: Re-Provision Hardware / VMs
+1. In the event of catastrophic data center destruction, trigger server provisioning (Bare Metal Redfish, VMware vCenter, or Cloud Terraform).
+2. Reset server boot disks to clean state.
+
+### Step 2: Boot OpenShift 4.20 Base Cluster
+1. Boot the nodes using the stored `agent.x86_64.iso` or trigger cloud IPI:
+   ```bash
+   openshift-install agent wait-for install-complete --dir=./recovery-workspace
+   ```
+2. The cluster converges into a fresh, baseline OpenShift 4.20 cluster in ~25 minutes.
+
+### Step 3: Install OpenShift GitOps Operator
+1. Apply the GitOps operator subscription:
+   ```bash
+   oc apply -f configs/day2/gitops-operator-sub.yaml
+   oc wait --for=condition=Ready pod -l app.kubernetes.io/name=openshift-gitops-server -n openshift-gitops --timeout=300s
+   ```
+
+### Step 4: Apply Root GitOps App-of-Apps
+1. Point ArgoCD to the disaster recovery cluster configuration repository:
+   ```yaml
+   apiVersion: argoproj.io/v1alpha1
+   kind: Application
+   metadata:
+     name: root-cluster-app
+     namespace: openshift-gitops
+   spec:
+     project: default
+     source:
+       repoURL: https://github.com/nubenetes/cluster-fleet-gitops.git
+       targetRevision: main
+       path: clusters/prod-cluster-01
+     destination:
+       server: https://kubernetes.default.svc
+       namespace: default
+     syncPolicy:
+       automated:
+         prune: true
+         selfHeal: true
+   ```
+2. ArgoCD automatically deploys:
+   - Cluster Operators (ODF, OADP, Logging, Compliance).
+   - Ingress wildcard TLS certificates and custom CA bundles.
+   - Identity Provider (Keycloak / Entra ID) and RBAC bindings.
+   - All tenant application deployments, statefulsets, and routes.
+
+### Step 5: Restore Application Stateful Data via OADP
+1. Once OADP is reconciled by ArgoCD, trigger the restore of persistent volume data from the off-site S3 backup bucket:
+   ```bash
+   oc apply -f configs/dr/restore-stateful-workloads.yaml
+   ```
+2. Application pods bind to restored volume snapshots and resume business operations.
 
 ---
 [Back to DR Index](README.md) • [Back to Global Navigation](../00-navigation.md)

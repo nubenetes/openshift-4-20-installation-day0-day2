@@ -20,31 +20,75 @@ The definitive technical verdict is: **NO. Vanilla Velero is neither recommended
 
 ---
 
-## Why Vanilla Velero Fails on OpenShift
+## End-to-End Step-by-Step Implementation Procedure
 
-```mermaid
-flowchart TD
-    subgraph VanillaVelero["Upstream Vanilla Velero"]
-        V1["Treats cluster as generic Vanilla Kubernetes"]
-        V2["Ignores OpenShift-specific API Groups (route.openshift.io, security.openshift.io)"]
-        V3["Cannot map auto-generated ServiceAccount tokens"]
-        V4["Fails namespace UID range reconciliation on restore"]
-        V1 --> V2 --> V3 --> V4 --> Failure["Workload CrashLoopBackOff & Permission Denied on Restore"]
-    end
+### Step 1: Install OADP Operator
+1. Subscribe to the **OADP Operator** from the Red Hat OperatorHub:
+   ```bash
+   oc create namespace openshift-adp
+   oc apply -f configs/day2/oadp-operator-sub.yaml
+   ```
+2. Wait for OADP operator pod to be `Running`.
 
-    subgraph OADP["Red Hat OADP Solution"]
-        O1["Includes openshift-velero-plugin"]
-        O2["Cleans cluster-scoped metadata and recreates Routes, SCCs, ImageStreams"]
-        O3["Re-allocates valid UID/GID ranges in target namespace"]
-        O4["Integrates with DataProtectionApplication CRD"]
-        O1 --> O2 --> O3 --> O4 --> Success["Clean, One-Click Application Recovery"]
-    end
-```
+### Step 2: Configure Cloud Storage Credentials (S3 / MinIO / Ceph RGW)
+1. Store object store credentials in a secret:
+   ```bash
+   cat << EOF > /tmp/credentials-velero
+   [default]
+   aws_access_key_id = EnterpriseBackupKey
+   aws_secret_access_key = EnterpriseBackupSecret
+   EOF
 
----
+   oc create secret generic cloud-credentials      --namespace openshift-adp      --from-file cloud=/tmp/credentials-velero
+   rm /tmp/credentials-velero
+   ```
 
-## Recommended OADP Configuration in 2026
-In OpenShift 4.20, configure OADP with **Kopia** as the data-mover uploader rather than legacy Restic, providing up to 4x faster backup speeds and deduplication (see [`configs/day2/oadp-dpa-cr.yaml`](../../configs/day2/oadp-dpa-cr.yaml)).
+### Step 3: Deploy DataProtectionApplication (DPA) Custom Resource
+1. Deploy the DPA CR with **Kopia** data-mover enabled (see [`configs/day2/oadp-dpa-cr.yaml`](../../configs/day2/oadp-dpa-cr.yaml)):
+   ```bash
+   oc apply -f configs/day2/oadp-dpa-cr.yaml
+   ```
+2. Verify Velero pod and node-agent daemonset are active:
+   ```bash
+   oc get pods -n openshift-adp
+   ```
+
+### Step 4: Execute Application & Persistent Volume Backup
+1. Trigger an on-demand backup of target namespace:
+   ```yaml
+   apiVersion: velero.io/v1
+   kind: Backup
+   metadata:
+     name: payment-app-backup
+     namespace: openshift-adp
+   spec:
+     includedNamespaces:
+       - payment-system
+     snapshotVolumes: true
+     storageLocation: dpa-enterprise-prod-1
+   ```
+2. Check backup progress:
+   ```bash
+   oc describe backup payment-app-backup -n openshift-adp
+   ```
+
+### Step 5: Disaster Recovery & Restore Drill
+1. Simulate namespace corruption or disaster:
+   ```bash
+   oc delete namespace payment-system
+   ```
+2. Trigger the restore:
+   ```yaml
+   apiVersion: velero.io/v1
+   kind: Restore
+   metadata:
+     name: payment-app-restore
+     namespace: openshift-adp
+   spec:
+     backupName: payment-app-backup
+     restorePVs: true
+   ```
+3. OADP reconstructs the namespace, allocates valid UIDs, re-attaches PVC snapshots, restores Routes with TLS certificates, and brings workloads online.
 
 ---
 [Next: Metro-DR & Regional-DR](03-metro-dr-and-regional-dr.md) • [Back to DR Index](README.md)

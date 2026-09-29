@@ -4,59 +4,43 @@ An air-gapped OpenShift 4.20 cluster requires three indispensable foundation ser
 
 ---
 
-## Foundation Service Matrix
+## End-to-End Step-by-Step Implementation Procedure
 
-```mermaid
-flowchart LR
-    subgraph CoreServices["Air-Gapped Datacenter Core Infrastructure"]
-        DNS["Internal DNS (BIND9 / Infoblox / Active Directory)<br/>Forward & Reverse PTR"]
-        NTP["Stratum-1/2 NTP Server<br/>GPS or Local Hardware Clock"]
-        PKI["Corporate Root / Intermediate CA<br/>Vault / Microsoft CA / OpenSSL"]
-        Quay["Private Container Registry<br/>Red Hat Quay / Harbor"]
-    end
+### Step 1: Configure Internal Split-Horizon DNS (BIND9 / Infoblox)
+1. Create forward zone `corp.local` with required records:
+   ```zone
+   api.ocp420.corp.local.       IN  A  192.168.10.100
+   api-int.ocp420.corp.local.   IN  A  192.168.10.100
+   *.apps.ocp420.corp.local.    IN  A  192.168.10.101
+   master-0.ocp420.corp.local.  IN  A  192.168.10.11
+   master-1.ocp420.corp.local.  IN  A  192.168.10.12
+   master-2.ocp420.corp.local.  IN  A  192.168.10.13
+   ```
+2. Create reverse lookup zone (`10.168.192.in-addr.arpa`) mapping each IP to its FQDN.
+3. Validate with `dig`:
+   ```bash
+   dig +short api.ocp420.corp.local @192.168.10.1
+   dig +short -x 192.168.10.11 @192.168.10.1
+   ```
 
-    subgraph MasterNodes["OpenShift Control Plane Nodes"]
-        Node1["master-0"]
-        Node2["master-1"]
-        Node3["master-2"]
-    end
+### Step 2: Deploy Local Stratum-1/2 NTP Server (Chrony)
+1. Configure an internal Linux host as a local NTP stratum synchronized against GPS or hardware clock:
+   ```ini
+   # /etc/chrony.conf on local NTP server
+   local stratum 8
+   allow 192.168.10.0/24
+   ```
+2. Create an OpenShift `MachineConfig` pointing all cluster nodes to this internal NTP server (see [`configs/day1/machineconfig-chrony.yaml`](../../configs/day1/machineconfig-chrony.yaml)).
 
-    DNS <--> MasterNodes
-    NTP --> MasterNodes
-    PKI --> MasterNodes
-    Quay --> MasterNodes
-```
+### Step 3: Establish Internal Enterprise Root & Intermediate PKI
+1. Generate corporate root CA and signing intermediate certificate.
+2. Issue wildcard TLS certificate for `*.apps.ocp420.corp.local` and registry certificate for `quay.internal.corp`.
+3. Embed root CA into `install-config.yaml` under `additionalTrustBundle`.
 
----
-
-## 1. Internal DNS Requirements
-The internal DNS server must resolve the following records without forwarding to public root servers:
-
-| Record Name | Type | Target | Purpose |
-| :--- | :---: | :--- | :--- |
-| `api.<cluster>.<baseDomain>` | A | API VIP (or Load Balancer) | Kubernetes API Server (External & Node access) |
-| `api-int.<cluster>.<baseDomain>` | A | API VIP (or Load Balancer) | Internal cluster components & Ignition downloads |
-| `*.apps.<cluster>.<baseDomain>` | A | Ingress VIP (or LB) | Ingress router wildcard domain |
-| Reverse PTR for all Master/Worker IPs | PTR | FQDN of respective node | etcd certificate validation & reverse identity |
-
----
-
-## 2. High-Precision Local NTP (Chrony)
-- etcd uses Raft consensus, which tolerates **no more than 500ms** of clock drift between masters before electing leaders repeatedly or triggering panic aborts.
-- In disconnected networks with no public NTP pools (`pool.ntp.org`), nodes must synchronize against internal hardware appliances or internal NTP servers via custom MachineConfig (see [`configs/day1/machineconfig-chrony.yaml`](../../configs/day1/machineconfig-chrony.yaml)).
-
----
-
-## 3. Internal Registry TLS Certificates
-Local registries (Quay/Harbor) running on internal TLS certificates must have their Root/Intermediate CA bundle embedded directly inside `install-config.yaml`:
-
-```yaml
-additionalTrustBundle: |
-  -----BEGIN CERTIFICATE-----
-  MIIFazCCA1OgAwIBAgIUW1...
-  -----END CERTIFICATE-----
-```
-Failure to include this bundle prevents the bootstrap node and CoreOS ignition from pulling release images from the local registry.
+### Step 4: Deploy Air-Gapped Red Hat Quay / Harbor
+1. Install standalone Red Hat Quay or Harbor container registry on an internal server.
+2. Configure persistent storage (NFS / SAN) for Quay image layers.
+3. Load the mirrored OpenShift 4.20 payload into Quay.
 
 ---
 [Next: OVN-Kubernetes Tuning](04-ovn-kubernetes-tuning.md) • [Back to Index](README.md)

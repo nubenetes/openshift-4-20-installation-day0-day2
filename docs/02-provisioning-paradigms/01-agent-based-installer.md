@@ -37,17 +37,64 @@ sequenceDiagram
 
 ---
 
-## Key Configuration Files
+## End-to-End Step-by-Step Implementation Procedure
 
-The Agent-Based Installer is driven by two declarative YAML manifests:
-1. `install-config.yaml`: Defines cluster metadata, network CIDRs, platform parameters, and pull secret.
-2. `agent-config.yaml`: Defines the Rendezvous IP, target host MAC addresses, network interfaces (NMState for static IPs or bonds), and root disk hints.
+### Step 1: Download OpenShift 4.20 Installer & Client Tools
+1. Fetch the official installer and `oc` CLI binaries:
+   ```bash
+   curl -sSL -o openshift-install-linux.tar.gz https://mirror.openshift.com/pub/openshift-v4/clients/ocp/4.20.0/openshift-install-linux.tar.gz
+   tar -xzf openshift-install-linux.tar.gz && sudo mv openshift-install /usr/local/bin/
+   ```
+2. Verify version output:
+   ```bash
+   openshift-install version
+   ```
 
-Example generation command:
-```bash
-openshift-install agent create image --dir=./cluster-workspace
-```
-Outputs `agent.x86_64.iso` ready to be mounted via Redfish BMC virtual media.
+### Step 2: Formulate Cluster Definition (install-config.yaml)
+1. Initialize an installation directory:
+   ```bash
+   mkdir -p ~/ocp-agent-install && cd ~/ocp-agent-install
+   ```
+2. Author `install-config.yaml` specifying baseDomain, network CIDRs, VIPs, and pull secret (see [`configs/agent-based/install-config-standard.yaml`](../../configs/agent-based/install-config-standard.yaml)).
+
+### Step 3: Configure Host & Interface Topology (agent-config.yaml)
+1. Designate the Rendezvous node IP address.
+2. Define host roles, static NMState configurations, bonded NICs, and root disk hints (see [`configs/agent-based/agent-config.yaml`](../../configs/agent-based/agent-config.yaml)).
+
+### Step 4: Validate Configuration Files
+1. Run preflight syntax checks:
+   ```bash
+   python3 -c "import yaml; yaml.safe_load(open('install-config.yaml')); yaml.safe_load(open('agent-config.yaml'))"
+   ```
+
+### Step 5: Generate the Agent Bootable ISO
+1. Trigger the image build:
+   ```bash
+   openshift-install agent create image --dir=. --log-level=info
+   ```
+2. The installer produces `agent.x86_64.iso` containing embedded Ignition files, network configurations, and the Assisted Installer agent.
+
+### Step 6: Mount and Boot Hosts via Virtual Media
+1. Connect to the Baseboard Management Controller (iDRAC, iLO, or CIMC) of each node.
+2. Insert `agent.x86_64.iso` as a Virtual CD/DVD drive.
+3. Configure the boot order to prioritize Virtual CD/DVD on the next reboot.
+4. Power on all target nodes.
+
+### Step 7: Monitor Automated Bootstrap-in-Place
+1. From the administration workstation, monitor deployment progress:
+   ```bash
+   openshift-install agent wait-for install-complete --dir=. --log-level=info
+   ```
+2. Monitor node discovery, ignition injection, OS installation, and etcd cluster assembly.
+
+### Step 8: Post-Installation Validation
+1. Export the generated kubeconfig:
+   ```bash
+   export KUBECONFIG=$(pwd)/auth/kubeconfig
+   oc get nodes -o wide
+   oc get clusteroperators
+   ```
+2. Save `auth/kubeadmin-password` into a secure enterprise secret vault.
 
 ---
 [Next: Installer Provisioned Infrastructure (IPI)](02-installer-provisioned-ipi.md) • [Back to Index](README.md)

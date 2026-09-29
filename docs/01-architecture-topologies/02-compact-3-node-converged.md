@@ -43,15 +43,93 @@ flowchart LR
 
 ---
 
-## Critical Engineering Considerations
-1. **Schedulable Masters**:
-   - In ,  is set to . The installer automatically configures .
-2. **Failure Quorum**:
-   - Tolerates exactly **1 node failure**. If node 1 fails, etcd maintains 2/3 quorum. If a second node fails, etcd loses quorum and the cluster enters read-only emergency state.
-3. **ODF Converged Mode**:
-   - Ceph MON pods run on each of the 3 nodes. Ceph OSDs consume local raw NVMe disks via the Local Storage Operator (LSO).
-4. **No Dedicated Infra Pool**:
-   - System workloads (monitoring, logging, ingress) run alongside user workloads. Pod resource requests and limits ( and ) must be strictly enforced.
+## End-to-End Step-by-Step Implementation Procedure
+
+### Step 1: Network & Virtual IP Allocation
+1. Reserve 3 static IP addresses for the physical hosts (`192.168.10.11`, `.12`, `.13`).
+2. Reserve 2 static Virtual IPs (VIPs) on the same subnet:
+   - `apiVIPs`: `192.168.10.100` (`api.compact.corp.local` and `api-int.compact.corp.local`)
+   - `ingressVIPs`: `192.168.10.101` (`*.apps.compact.corp.local`)
+3. Pre-configure forward DNS and reverse PTR records for all 5 IP addresses.
+
+### Step 2: Configure install-config.yaml
+1. Create `install-config.yaml` specifying `platform.baremetal` with the VIPs:
+   ```yaml
+   apiVersion: v1
+   baseDomain: corp.local
+   metadata:
+     name: compact
+   compute:
+     - name: worker
+       replicas: 0
+   controlPlane:
+     name: master
+     replicas: 3
+     architecture: amd64
+   networking:
+     networkType: OVNKubernetes
+     machineNetwork:
+       - cidr: 192.168.10.0/24
+   platform:
+     baremetal:
+       apiVIPs:
+         - 192.168.10.100
+       ingressVIPs:
+         - 192.168.10.101
+   pullSecret: '{"auths":{...}}'
+   sshKey: 'ssh-ed25519 AAAAC3... admin@corp'
+   ```
+
+### Step 3: Define agent-config.yaml with Rendezvous Host
+1. Select `master-0` (`192.168.10.11`) as the `rendezvousIP`.
+2. Configure all 3 master hosts with their MAC addresses and NMState bonded interfaces (LACP or Active-Backup):
+   ```yaml
+   apiVersion: v1alpha1
+   kind: AgentConfig
+   metadata:
+     name: compact-agent
+   rendezvousIP: 192.168.10.11
+   hosts:
+     - hostname: master-0.compact.corp.local
+       role: master
+       interfaces:
+         - name: bond0
+           macAddress: '52:54:00:10:00:01'
+     - hostname: master-1.compact.corp.local
+       role: master
+       interfaces:
+         - name: bond0
+           macAddress: '52:54:00:10:00:02'
+     - hostname: master-2.compact.corp.local
+       role: master
+       interfaces:
+         - name: bond0
+           macAddress: '52:54:00:10:00:03'
+   ```
+
+### Step 4: Build ISO and Boot All 3 Nodes Simultaneously
+1. Generate the ISO:
+   ```bash
+   openshift-install agent create image --dir=.
+   ```
+2. Mount the generated `agent.x86_64.iso` to all 3 servers via Redfish Virtual Media.
+3. Power on all three servers at the same time.
+4. `master-0` boots Assisted Service, `master-1` and `master-2` discover `master-0`, and Bootstrap-in-Place establishes Raft quorum.
+
+### Step 5: Wait for Cluster Availability
+1. Execute the wait command:
+   ```bash
+   openshift-install agent wait-for install-complete --dir=.
+   ```
+2. Confirm all 3 nodes report `Ready,SchedulingDisabled=false` (masters are schedulable):
+   ```bash
+   oc get nodes
+   ```
+
+### Step 6: Deploy Converged OpenShift Data Foundation (ODF)
+1. Install the ODF Operator from OperatorHub.
+2. Create the `StorageCluster` CR targeting raw NVMe disks across all 3 nodes.
+3. Verify Ceph MON, MGR, and OSD pods reach `Running` state and standard storage classes (`ocs-storagecluster-ceph-rbd`, `ocs-storagecluster-cephfs`) are created.
 
 ---
 [Next: Standard Multi-Node HA](03-standard-ha-multinode.md) • [Back to Topologies Index](README.md)

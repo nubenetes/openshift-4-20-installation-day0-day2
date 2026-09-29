@@ -4,39 +4,29 @@ OpenShift 4.20 on Google Cloud Platform (GCP) provides robust enterprise multi-z
 
 ---
 
-## GCP Shared VPC Architecture
+## End-to-End Step-by-Step Implementation Procedure
 
-In large enterprises, networking is centralized within a dedicated Host Project, while OpenShift compute and storage resources run within a Service Project:
+### Step 1: Shared VPC Setup (Host Project)
+1. In the GCP Host Project, establish a Shared VPC with subnets for master nodes (`snet-ocp-masters`) and worker nodes (`snet-ocp-workers`).
+2. Attach the Service Project to the Shared VPC.
 
-```mermaid
-flowchart TD
-    subgraph HostProject["GCP Host Project (Network Admin / NetOps)"]
-        VPC["Enterprise Shared VPC"]
-        SubnetMaster["Subnet: ocp-masters (10.10.1.0/24)"]
-        SubnetWorker["Subnet: ocp-workers (10.10.2.0/23)"]
-        Firewalls["Enterprise Cloud Firewall Policies"]
-        VPC --> SubnetMaster
-        VPC --> SubnetWorker
-    end
+### Step 2: GCP Workload Identity Federation
+1. Generate GCP Workload Identity pools and provider bindings using `ccoctl`:
+   ```bash
+   ccoctl gcp create-all      --name=ocp420-gcp      --region=europe-west1      --project=enterprise-service-project      --credentials-requests-dir=./credrequests
+   ```
 
-    subgraph ServiceProject["GCP Service Project (Platform Team)"]
-        MasterMIG["3x Master Compute Instances (n2-standard-8)"]
-        WorkerMIG["Worker MachineSets (n2-standard-16)"]
-        PDStorage["Persistent Disk CSI (pd-ssd / pd-balanced)"]
-    end
+### Step 3: Configure GCP install-config.yaml
+1. Specify Shared VPC details, instance types (`n2-standard-8`), and `credentialsMode: Manual` (see [`configs/ipi-cloud/gcp-install-config.yaml`](../../configs/ipi-cloud/gcp-install-config.yaml)).
 
-    SubnetMaster --> MasterMIG
-    SubnetWorker --> WorkerMIG
-```
+### Step 4: Execute Installation
+1. Trigger automated deployment:
+   ```bash
+   openshift-install create cluster --dir=./gcp-cluster --log-level=info
+   ```
 
----
-
-## GCP Workload Identity Federation
-`ccoctl` automates the binding between OpenShift service accounts and GCP IAM Service Accounts without creating service account key files:
-
-```bash
-ccoctl gcp create-all   --name=ocp-gcp-prod   --region=europe-west1   --project=enterprise-cloud-host-prod   --workload-identity-pool=enterprise-pool   --workload-identity-provider=enterprise-provider
-```
+### Step 5: Verify Persistent Disk CSI & PSC Endpoints
+1. Validate that the Google Compute Engine Persistent Disk CSI driver is operational.
 
 ---
-[Back to Platforms Index](README.md) • [Next Chapter: Day 0 Readiness](../05-day0-readiness/README.md)
+[Next: Microsoft Hyper-V](08-microsoft-hyper-v.md) • [Back to Platforms Index](README.md)

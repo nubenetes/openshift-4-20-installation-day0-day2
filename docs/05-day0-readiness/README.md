@@ -13,6 +13,15 @@ Day 0 encompasses all architectural planning, hardware validation, network provi
 - [ ] **Load Balancing**: External or integrated VIPs configured for ports 6443, 22623, 80, and 443.
 - [ ] **Storage & CSI**: Primary block/file storage class identified, or raw NVMe disks allocated for ODF Ceph.
 - [ ] **Automated Preflight Execution**: Run `scripts/preflight-check.sh` on the bastion host.
+- [ ] **Helper Node Verification**: Validate DNS, HAProxy, and Chrony services on the Bastion / Services host.
+
+---
+
+## Section Documents
+- [01. Hardware Sizing & Capacity Calculations](01-hardware-and-sizing.md)
+- [02. DNS & Load Balancing Matrix](02-dns-loadbalancer-matrix.md)
+- [03. Storage Architecture & ODF](03-storage-architecture-odf.md)
+- [04. Helper Node Architecture & Engineering](04-helper-node-architecture.md)
 
 ---
 [Back to Global Navigation](../00-navigation.md)

@@ -39,24 +39,80 @@ flowchart TD
 
 ---
 
-## Node Roles & MachineConfigPools (MCP)
+## End-to-End Step-by-Step Implementation Procedure
 
-To maintain stability at scale, the cluster is divided into distinct MachineConfigPools:
+### Step 1: Pre-Allocating Subnets and Enterprise DNS
+1. Plan machine network CIDR (e.g., `10.240.0.0/22`).
+2. Establish static records in enterprise DNS:
+   - `api.prod.corp.local` -> Load Balancer VIP (`10.240.0.10`)
+   - `api-int.prod.corp.local` -> Load Balancer VIP (`10.240.0.10`)
+   - `*.apps.prod.corp.local` -> Ingress Load Balancer VIP (`10.240.0.11`)
+3. Configure enterprise load balancers (F5 BIG-IP / Citrix / HAProxy) with health checks:
+   - Port 6443 (API): `GET /readyz` HTTP 200 check.
+   - Port 22623 (Machine Config): TCP check.
 
-1. ** Pool**:
-   - Size: Exactly 3 nodes (odd number for Raft quorum).
-   - Taint:  (immutable).
-   - Dedicated low-latency network interface for etcd replication.
-2. ** Pool**:
-   - Size: 3 nodes minimum (distributed across distinct failure zones / racks).
-   - Taint: .
-   - Workload assignment: IngressController, OpenShift Monitoring (Prometheus, Alertmanager), OpenShift Logging (Vector, LokiStack), Quay Registry.
-3. ** Pool (Optional if running external SAN/NAS or separate ODF)**:
-   - Size: 3 to 12 nodes.
-   - Dedicated NVMe disks and 25/100GbE storage fabric.
-4. ** Pool**:
-   - Size: 3 to 2,000+ nodes.
-   - Dynamic scaling via MachineSets or manual expansion.
+### Step 2: Formulate Multi-Pool install-config.yaml
+1. Define 3 Control Plane replicas and initial Worker replicas (e.g. 6 workers):
+   ```yaml
+   apiVersion: v1
+   baseDomain: corp.local
+   metadata:
+     name: prod
+   controlPlane:
+     name: master
+     replicas: 3
+     architecture: amd64
+   compute:
+     - name: worker
+       replicas: 6
+       architecture: amd64
+   networking:
+     networkType: OVNKubernetes
+     machineNetwork:
+       - cidr: 10.240.0.0/22
+   platform:
+     baremetal:
+       apiVIPs:
+         - 10.240.0.10
+       ingressVIPs:
+         - 10.240.0.11
+   pullSecret: '{"auths":{...}}'
+   sshKey: 'ssh-ed25519 AAAAC3... admin@corp'
+   ```
+
+### Step 3: Build & Boot via Agent-Based ISO
+1. Generate ISO:
+   ```bash
+   openshift-install agent create image --dir=./prod-cluster
+   ```
+2. Attach `agent.x86_64.iso` to all 9 physical servers via Redfish Virtual Media.
+3. Power on servers; observe Rendezvous host coordination and automated node joining.
+
+### Step 4: Carve Out Dedicated Infrastructure MachineConfigPool
+1. Once installation completes, select 3 worker nodes to become dedicated Infra nodes:
+   ```bash
+   oc label node worker-0.corp.local node-role.kubernetes.io/infra=""
+   oc label node worker-1.corp.local node-role.kubernetes.io/infra=""
+   oc label node worker-2.corp.local node-role.kubernetes.io/infra=""
+   oc label node worker-0.corp.local node-role.kubernetes.io/worker-
+   oc label node worker-1.corp.local node-role.kubernetes.io/worker-
+   oc label node worker-2.corp.local node-role.kubernetes.io/worker-
+   ```
+2. Taint the infra nodes to prevent regular workloads from scheduling:
+   ```bash
+   oc adm taint nodes -l node-role.kubernetes.io/infra node-role.kubernetes.io/infra=reserved:NoSchedule
+   ```
+3. Apply the Infra `MachineConfigPool` manifest:
+   ```bash
+   oc apply -f configs/day1/mcp-infra-nodes.yaml
+   ```
+
+### Step 5: Migrate Ingress, Monitoring, and Registry to Infra Nodes
+1. Update IngressController node placement to target `node-role.kubernetes.io/infra`:
+   ```bash
+   oc patch ingresscontroller.operator default -n openshift-ingress-operator --type=merge -p '{"spec":{"nodePlacement":{"nodeSelector":{"matchLabels":{"node-role.kubernetes.io/infra":""}},"tolerations":[{"key":"node-role.kubernetes.io/infra","operator":"Exists","effect":"NoSchedule"}]}}}'
+   ```
+2. Move OpenShift Monitoring (Prometheus/Thanos) and OpenShift Logging (LokiStack) by updating `cluster-monitoring-config` with matching nodeSelector and tolerations.
 
 ---
 [Next: Remote Worker Nodes over WAN](04-remote-workers-wan.md) • [Back to Topologies Index](README.md)
