@@ -1,11 +1,27 @@
 # Enterprise Red Hat OpenShift 4.20 Architecture, Installation & Lifecycle Matrix (Day 0, Day 1, Day 2)
 
-[![OpenShift](https://img.shields.io/badge/OpenShift-4.20-red.svg?logo=redhat&logoColor=white)](https://docs.openshift.com)
-[![Kubernetes](https://img.shields.io/badge/Kubernetes-1.31--1.33-blue.svg?logo=kubernetes&logoColor=white)](https://kubernetes.io)
+[![OpenShift](https://img.shields.io/badge/OpenShift-4.20-EE0000.svg?logo=redhat&logoColor=white)](https://docs.openshift.com)
+[![Kubernetes](https://img.shields.io/badge/Kubernetes-1.31--1.33-326CE5.svg?logo=kubernetes&logoColor=white)](https://kubernetes.io)
+[![RHCOS](https://img.shields.io/badge/RHCOS-9.6+-CC0000.svg?logo=redhat&logoColor=white)](https://docs.openshift.com)
 [![Status](https://img.shields.io/badge/Status-Production--Ready-brightgreen.svg)]()
-[![Target Date](https://img.shields.io/badge/Current%20State-September%202026-blueviolet.svg)]()
-[![License](https://img.shields.io/badge/License-Apache%202.0-yellow.svg)](LICENSE)
-[![AI-Generated](https://img.shields.io/badge/Generated%20by-Gemini%203.8%20Flash-9cf.svg?logo=google&logoColor=white)]()
+[![Release State](https://img.shields.io/badge/Release%20State-September%202026-8A2BE2.svg)]()
+[![License](https://img.shields.io/badge/License-Apache%202.0-F9A825.svg)](LICENSE)
+[![AI-Generated](https://img.shields.io/badge/Generated%20by-Gemini%203.8%20Flash-4285F4.svg?logo=google&logoColor=white)]()
+<br/>
+[![Gateway API](https://img.shields.io/badge/Gateway%20API-v1%20GA-4285F4.svg?logo=kubernetes&logoColor=white)](docs/03-network-and-connectivity/05-gateway-api-architecture.md)
+[![Service Mesh](https://img.shields.io/badge/Service%20Mesh-3.x%20Ambient-466BB0.svg?logo=istio&logoColor=white)](docs/03-network-and-connectivity/05-gateway-api-architecture.md)
+[![CNI OVN](https://img.shields.io/badge/CNI-OVN--Kubernetes-1F618D.svg)](docs/03-network-and-connectivity/04-ovn-kubernetes-tuning.md)
+[![Air-Gap Standard](https://img.shields.io/badge/Air--Gap-oc--mirror%20v2-critical.svg)](docs/03-network-and-connectivity/02-air-gapped-oc-mirror-v2.md)
+[![Storage Ceph](https://img.shields.io/badge/Storage-ODF%20Ceph%204.16+-E03C11.svg?logo=ceph&logoColor=white)](docs/05-day0-readiness/03-storage-architecture-odf.md)
+[![GitOps](https://img.shields.io/badge/GitOps-ArgoCD%20v3+-EF6C00.svg?logo=argo&logoColor=white)](docs/07-day2-operations/04-gitops-app-of-apps.md)
+<br/>
+[![Backup OADP](https://img.shields.io/badge/Backup-OADP%201.4+%20(Kopia)-2E7D32.svg)](docs/08-backup-dr-and-rebuild/02-oadp-backup-restore.md)
+[![Lifecycle Upgrades](https://img.shields.io/badge/Lifecycle-Canary%20Upgrades-00897B.svg)](docs/07-day2-operations/05-automated-upgrades.md)
+[![Virtualization](https://img.shields.io/badge/Virtualization-KubeVirt%204.16+-6A1B9A.svg)](docs/04-platforms/09-openshift-virtualization.md)
+[![OpenShift AI](https://img.shields.io/badge/AI%20%2F%20ML-RHOAI%202.16+-00ACC1.svg?logo=redhat&logoColor=white)](docs/07-day2-operations/07-openshift-ai-gpu.md)
+[![LLM Serving](https://img.shields.io/badge/LLM%20Serving-vLLM%20gRPC-0288D1.svg)](docs/07-day2-operations/07-openshift-ai-gpu.md)
+[![Emergency Runbooks](https://img.shields.io/badge/Emergency-Runbooks%20&%20Scripts-D32F2F.svg)](docs/09-emergency-runbooks/README.md)
+[![Security CIS](https://img.shields.io/badge/Security-CIS%20&%20NIST%20800--53-37474F.svg)](docs/07-day2-operations/03-compliance-cis-benchmark.md)
 
 An exhaustive, enterprise-grade reference architecture, installation engineering handbook, declarative automation toolkit, and Day 0/1/2 operational field manual for **Red Hat OpenShift Container Platform (OCP) 4.20** (Kubernetes 1.31–1.33, updated through **September/October 2026**).
 
@@ -16,6 +32,18 @@ Designed for Enterprise Platform Architects, Principal Site Reliability Engineer
 - ⚙️ **34 Production Declarative Manifests (`configs/`)**: Validated Custom Resources for Agent-Based Installer, Keyless Cloud IPI, oc-mirror v2, Gateway API, Ingress PKI, GitOps root App-of-Apps, External Secrets Operator, cert-manager, OpenShift Virtualization, RHOAI, and vLLM ServingRuntime.
 - 🛠️ **14 Production Automation Scripts (`scripts/`)**: Complete shell and PowerShell operational tools covering preflight validation, air-gap mirroring, automated etcd backups, canary cluster upgrades with Prometheus SLO gating, automated OADP restore drills, expired certificate recovery from the Helper Node, and single-member quorum restoration.
 - 🎯 **10-Step Deterministic Implementation Workflow**: A unified sequence linking Day 0 readiness through to autonomous lifecycle operations across all infrastructure targets.
+
+### Core Architecture & Technical Taxonomy Tags:
+
+| Domain | Topic Tags & Architectural Components | Primary Reference Modules |
+| :--- | :--- | :--- |
+| **Ingress & Networking** | `gateway-api` `httproute` `grpcroute` `tlsroute` `service-mesh-3` `ovn-kubernetes` `geneve` `split-dns` `air-gapped` `oc-mirror-v2` | [`docs/03-network-and-connectivity/`](docs/03-network-and-connectivity/) |
+| **Topologies & Sizing** | `sno` `compact-3-node` `standard-ha` `remote-workers-wan` `hypershift` `hosted-control-planes` `ztp` `acm-2.12` | [`docs/01-architecture-topologies/`](docs/01-architecture-topologies/) |
+| **Datacenter & Cloud** | `bare-metal` `abi-bootstrap` `vsphere-8-9` `nutanix-ahv` `kvm-rhoso` `aws-sts-irsa` `azure-workload-id` `gcp-workload-id` `hyper-v` | [`docs/04-platforms/`](docs/04-platforms/) |
+| **Storage & Data Fabric**| `odf-ceph` `rook-ceph` `ceph-rbd` `cephfs` `rgw-s3` `fio-benchmarks` `local-storage-lso` | [`docs/05-day0-readiness/03-storage-architecture-odf.md`](docs/05-day0-readiness/03-storage-architecture-odf.md) |
+| **Modern Workloads** | `openshift-virtualization` `kubevirt` `forklift-mtv` `openshift-ai` `rhoai` `vllm-grpc` `kserve-v2` `nvidia-gpu-operator` `mig-slicing` | [`docs/04-platforms/09-openshift-virtualization.md`](docs/04-platforms/09-openshift-virtualization.md) & [`docs/07-day2-operations/07-openshift-ai-gpu.md`](docs/07-day2-operations/07-openshift-ai-gpu.md) |
+| **Day 2 Ops & Recovery** | `gitops-argocd` `external-secrets` `cert-manager` `canary-upgrades` `oadp-velero` `kopia` `metro-dr` `regional-dr` `cis-benchmark` | [`docs/07-day2-operations/`](docs/07-day2-operations/) & [`docs/08-backup-dr-and-rebuild/`](docs/08-backup-dr-and-rebuild/) |
+| **Emergency Runbooks** | `emergency-runbooks` `expired-certificates` `kubelet-csr-recovery` `etcd-quorum-recovery` `single-member-etcd` `node-replacement` `helper-ssh-jump` | [`docs/09-emergency-runbooks/`](docs/09-emergency-runbooks/) |
 
 > [!IMPORTANT]
 > **Architecture Reference & Non-Live Environment Disclaimer**:
