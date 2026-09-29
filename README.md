@@ -65,6 +65,8 @@ Architectural masterclasses, deep-dive podcasts, and focused technical video sho
 | **04** | [OpenShift 4.20 Day 0 Readiness: Air-Gapped Mirroring, DNS, NTP and Preflight Architecture](https://www.youtube.com/watch?v=h13w4e_Qx1U) | **Day 0 Preflight & Network**<br/>oc-mirror v2 OCI streaming, BIND9 DNS split-horizon, Chrony NTP & fio disk benchmarking | 🇺🇸 EN | `7:25` | [▶️ Watch](https://www.youtube.com/watch?v=h13w4e_Qx1U) |
 | **05** | [OpenShift 4.20 Gateway API: Modernización de Ingress, HTTPRoute y Tráfico L4-L7](https://www.youtube.com/watch?v=hUSGPVtyidc) | **Modernización Ingress & Gateway API**<br/>Transición desde Ingress/Routes hacia Gateway API, roles desacoplados y Canary rollouts | 🇪🇸 ES | `6:06` | [▶️ Watch](https://www.youtube.com/watch?v=hUSGPVtyidc) |
 | **06** | [Kubernetes Gateway API on OpenShift 4.20: Day 0 to Day 2 Ingress and Traffic Engineering](https://www.youtube.com/watch?v=GrCoDGJ8YiQ) | **Traffic Engineering & Routing**<br/>Gateway controller, HTTPRoute, GRPCRoute, TLSRoute, Kuadrant & ReferenceGrant security | 🇺🇸 EN | `9:47` | [▶️ Watch](https://www.youtube.com/watch?v=GrCoDGJ8YiQ) |
+| **07** | [OpenShift 4.20 Day 1 Hardening: Custom Ingress PKI, Enterprise IdP, RBAC and MCPs](https://www.youtube.com/watch?v=E9eV9CHYYPE) | **Day 1 Post-Install & Hardening**<br/>ClusterOperators health, custom Ingress certs, OIDC/Keycloak IdP, RBAC lockdown & MCP tuning | 🇺🇸 EN | `6:30` | [▶️ Watch](https://www.youtube.com/watch?v=E9eV9CHYYPE) |
+| **08** | [OpenShift 4.20 Day 2 Operations: Observability, GitOps, EUS Upgrades and OpenShift AI](https://www.youtube.com/watch?v=9MHiGiQcqH0) | **Day 2 Ops & Fleet Management**<br/>Thanos/LokiStack observability, GitOps App-of-Apps, EUS upgrades (4.18 to 4.20) & RHOAI GPU | 🇺🇸 EN | `6:44` | [▶️ Watch](https://www.youtube.com/watch?v=9MHiGiQcqH0) |
 
 ### 🎬 Video Shorts Matrix
 
@@ -1207,7 +1209,7 @@ Below are the complete video overviews organized by original audio language and 
 ### 🇬🇧 Videos in English (Original Audio)
 
 <details open>
-<summary>📂 <strong>Full-Length Technical Deep Dives & Architecture Masterclasses (5 Videos)</strong></summary>
+<summary>📂 <strong>Full-Length Technical Deep Dives & Architecture Masterclasses (7 Videos)</strong></summary>
 
 <br/>
 
@@ -1330,6 +1332,54 @@ Below are the complete video overviews organized by original audio language and 
 >
 > ⏱️ Duration: 9:47
 > #GatewayAPI #OpenShift #Kubernetes #Ingress #HTTPRoute #GRPCRoute #TLSRoute #CloudNative #DevOps #SRE
+
+#### 6. OpenShift 4.20 Day 1 Hardening: Custom Ingress PKI, Enterprise IdP, RBAC and MCPs
+- 🔗 **Direct Link**: [https://www.youtube.com/watch?v=E9eV9CHYYPE](https://www.youtube.com/watch?v=E9eV9CHYYPE)
+- 🛠️ **YouTube Studio**: [https://studio.youtube.com/video/E9eV9CHYYPE/edit](https://studio.youtube.com/video/E9eV9CHYYPE/edit)
+- ⏱️ **Duration**: 6:30
+- 🏷️ **Domain**: Day 1 Post-Installation Hardening & Baselining
+- 📝 **Full Description**:
+> 🛡️ OpenShift 4.20 Day 1 Post-Installation Hardening: Custom PKI, Enterprise IdP, RBAC and MCPs
+>
+> An exhaustive architectural reference and Day 1 operational guide for Red Hat OpenShift Container Platform 4.20. Learn how enterprise platform engineers and SREs baseline and harden a newly provisioned cluster into a secure, production-grade enterprise platform immediately after installation.
+>
+> 📌 Key Day 1 Hardening Modules Covered:
+> • Cluster Operator Verification: Validating degraded conditions, version progression, and operator stability across all core subsystems.
+> • Custom Ingress PKI and TLS: Replacing default ingress wildcards with trusted Enterprise CA certificates and automating renewal workflows via cert-manager.
+> • Enterprise Identity Providers and RBAC: Integrating OIDC/Keycloak and Microsoft Entra ID, disabling the default kubeadmin backdoor, and revoking cluster-wide self-provisioner permissions.
+> • MachineConfigPool Partitioning: Isolating Infra, Storage, and Edge worker nodes with custom MachineConfigs, kernel arguments, and tuned profiles.
+> • Enterprise Secret Management: Decoupling sensitive credentials using External Secrets Operator (ESO) with HashiCorp Vault backend integration.
+>
+> 🔗 Source Code and Day 1 Manifests:
+> • Day 1 Baselining Guide: https://github.com/nubenetes/openshift-4-20-installation-day0-day2/tree/main/docs/06-day1-baselining
+> • Complete Architecture Repository: https://github.com/nubenetes/openshift-4-20-installation-day0-day2
+>
+> ⏱️ Duration: 6:30
+> #OpenShift #Day1 #Hardening #Kubernetes #Security #RBAC #MachineConfig #certmanager #ExternalSecrets #DevOps #SRE #RedHat
+
+#### 7. OpenShift 4.20 Day 2 Operations: Observability, GitOps, EUS Upgrades and OpenShift AI
+- 🔗 **Direct Link**: [https://www.youtube.com/watch?v=9MHiGiQcqH0](https://www.youtube.com/watch?v=9MHiGiQcqH0)
+- 🛠️ **YouTube Studio**: [https://studio.youtube.com/video/9MHiGiQcqH0/edit](https://studio.youtube.com/video/9MHiGiQcqH0/edit)
+- ⏱️ **Duration**: 6:44
+- 🏷️ **Domain**: Day 2 Operations, Fleet Management & Lifecycle
+- 📝 **Full Description**:
+> ⚙️ OpenShift 4.20 Day 2 Operations and Fleet Management: Observability, GitOps, Upgrades and AI
+>
+> The definitive operational reference for day-to-day cluster administration, enterprise fleet management, and continuous lifecycle maintenance in Red Hat OpenShift 4.20. Discover how platform teams scale observability, enforce compliance, automate EUS upgrades, and orchestrate GPU-accelerated AI inference.
+>
+> 📌 Core Day 2 Operational Pillars:
+> • Full-Stack Enterprise Observability: Configuring User Workload Monitoring (UWM), Thanos cross-cluster aggregation, LokiStack centralized logging, and OpenTelemetry distributed tracing.
+> • Security and Compliance Governance: Automating CIS Kubernetes benchmarks and NIST controls using the Compliance Operator and File Integrity Operator (AIDE).
+> • GitOps Foundation and Fleet Orchestration: Standardizing multi-cluster configurations using OpenShift GitOps (Argo CD) and the App-of-Apps architectural pattern.
+> • Automated EUS-to-EUS Upgrades: Safely executing OpenShift 4.18 to 4.20 Extended Update Support migrations using paused MachineConfigPools and controlled canary worker waves.
+> • Red Hat OpenShift AI (RHOAI) and GPU Infrastructure: Deploying the NVIDIA GPU Operator, Node Feature Discovery, and vLLM / KServe model serving pipelines for enterprise LLMs.
+>
+> 🔗 Architectural Guides and Manifests:
+> • Day 2 Operations Handbook: https://github.com/nubenetes/openshift-4-20-installation-day0-day2/tree/main/docs/07-day2-operations
+> • Complete Architecture Repository: https://github.com/nubenetes/openshift-4-20-installation-day0-day2
+>
+> ⏱️ Duration: 6:44
+> #OpenShift #Day2 #Kubernetes #GitOps #ArgoCD #Observability #OpenShiftAI #RHOAI #DevOps #SRE #PlatformEngineering #RedHat
 
 </details>
 
