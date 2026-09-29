@@ -415,107 +415,106 @@ To navigate and utilize this enterprise repository effectively, the directory st
 
 ### High-Level Directory Tree
 
-```text
-openshift-4-20-installation-day0-day2/
-├── .gitignore                                      # Ignored artifacts (ISOs, ignition, local auth tokens, logs)
-├── LICENSE                                         # Apache 2.0 open-source enterprise license
-├── README.md                                       # Master architecture matrix, decision trees, workflow & TOC
-├── docs/                                           # Exhaustive Technical Documentation & Architecture Modules
-│   ├── 00-navigation.md                            # Comprehensive cross-reference index and document map
-│   ├── 01-architecture-topologies/                 # Sizing, quorum, and hardware topologies (SNO, Compact, Remote, HCP)
-│   │   ├── 01-sno-single-node.md                   # Single Node OpenShift (far-edge, autonomous operation)
-│   │   ├── 02-compact-3-node-converged.md          # 3-Node Compact Converged (collocated masters + ODF storage)
-│   │   ├── 03-standard-ha-multinode.md             # Standard HA Multi-Node (dedicated masters, infra, workers)
-│   │   ├── 04-remote-workers-wan.md                # Distributed Remote Worker Nodes over high-latency WAN links
-│   │   ├── 05-hypershift-hosted-cp.md              # Hosted Control Planes (HyperShift centralized pods)
-│   │   └── README.md                               # Architecture module summary & sizing tables
-│   ├── 02-provisioning-paradigms/                  # Installation mechanisms & bootstrap architectures
-│   │   ├── 01-agent-based-installer.md             # Agent-Based Installer (ABI) & Bootstrap-in-Place deep dive
-│   │   ├── 02-installer-provisioned-ipi.md         # Installer-Provisioned Infrastructure (IPI) automation
-│   │   ├── 03-user-provisioned-upi.md              # User-Provisioned Infrastructure (UPI) legacy / strict SecOps
-│   │   ├── 04-ztp-acm-gitops.md                    # Zero Touch Provisioning (ZTP) via ACM 2.12+ & TALM GitOps
-│   │   └── README.md                               # Provisioning paradigms evaluation matrix
-│   ├── 03-network-and-connectivity/                # Enterprise networking, proxy egress, and air-gap mirrors
-│   │   ├── 01-connected-with-proxies.md            # Forward proxy egress, noProxy CIDRs, and custom trustedCA
-│   │   ├── 02-air-gapped-oc-mirror-v2.md           # Disconnected mirroring standard with oc-mirror v2 & IDMS
-│   │   ├── 03-air-gapped-core-services.md          # Isolated infrastructure services (split DNS, Chrony, PKI)
-│   │   ├── 04-ovn-kubernetes-tuning.md             # OVN-Kubernetes CNI, MTU sizing, EgressIP & EgressFirewall
-│   │   └── README.md                               # Network architecture module guide
-│   ├── 04-platforms/                               # Infrastructure-specific installation blueprints
-│   │   ├── 01-bare-metal-physical.md               # Physical Bare Metal (Dell, HPE, Cisco UCS, Lenovo) via BMC
-│   │   ├── 02-vmware-vsphere.md                    # VMware vSphere (8.x / 9.x) IPI vs ABI, vSAN, and CSI
-│   │   ├── 03-nutanix-ahv.md                       # Nutanix AHV HCI IPI via Prism Central and Nutanix CSI
-│   │   ├── 04-kvm-openstack.md                     # KVM Libvirt & Red Hat OpenStack Services on OpenShift (RHOSO)
-│   │   ├── 05-aws.md                               # Amazon Web Services Private VPC IPI with STS Manual Mode
-│   │   ├── 06-azure.md                             # Microsoft Azure Private VNet IPI with Workload Identity
-│   │   ├── 07-gcp.md                               # Google Cloud Platform Shared VPC with Workload Identity
-│   │   ├── 08-microsoft-hyper-v.md                 # Microsoft Hyper-V / Azure Stack HCI Gen 2 VM deployment
-│   │   └── README.md                               # Platform compatibility & deployment matrix
-│   ├── 05-day0-readiness/                          # Preflight capacity planning & core services deployment
-│   │   ├── 01-hardware-and-sizing.md               # Hardware capacity, CPU/RAM quotas, and disk IOPS latency
-│   │   ├── 02-dns-loadbalancer-matrix.md           # DNS records matrix, port routing, and Keepalived VIP specs
-│   │   ├── 03-storage-architecture-odf.md          # OpenShift Data Foundation (ODF) Ceph RBD, CephFS & RGW
-│   │   ├── 04-helper-node-architecture.md          # Helper Node / Bastion engineering (BIND9, HAProxy, Chrony)
-│   │   └── README.md                               # Day 0 readiness overview
-│   ├── 06-day1-baselining/                         # Day 1 post-installation hardening & enterprise baselining
-│   │   ├── 01-cluster-operator-hardening.md        # Verifying 34+ ClusterOperators and resolving degraded states
-│   │   ├── 02-ingress-and-custom-certs.md          # Replacing ingress router certificates with enterprise PKI
-│   │   ├── 03-identity-providers-rbac.md           # Enterprise SSO (Keycloak, Entra ID) and RBAC lockdown
-│   │   ├── 04-machineconfigpools-tuning.md         # Dedicated infra MCPs, real-time kernel, and node tuning
-│   │   └── README.md                               # Day 1 baselining overview
-│   ├── 07-day2-operations/                         # Day 2 enterprise operations, observability & lifecycle
-│   │   ├── 01-observability-stack.md               # User Workload Monitoring, LokiStack logging & Tempo tracing
-│   │   ├── 02-security-and-compliance.md           # CIS Benchmark & NIST SP 800-53 via Compliance Operator
-│   │   ├── 03-gitops-foundation.md                 # Red Hat OpenShift GitOps (ArgoCD v3+) & External Secrets
-│   │   ├── 04-lifecycle-and-upgrades.md            # Cluster lifecycle, EUS-to-EUS upgrades & MCP canary rollout
-│   │   ├── 05-automated-upgrades.md                # Automated upgrade workflows, etcd snapshot preflight gating
-│   │   └── README.md                               # Day 2 operational runbooks overview
-│   └── 08-backup-dr-and-rebuild/                   # Business continuity, disaster recovery & rapid rebuild
-│       ├── 01-etcd-backup-restore.md               # Control plane etcd snapshot automation & disaster recovery
-│       ├── 02-oadp-vs-velero-deepdive.md           # Technical deep-dive: why vanilla Velero fails vs OADP Kopia
-│       ├── 03-metro-dr-and-regional-dr.md          # Metro-DR (RPO=0) vs Regional-DR (RPO<5m) multi-cluster
-│       ├── 04-declarative-rebuild-gitops.md        # Full cluster rebuild in <45 minutes via GitOps & ACM
-│       └── README.md                               # Backup & DR module overview
-├── configs/                                        # Production Declarative Manifests & Configurations
-│   ├── agent-based/                                # Declarative Agent-Based Installer (ABI) manifests
-│   │   ├── agent-config.yaml                       # Static NMState host IP bonding and Rendezvous node config
-│   │   ├── install-config-sno.yaml                 # SNO single-node cluster install configuration
-│   │   ├── install-config-compact.yaml             # 3-Node Compact Converged install configuration
-│   │   └── install-config-standard.yaml            # Standard 3-Master + 3-Worker HA install configuration
-│   ├── ipi-cloud/                                  # Public Cloud Installer-Provisioned (IPI) manifests
-│   │   ├── aws-install-config.yaml                 # AWS Private VPC install-config with STS keyless IAM
-│   │   ├── azure-install-config.yaml               # Azure Private VNet install-config with Workload Identity
-│   │   └── gcp-install-config.yaml                 # GCP Shared VPC install-config with Workload Identity
-│   ├── upi-vsphere/                                # Virtualization User-Provisioned (UPI) manifests
-│   │   └── vsphere-install-config.yaml             # VMware vSphere UPI install configuration
-│   ├── airgap/                                     # Disconnected & Air-Gapped cluster manifests
-│   │   ├── imageset-config-v2.yaml                 # oc-mirror v2 declarative image set mirroring specification
-│   │   └── local-registry-quay.yaml                # On-prem mirror registry deployment manifest (Quay / Harbor)
-│   ├── day1/                                       # Day 1 baselining & security configuration manifests
-│   │   ├── machineconfig-chrony.yaml               # Declarative Chrony NTP sync MachineConfig (stratum servers)
-│   │   ├── cluster-proxy-trustedca.yaml            # Cluster-wide corporate forward proxy & trustedCA bundle
-│   │   ├── ingresscontroller-custom-tls.yaml       # Default IngressController custom wildcard TLS certificate
-│   │   ├── idp-keycloak-oidc.yaml                  # Enterprise OpenID Connect (OIDC) identity provider
-│   │   └── mcp-infra-nodes.yaml                    # Dedicated MachineConfigPool for Ingress/Registry/Monitoring
-│   ├── day2/                                       # Day 2 observability, governance, and backup manifests
-│   │   ├── oadp-dpa-cr.yaml                        # OADP 1.4+ DataProtectionApplication CR (Kopia data-mover)
-│   │   ├── etcd-backup-cronjob.yaml                # Scheduled etcd snapshot Kubernetes CronJob
-│   │   ├── compliance-suite-cis.yaml               # Compliance Operator CIS benchmark scanning suite
-│   │   └── cluster-autoscaler.yaml                 # Automated compute scaling threshold specification
-│   └── helper-node/                                # On-premises / Air-Gapped Helper Node daemon configurations
-│       ├── haproxy.cfg                             # HAProxy Layer 4 load balancing for API (6443) & Apps (80/443)
-│       └── named.conf                              # Authoritative BIND9 DNS split-horizon zone configuration
-└── scripts/                                        # Production Automation Tooling & Operational Scripts
-    ├── preflight-check.sh                          # Day 0 DNS, PTR, NTP, MTU, proxy, and latency preflight audit
-    ├── generate-agent-iso.sh                       # Agent-Based Installer boot ISO builder (SNO/Compact/Standard)
-    ├── mirror-ocp420-airgap.sh                     # oc-mirror v2 automated mirroring to local Quay/Harbor registry
-    ├── validate-cluster-health.sh                  # Comprehensive health audit: operators, nodes, MCPs, storage
-    ├── etcd-backup.sh                              # Non-disruptive master etcd snapshotting & retention pruning
-    ├── pre-upgrade-health-check.sh                 # Pre-upgrade gatekeeper: verifies etcd backup, MCPs & operators
-    ├── automated-cluster-upgrade.sh                # End-to-end upgrade orchestrator with paused worker MCP canary
-    ├── airgap-upgrade.sh                           # Disconnected upgrade orchestrator: mirrors release & applies IDMS
-    └── deploy-hyperv-vms.ps1                       # Automated PowerShell Gen 2 VM provisioner for Hyper-V / HCI
-```
+<pre><code><b><a href="./">openshift-4-20-installation-day0-day2/</a></b>
+├── <a href=".gitignore">.gitignore</a>                                      # Ignored artifacts (ISOs, ignition, local auth tokens, logs)
+├── <a href="LICENSE">LICENSE</a>                                         # Apache 2.0 open-source enterprise license
+├── <a href="README.md">README.md</a>                                       # Master architecture matrix, decision trees, workflow & TOC
+├── <b><a href="docs/">docs/</a></b>                                           # Exhaustive Technical Documentation & Architecture Modules
+│   ├── <a href="docs/00-navigation.md">00-navigation.md</a>                            # Comprehensive cross-reference index and document map
+│   ├── <b><a href="docs/01-architecture-topologies/">01-architecture-topologies/</a></b>                 # Sizing, quorum, and hardware topologies (SNO, Compact, Remote, HCP)
+│   │   ├── <a href="docs/01-architecture-topologies/01-sno-single-node.md">01-sno-single-node.md</a>                   # Single Node OpenShift (far-edge, autonomous operation)
+│   │   ├── <a href="docs/01-architecture-topologies/02-compact-3-node-converged.md">02-compact-3-node-converged.md</a>          # 3-Node Compact Converged (collocated masters + ODF storage)
+│   │   ├── <a href="docs/01-architecture-topologies/03-standard-ha-multinode.md">03-standard-ha-multinode.md</a>             # Standard HA Multi-Node (dedicated masters, infra, workers)
+│   │   ├── <a href="docs/01-architecture-topologies/04-remote-workers-wan.md">04-remote-workers-wan.md</a>                # Distributed Remote Worker Nodes over high-latency WAN links
+│   │   ├── <a href="docs/01-architecture-topologies/05-hypershift-hosted-cp.md">05-hypershift-hosted-cp.md</a>              # Hosted Control Planes (HyperShift centralized pods)
+│   │   └── <a href="docs/01-architecture-topologies/README.md">README.md</a>                               # Architecture module summary & sizing tables
+│   ├── <b><a href="docs/02-provisioning-paradigms/">02-provisioning-paradigms/</a></b>                  # Installation mechanisms & bootstrap architectures
+│   │   ├── <a href="docs/02-provisioning-paradigms/01-agent-based-installer.md">01-agent-based-installer.md</a>             # Agent-Based Installer (ABI) & Bootstrap-in-Place deep dive
+│   │   ├── <a href="docs/02-provisioning-paradigms/02-installer-provisioned-ipi.md">02-installer-provisioned-ipi.md</a>         # Installer-Provisioned Infrastructure (IPI) automation
+│   │   ├── <a href="docs/02-provisioning-paradigms/03-user-provisioned-upi.md">03-user-provisioned-upi.md</a>              # User-Provisioned Infrastructure (UPI) legacy / strict SecOps
+│   │   ├── <a href="docs/02-provisioning-paradigms/04-ztp-acm-gitops.md">04-ztp-acm-gitops.md</a>                    # Zero Touch Provisioning (ZTP) via ACM 2.12+ & TALM GitOps
+│   │   └── <a href="docs/02-provisioning-paradigms/README.md">README.md</a>                               # Provisioning paradigms evaluation matrix
+│   ├── <b><a href="docs/03-network-and-connectivity/">03-network-and-connectivity/</a></b>                # Enterprise networking, proxy egress, and air-gap mirrors
+│   │   ├── <a href="docs/03-network-and-connectivity/01-connected-with-proxies.md">01-connected-with-proxies.md</a>            # Forward proxy egress, noProxy CIDRs, and custom trustedCA
+│   │   ├── <a href="docs/03-network-and-connectivity/02-air-gapped-oc-mirror-v2.md">02-air-gapped-oc-mirror-v2.md</a>           # Disconnected mirroring standard with oc-mirror v2 & IDMS
+│   │   ├── <a href="docs/03-network-and-connectivity/03-air-gapped-core-services.md">03-air-gapped-core-services.md</a>          # Isolated infrastructure services (split DNS, Chrony, PKI)
+│   │   ├── <a href="docs/03-network-and-connectivity/04-ovn-kubernetes-tuning.md">04-ovn-kubernetes-tuning.md</a>             # OVN-Kubernetes CNI, MTU sizing, EgressIP & EgressFirewall
+│   │   └── <a href="docs/03-network-and-connectivity/README.md">README.md</a>                               # Network architecture module guide
+│   ├── <b><a href="docs/04-platforms/">04-platforms/</a></b>                               # Infrastructure-specific installation blueprints
+│   │   ├── <a href="docs/04-platforms/01-bare-metal-physical.md">01-bare-metal-physical.md</a>               # Physical Bare Metal (Dell, HPE, Cisco UCS, Lenovo) via BMC
+│   │   ├── <a href="docs/04-platforms/02-vmware-vsphere.md">02-vmware-vsphere.md</a>                    # VMware vSphere (8.x / 9.x) IPI vs ABI, vSAN, and CSI
+│   │   ├── <a href="docs/04-platforms/03-nutanix-ahv.md">03-nutanix-ahv.md</a>                       # Nutanix AHV HCI IPI via Prism Central and Nutanix CSI
+│   │   ├── <a href="docs/04-platforms/04-kvm-openstack.md">04-kvm-openstack.md</a>                     # KVM Libvirt & Red Hat OpenStack Services on OpenShift (RHOSO)
+│   │   ├── <a href="docs/04-platforms/05-aws.md">05-aws.md</a>                               # Amazon Web Services Private VPC IPI with STS Manual Mode
+│   │   ├── <a href="docs/04-platforms/06-azure.md">06-azure.md</a>                             # Microsoft Azure Private VNet IPI with Workload Identity
+│   │   ├── <a href="docs/04-platforms/07-gcp.md">07-gcp.md</a>                               # Google Cloud Platform Shared VPC with Workload Identity
+│   │   ├── <a href="docs/04-platforms/08-microsoft-hyper-v.md">08-microsoft-hyper-v.md</a>                 # Microsoft Hyper-V / Azure Stack HCI Gen 2 VM deployment
+│   │   └── <a href="docs/04-platforms/README.md">README.md</a>                               # Platform compatibility & deployment matrix
+│   ├── <b><a href="docs/05-day0-readiness/">05-day0-readiness/</a></b>                          # Preflight capacity planning & core services deployment
+│   │   ├── <a href="docs/05-day0-readiness/01-hardware-and-sizing.md">01-hardware-and-sizing.md</a>               # Hardware capacity, CPU/RAM quotas, and disk IOPS latency
+│   │   ├── <a href="docs/05-day0-readiness/02-dns-loadbalancer-matrix.md">02-dns-loadbalancer-matrix.md</a>           # DNS records matrix, port routing, and Keepalived VIP specs
+│   │   ├── <a href="docs/05-day0-readiness/03-storage-architecture-odf.md">03-storage-architecture-odf.md</a>          # OpenShift Data Foundation (ODF) Ceph RBD, CephFS & RGW
+│   │   ├── <a href="docs/05-day0-readiness/04-helper-node-architecture.md">04-helper-node-architecture.md</a>          # Helper Node / Bastion engineering (BIND9, HAProxy, Chrony)
+│   │   └── <a href="docs/05-day0-readiness/README.md">README.md</a>                               # Day 0 readiness overview
+│   ├── <b><a href="docs/06-day1-baselining/">06-day1-baselining/</a></b>                         # Day 1 post-installation hardening & enterprise baselining
+│   │   ├── <a href="docs/06-day1-baselining/01-cluster-operator-hardening.md">01-cluster-operator-hardening.md</a>        # Verifying 34+ ClusterOperators and resolving degraded states
+│   │   ├── <a href="docs/06-day1-baselining/02-ingress-and-custom-certs.md">02-ingress-and-custom-certs.md</a>          # Replacing ingress router certificates with enterprise PKI
+│   │   ├── <a href="docs/06-day1-baselining/03-identity-providers-rbac.md">03-identity-providers-rbac.md</a>           # Enterprise SSO (Keycloak, Entra ID) and RBAC lockdown
+│   │   ├── <a href="docs/06-day1-baselining/04-machineconfigpools-tuning.md">04-machineconfigpools-tuning.md</a>         # Dedicated infra MCPs, real-time kernel, and node tuning
+│   │   └── <a href="docs/06-day1-baselining/README.md">README.md</a>                               # Day 1 baselining overview
+│   ├── <b><a href="docs/07-day2-operations/">07-day2-operations/</a></b>                         # Day 2 enterprise operations, observability & lifecycle
+│   │   ├── <a href="docs/07-day2-operations/01-observability-stack.md">01-observability-stack.md</a>               # User Workload Monitoring, LokiStack logging & Tempo tracing
+│   │   ├── <a href="docs/07-day2-operations/02-security-and-compliance.md">02-security-and-compliance.md</a>           # CIS Benchmark & NIST SP 800-53 via Compliance Operator
+│   │   ├── <a href="docs/07-day2-operations/03-gitops-foundation.md">03-gitops-foundation.md</a>                 # Red Hat OpenShift GitOps (ArgoCD v3+) & External Secrets
+│   │   ├── <a href="docs/07-day2-operations/04-lifecycle-and-upgrades.md">04-lifecycle-and-upgrades.md</a>            # Cluster lifecycle, EUS-to-EUS upgrades & MCP canary rollout
+│   │   ├── <a href="docs/07-day2-operations/05-automated-upgrades.md">05-automated-upgrades.md</a>                # Automated upgrade workflows, etcd snapshot preflight gating
+│   │   └── <a href="docs/07-day2-operations/README.md">README.md</a>                               # Day 2 operational runbooks overview
+│   └── <b><a href="docs/08-backup-dr-and-rebuild/">08-backup-dr-and-rebuild/</a></b>                   # Business continuity, disaster recovery & rapid rebuild
+│       ├── <a href="docs/08-backup-dr-and-rebuild/01-etcd-backup-restore.md">01-etcd-backup-restore.md</a>               # Control plane etcd snapshot automation & disaster recovery
+│       ├── <a href="docs/08-backup-dr-and-rebuild/02-oadp-vs-velero-deepdive.md">02-oadp-vs-velero-deepdive.md</a>           # Technical deep-dive: why vanilla Velero fails vs OADP Kopia
+│       ├── <a href="docs/08-backup-dr-and-rebuild/03-metro-dr-and-regional-dr.md">03-metro-dr-and-regional-dr.md</a>          # Metro-DR (RPO=0) vs Regional-DR (RPO<5m) multi-cluster
+│       ├── <a href="docs/08-backup-dr-and-rebuild/04-declarative-rebuild-gitops.md">04-declarative-rebuild-gitops.md</a>        # Full cluster rebuild in <45 minutes via GitOps & ACM
+│       └── <a href="docs/08-backup-dr-and-rebuild/README.md">README.md</a>                               # Backup & DR module overview
+├── <b><a href="configs/">configs/</a></b>                                        # Production Declarative Manifests & Configurations
+│   ├── <b><a href="configs/agent-based/">agent-based/</a></b>                                # Declarative Agent-Based Installer (ABI) manifests
+│   │   ├── <a href="configs/agent-based/agent-config.yaml">agent-config.yaml</a>                       # Static NMState host IP bonding and Rendezvous node config
+│   │   ├── <a href="configs/agent-based/install-config-sno.yaml">install-config-sno.yaml</a>                 # SNO single-node cluster install configuration
+│   │   ├── <a href="configs/agent-based/install-config-compact.yaml">install-config-compact.yaml</a>             # 3-Node Compact Converged install configuration
+│   │   └── <a href="configs/agent-based/install-config-standard.yaml">install-config-standard.yaml</a>            # Standard 3-Master + 3-Worker HA install configuration
+│   ├── <b><a href="configs/ipi-cloud/">ipi-cloud/</a></b>                                  # Public Cloud Installer-Provisioned (IPI) manifests
+│   │   ├── <a href="configs/ipi-cloud/aws-install-config.yaml">aws-install-config.yaml</a>                 # AWS Private VPC install-config with STS keyless IAM
+│   │   ├── <a href="configs/ipi-cloud/azure-install-config.yaml">azure-install-config.yaml</a>               # Azure Private VNet install-config with Workload Identity
+│   │   └── <a href="configs/ipi-cloud/gcp-install-config.yaml">gcp-install-config.yaml</a>                 # GCP Shared VPC install-config with Workload Identity
+│   ├── <b><a href="configs/upi-vsphere/">upi-vsphere/</a></b>                                # Virtualization User-Provisioned (UPI) manifests
+│   │   └── <a href="configs/upi-vsphere/vsphere-install-config.yaml">vsphere-install-config.yaml</a>             # VMware vSphere UPI install configuration
+│   ├── <b><a href="configs/airgap/">airgap/</a></b>                                     # Disconnected & Air-Gapped cluster manifests
+│   │   ├── <a href="configs/airgap/imageset-config-v2.yaml">imageset-config-v2.yaml</a>                 # oc-mirror v2 declarative image set mirroring specification
+│   │   └── <a href="configs/airgap/local-registry-quay.yaml">local-registry-quay.yaml</a>                # On-prem mirror registry deployment manifest (Quay / Harbor)
+│   ├── <b><a href="configs/day1/">day1/</a></b>                                       # Day 1 baselining & security configuration manifests
+│   │   ├── <a href="configs/day1/machineconfig-chrony.yaml">machineconfig-chrony.yaml</a>               # Declarative Chrony NTP sync MachineConfig (stratum servers)
+│   │   ├── <a href="configs/day1/cluster-proxy-trustedca.yaml">cluster-proxy-trustedca.yaml</a>            # Cluster-wide corporate forward proxy & trustedCA bundle
+│   │   ├── <a href="configs/day1/ingresscontroller-custom-tls.yaml">ingresscontroller-custom-tls.yaml</a>       # Default IngressController custom wildcard TLS certificate
+│   │   ├── <a href="configs/day1/idp-keycloak-oidc.yaml">idp-keycloak-oidc.yaml</a>                  # Enterprise OpenID Connect (OIDC) identity provider
+│   │   └── <a href="configs/day1/mcp-infra-nodes.yaml">mcp-infra-nodes.yaml</a>                    # Dedicated MachineConfigPool for Ingress/Registry/Monitoring
+│   ├── <b><a href="configs/day2/">day2/</a></b>                                       # Day 2 observability, governance, and backup manifests
+│   │   ├── <a href="configs/day2/oadp-dpa-cr.yaml">oadp-dpa-cr.yaml</a>                        # OADP 1.4+ DataProtectionApplication CR (Kopia data-mover)
+│   │   ├── <a href="configs/day2/etcd-backup-cronjob.yaml">etcd-backup-cronjob.yaml</a>                # Scheduled etcd snapshot Kubernetes CronJob
+│   │   ├── <a href="configs/day2/compliance-suite-cis.yaml">compliance-suite-cis.yaml</a>               # Compliance Operator CIS benchmark scanning suite
+│   │   └── <a href="configs/day2/cluster-autoscaler.yaml">cluster-autoscaler.yaml</a>                 # Automated compute scaling threshold specification
+│   └── <b><a href="configs/helper-node/">helper-node/</a></b>                                # On-premises / Air-Gapped Helper Node daemon configurations
+│       ├── <a href="configs/helper-node/haproxy.cfg">haproxy.cfg</a>                             # HAProxy Layer 4 load balancing for API (6443) & Apps (80/443)
+│       └── <a href="configs/helper-node/named.conf">named.conf</a>                              # Authoritative BIND9 DNS split-horizon zone configuration
+└── <b><a href="scripts/">scripts/</a></b>                                        # Production Automation Tooling & Operational Scripts
+    ├── <a href="scripts/preflight-check.sh">preflight-check.sh</a>                          # Day 0 DNS, PTR, NTP, MTU, proxy, and latency preflight audit
+    ├── <a href="scripts/generate-agent-iso.sh">generate-agent-iso.sh</a>                       # Agent-Based Installer boot ISO builder (SNO/Compact/Standard)
+    ├── <a href="scripts/mirror-ocp420-airgap.sh">mirror-ocp420-airgap.sh</a>                     # oc-mirror v2 automated mirroring to local Quay/Harbor registry
+    ├── <a href="scripts/validate-cluster-health.sh">validate-cluster-health.sh</a>                  # Comprehensive health audit: operators, nodes, MCPs, storage
+    ├── <a href="scripts/etcd-backup.sh">etcd-backup.sh</a>                              # Non-disruptive master etcd snapshotting & retention pruning
+    ├── <a href="scripts/pre-upgrade-health-check.sh">pre-upgrade-health-check.sh</a>                 # Pre-upgrade gatekeeper: verifies etcd backup, MCPs & operators
+    ├── <a href="scripts/automated-cluster-upgrade.sh">automated-cluster-upgrade.sh</a>                # End-to-end upgrade orchestrator with paused worker MCP canary
+    ├── <a href="scripts/airgap-upgrade.sh">airgap-upgrade.sh</a>                           # Disconnected upgrade orchestrator: mirrors release & applies IDMS
+    └── <a href="scripts/deploy-hyperv-vms.ps1">deploy-hyperv-vms.ps1</a>                       # Automated PowerShell Gen 2 VM provisioner for Hyper-V / HCI
+</code></pre>
 
 ### Architectural Component Breakdown
 
