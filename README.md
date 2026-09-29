@@ -190,40 +190,60 @@ Use this deterministic ASCII decision tree to determine the optimal installation
 <summary><b>Click to view Graphical Mermaid Flowchart</b></summary>
 
 ```mermaid
-flowchart TD
-    Start(["OpenShift 4.20 Architecture Decision Tree"]) --> TargetEnv{"Target<br/>Infrastructure<br/>Environment?"}
+flowchart LR
+    Start(["<div style='width:220px; text-align:center'><b>OpenShift 4.20 Architecture<br/>Master Decision Engine</b></div>"]) --> TargetEnv{{"<div style='width:180px; text-align:center'><b>Target Infrastructure<br/>Environment?</b></div>"}}
 
-    %% Main Routing Branches
-    TargetEnv -->|"Public Cloud"| CloudSecurity{"Cloud Security<br/>& IAM Policy?"}
-    TargetEnv -->|"Edge & Distributed"| EdgeScale{"Edge Topology<br/>& Footprint?"}
-    TargetEnv -->|"Enterprise Datacenter"| DCPlatform{"Datacenter<br/>Platform Type?"}
+    %% Routing to Subgraphs
+    TargetEnv -->|"Public Cloud"| CloudSec{{"<div style='width:170px; text-align:center'><b>Cloud IAM &<br/>Security Governance?</b></div>"}}
+    TargetEnv -->|"Edge & Remote"| EdgeScale{{"<div style='width:170px; text-align:center'><b>Target Edge Footprint<br/>& Cluster Scale?</b></div>"}}
+    TargetEnv -->|"On-Premises"| DCPlatform{{"<div style='width:170px; text-align:center'><b>Datacenter Hypervisor<br/>or Physical Platform?</b></div>"}}
+    TargetEnv -->|"Network Layer"| NetMode{{"<div style='width:170px; text-align:center'><b>Network Isolation<br/>& Egress Security?</b></div>"}}
 
     subgraph CloudFlow [" 1. Public Cloud Deployments "]
-        CloudSecurity -->|"API Automation Allowed"| CloudIPI["Cloud IPI (Automated)<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>• AWS / Azure / GCP / OCI<br/>• STS / Workload Identity<br/>• Private Subnets & Internal LBs"]
-        CloudSecurity -->|"Strict Network Governance"| CloudUPI["Cloud UPI (Manual)<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>• Pre-created Enterprise VPC / VNet<br/>• Manual Cloud Credential Mode<br/>• Dedicated SecOps Route Tables"]
+        direction TB
+        CloudSec -->|"Automated API"| CloudIPI["<div style='width:270px; text-align:left'><b>Cloud IPI (Installer-Provisioned)</b><br/>• AWS / Azure / GCP / OCI<br/>• Keyless STS & Workload Identity<br/>• Dynamic VPC, Subnets & LBs<br/>• Automated MachineSets Scaling</div>"]
+        CloudSec -->|"Strict Governance"| CloudUPI["<div style='width:270px; text-align:left'><b>Cloud UPI (User-Provisioned)</b><br/>• Pre-created Enterprise VPC/VNet<br/>• Manual ccoctl Scoped Credentials<br/>• Custom SecOps Firewalls & Routes<br/>• Pre-allocated Internal Gateways</div>"]
     end
 
     subgraph EdgeFlow [" 2. Edge & Distributed Topologies "]
-        EdgeScale -->|"1 Node (Far Edge)"| SNO["Single Node OpenShift (SNO)<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>• Control Plane + Workloads Collocated<br/>• Minimal Footprint (16-32GB RAM)<br/>• Autonomous Agent ISO Boot"]
-        
-        EdgeScale -->|"3 Nodes (Branch/ROBO)"| Compact["3-Node Compact Converged<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>• Schedulable Master Nodes<br/>• Collocated ODF Ceph Storage<br/>• High Availability (1 Node Quorum Loss)"]
-        
-        EdgeScale -->|"Distributed Compute"| RemoteWorkers["Remote Worker Nodes (WAN)<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>• Central 3-Node Core Control Plane<br/>• Remote Worker Nodes at Edge Sites<br/>• Latency-Tuned Kubelet Heartbeats"]
-        
-        EdgeScale -->|"Fleet Scale (10+ Sites)"| ZTP["Zero Touch Provisioning (ZTP)<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>• ACM 2.12+ Fleet Hub & TALM<br/>• Declarative GitOps SiteConfig CRDs<br/>• Out-of-Band Redfish BMC Provisioning"]
+        direction TB
+        EdgeScale -->|"1 Node (Far Edge)"| SNO["<div style='width:270px; text-align:left'><b>Single Node OpenShift (SNO)</b><br/>• Collocated Master + Workloads<br/>• 8 vCPU, 16-32GB RAM, 120GB SSD<br/>• Autonomous Agent ISO Boot<br/>• Survives Upstream WAN Outages</div>"]
+        EdgeScale -->|"3 Nodes (Branch/ROBO)"| Compact["<div style='width:270px; text-align:left'><b>3-Node Compact Converged</b><br/>• Schedulable Master Nodes<br/>• Collocated ODF Ceph Storage<br/>• Full 3-Node Raft Quorum HA<br/>• Zero Dedicated Worker Overhead</div>"]
+        EdgeScale -->|"Distributed Compute"| RemoteWorkers["<div style='width:270px; text-align:left'><b>Remote Worker Nodes (WAN)</b><br/>• Central 3-Node Core Control Plane<br/>• Edge Workers at Remote Facilities<br/>• Tuned Kubelet Heartbeats (10s)<br/>• Resilient Pod Eviction Tolerances</div>"]
+        EdgeScale -->|"Fleet (10+ Sites)"| ZTP["<div style='width:270px; text-align:left'><b>Zero Touch Provisioning (ZTP)</b><br/>• Red Hat ACM 2.12+ Hub & TALM<br/>• Declarative GitOps SiteConfigs<br/>• Out-of-Band Redfish BMC Boot<br/>• Scalable to 10,000+ Edge Clusters</div>"]
+        EdgeScale -->|"Multi-Tenant IDP"| HCP["<div style='width:270px; text-align:left'><b>Hosted Control Planes (HyperShift)</b><br/>• Containerized Control Plane Pods<br/>• Up to 60% Infrastructure Savings<br/>• Sub-15 Min Cluster Provisioning<br/>• Strict Failure Domain Isolation</div>"]
     end
 
     subgraph DCFlow [" 3. On-Premises Datacenter Platforms "]
-        DCPlatform -->|"Physical Hardware"| BM["Bare Metal Deployments<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>• Agent-Based Installer (ABI)<br/>• Dell iDRAC / HPE iLO Redfish<br/>• Bonded NMState LACP Interfaces"]
-        
-        DCPlatform -->|"VMware vSphere"| VMW["VMware vSphere 8.x / 9.x<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>• vSphere IPI or Agent-Based (ABI)<br/>• VMware vSphere CSI & vSAN Storage<br/>• Automated DRS Anti-Affinity Rules"]
-        
-        DCPlatform -->|"Nutanix HCI"| Nutanix["Nutanix AHV HCI<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>• Nutanix IPI via Prism Central<br/>• Nutanix CSI Block & File Volumes<br/>• Flow Microsegmentation Policies"]
-        
-        DCPlatform -->|"KVM / OpenStack"| OpenStack["KVM & RHOSO OpenStack<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>• OpenStack IPI / RHOSO Cinder CSI<br/>• KVM Libvirt Agent-Based ISO<br/>• Open-source Cloud Infrastructure"]
-        
-        DCPlatform -->|"Microsoft Hyper-V"| HyperV["Microsoft Hyper-V / Azure Stack HCI<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>• Generation 2 (Gen 2) UEFI VMs<br/>• MicrosoftUEFICertificateAuthority CA<br/>• MAC Address Spoofing for VIPs"]
+        direction TB
+        DCPlatform -->|"Bare Metal"| BM["<div style='width:270px; text-align:left'><b>Physical Bare Metal</b><br/>• Agent-Based Installer (ABI)<br/>• Dell / HPE / Cisco Redfish BMC<br/>• NMState Bonded LACP (MTU 9000)<br/>• Direct NVMe + ODF Ceph Storage</div>"]
+        DCPlatform -->|"VMware vSphere"| VMW["<div style='width:270px; text-align:left'><b>VMware vSphere (8.x / 9.x)</b><br/>• vSphere IPI (Automated vCenter)<br/>• VMware CSI Driver + vSAN Storage<br/>• Automated DRS Anti-Affinity Rules<br/>• Multi-vCenter Failure Domains</div>"]
+        DCPlatform -->|"Nutanix HCI"| Nutanix["<div style='width:270px; text-align:left'><b>Nutanix AHV HCI</b><br/>• Nutanix IPI via Prism Central<br/>• Nutanix CSI Volumes & Files<br/>• Native Flow Microsegmentation<br/>• Prism Disaster Recovery Pairing</div>"]
+        DCPlatform -->|"KVM / OpenStack"| OpenStack["<div style='width:270px; text-align:left'><b>KVM & RHOSO OpenStack</b><br/>• OpenStack IPI / Libvirt ABI<br/>• Cinder CSI Persistent Volumes<br/>• Octavia LBs & SR-IOV Passthrough<br/>• Telco NFV & Open Private Cloud</div>"]
+        DCPlatform -->|"Microsoft Hyper-V"| HyperV["<div style='width:270px; text-align:left'><b>Microsoft Hyper-V / HCI</b><br/>• Generation 2 (Gen 2) UEFI VMs<br/>• MicrosoftUEFICertificateAuthority<br/>• MAC Spoofing for Keepalived VIP<br/>• Automated PowerShell Provisioning</div>"]
     end
+
+    subgraph NetFlow [" 4. Network Isolation & Security "]
+        direction TB
+        NetMode -->|"Direct CDN"| NetConnected["<div style='width:270px; text-align:left'><b>Fully Connected Network</b><br/>• Direct Outbound Red Hat CDN Access<br/>• Automated Cincinnati Updates<br/>• Direct Quay.io & Registry.redhat.io<br/>• Optional Helper Node</div>"]
+        NetMode -->|"Corp Proxy"| NetProxy["<div style='width:270px; text-align:left'><b>Proxy-Restricted Network</b><br/>• Egress via Corporate HTTP/S Proxy<br/>• Cluster Proxy Resource (httpProxy)<br/>• Custom Enterprise CA in trustedCA<br/>• Recommended Helper Node for VIPs</div>"]
+        NetMode -->|"Air-Gapped"| NetAirGap["<div style='width:270px; text-align:left'><b>Air-Gapped / Dark Site</b><br/>• Strictly Zero Internet Access<br/>• oc-mirror v2 with OCI Local Cache<br/>• IDMS / ITMS Image Digest Mirrors<br/>• MANDATORY Local Helper Node</div>"]
+    end
+
+    %% Node Styles for High Readability
+    classDef mainNode fill:#0d233a,stroke:#2f7ed8,stroke-width:2px,color:#ffffff;
+    classDef decision fill:#302744,stroke:#8d79b9,stroke-width:2px,color:#ffffff;
+    classDef cloudBox fill:#e8f4fd,stroke:#0288d1,stroke-width:2px,color:#01579b;
+    classDef edgeBox fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,color:#4a148c;
+    classDef dcBox fill:#e8f5e9,stroke:#388e3c,stroke-width:2px,color:#1b5e20;
+    classDef netBox fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#e65100;
+
+    class Start mainNode;
+    class TargetEnv,CloudSec,EdgeScale,DCPlatform,NetMode decision;
+    class CloudIPI,CloudUPI cloudBox;
+    class SNO,Compact,RemoteWorkers,ZTP,HCP edgeBox;
+    class BM,VMW,Nutanix,OpenStack,HyperV dcBox;
+    class NetConnected,NetProxy,NetAirGap netBox;
 ```
 
 </details>
