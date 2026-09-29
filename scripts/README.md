@@ -723,5 +723,6 @@ Technical, 60-to-90 second field walkthroughs demonstrating these automation scr
 | [`test-oadp-restore.sh`](test-oadp-restore.sh) | [How to Automate OpenShift Disaster Recovery Drills with OADP and Kopia](https://www.youtube.com/shorts/5Jkl6h7uOgA) | `1:08` | [▶️ Watch](https://www.youtube.com/shorts/5Jkl6h7uOgA) |
 | [`replace-control-plane-node.sh`](replace-control-plane-node.sh) | [How to Automate OpenShift Master Node Replacement Without Downtime](https://www.youtube.com/shorts/XgkB-eDbl_U) | `0:58` | [▶️ Watch](https://www.youtube.com/shorts/XgkB-eDbl_U) |
 | [`automated-cluster-upgrade.sh`](automated-cluster-upgrade.sh) | [How OpenShift Canary Upgrades Protect Workloads with Automated SLO Gates](https://www.youtube.com/shorts/gN_-IyABljE) | `1:27` | [▶️ Watch](https://www.youtube.com/shorts/gN_-IyABljE) |
+| [`mirror-ocp420-airgap.sh`](mirror-ocp420-airgap.sh)<br/>[`airgap-upgrade.sh`](airgap-upgrade.sh)<br/>[`helper-ssh-jump.sh`](helper-ssh-jump.sh) | [How to Survive OpenShift Air-Gapped Upgrades and Out-of-Band IPMI Recovery](https://www.youtube.com/shorts/CYX30kt1B_M) | `1:04` | [▶️ Watch](https://www.youtube.com/shorts/CYX30kt1B_M) |
 
 *For complete end-to-end masterclasses and architecture podcasts, see the repository [Root Multimedia Catalog](../README.md#ai-generated-multimedia-series-youtube).*

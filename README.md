@@ -84,6 +84,7 @@ Architectural masterclasses, deep-dive podcasts, and focused technical video sho
 | **10** | [How to Automate OpenShift Disaster Recovery Drills with OADP and Kopia](https://www.youtube.com/shorts/5Jkl6h7uOgA) | **Automated DR Verification Harness**<br/>Sandbox namespace restores, SCC validation, synthetic probes & RTO/RPO metrics | 🇺🇸 EN | `1:08` | [▶️ Watch](https://www.youtube.com/shorts/5Jkl6h7uOgA) |
 | **11** | [How to Automate OpenShift Master Node Replacement Without Downtime](https://www.youtube.com/shorts/XgkB-eDbl_U) | **Node Lifecycle & Assisted Replacement**<br/>etcd member eviction, node cordon/drain/delete & CSR automated approval | 🇺🇸 EN | `0:58` | [▶️ Watch](https://www.youtube.com/shorts/XgkB-eDbl_U) |
 | **12** | [How OpenShift Canary Upgrades Protect Workloads with Automated SLO Gates](https://www.youtube.com/shorts/gN_-IyABljE) | **Canary Upgrades & SLO Gating**<br/>Paused MCP rollout waves, pre-flight health checks & Thanos SLO gating | 🇺🇸 EN | `1:27` | [▶️ Watch](https://www.youtube.com/shorts/gN_-IyABljE) |
+| **13** | [How to Survive OpenShift Air-Gapped Upgrades and Out-of-Band IPMI Recovery](https://www.youtube.com/shorts/CYX30kt1B_M) | **Air-Gapped & IPMI Hardware Lifeline**<br/>oc-mirror v2 local caching, offline staging & IPMI Serial-over-LAN console | 🇺🇸 EN | `1:04` | [▶️ Watch](https://www.youtube.com/shorts/CYX30kt1B_M) |
 
 *For complete technical breakdowns, copy-paste ready descriptions, and YouTube Studio links, see [Section: Video Walkthroughs & Architecture References](#video-walkthroughs--architecture-references-youtube).*
 
@@ -1396,10 +1397,10 @@ Below are the complete video overviews organized by original audio language and 
 
 <br/>
 
-### ⚡ Architecture & Automation Video Shorts (12 Shorts)
+### ⚡ Architecture & Automation Video Shorts (13 Shorts)
 
 <details open>
-<summary>📂 <strong>Technical Video Shorts Breakdown (12 Shorts)</strong></summary>
+<summary>📂 <strong>Technical Video Shorts Breakdown (13 Shorts)</strong></summary>
 
 <br/>
 
@@ -1680,6 +1681,29 @@ Below are the complete video overviews organized by original audio language and 
 > https://github.com/nubenetes/openshift-4-20-installation-day0-day2/tree/main/scripts
 >
 > #Shorts #OpenShift #CanaryUpgrade #Kubernetes #DevOps #SRE #PlatformEngineering #GitOps #Bash
+
+#### 13. How to Survive OpenShift Air-Gapped Upgrades and Out-of-Band IPMI Recovery
+- 🔗 **Direct Link**: [https://www.youtube.com/shorts/CYX30kt1B_M](https://www.youtube.com/shorts/CYX30kt1B_M)
+- 🛠️ **YouTube Studio**: [https://studio.youtube.com/video/CYX30kt1B_M/edit](https://studio.youtube.com/video/CYX30kt1B_M/edit)
+- 🌐 **Language**: English (Original Audio)
+- ⏱️ **Duration**: 1:04
+- 🏷️ **Domain**: Air-Gapped Tooling & Out-of-Band IPMI Rescue
+- 📝 **Full Description**:
+> 🛡️ How to Survive OpenShift Air-Gapped Upgrades and Out-of-Band IPMI Recovery!
+>
+> Operating OpenShift in a completely disconnected, high-security datacenter means you cannot just run oc adm upgrade against the internet. And if a catastrophic failure takes down cluster networking, you need a hardware lifeline!
+>
+> How our air-gap and out-of-band automation scripts keep your cluster alive:
+> • Air-Gapped Mirroring: mirror-ocp420-airgap.sh uses oc-mirror v2 to stream releases into a high-speed local OCI cache.
+> • Fully Offline Upgrades: airgap-upgrade.sh stages disconnected update payloads and routes nodes to the local registry.
+> • Out-of-Band Rescue: helper-ssh-jump.sh bypasses broken SDN and dead operating systems, connecting directly to node motherboards via IPMI Serial-over-LAN (SOL).
+>
+> Bulletproof your air-gapped infrastructure against catastrophic network isolation!
+>
+> 🔗 Explore the Automation Tooling:
+> https://github.com/nubenetes/openshift-4-20-installation-day0-day2/tree/main/scripts
+>
+> #Shorts #OpenShift #AirGapped #ocmirror #IPMI #BareMetal #Sysadmin #DevOps #SRE #DisasterRecovery #Bash
 
 </details>
 
