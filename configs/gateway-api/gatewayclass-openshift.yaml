@@ -1,0 +1,7 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: GatewayClass
+metadata:
+  name: openshift-default
+spec:
+  controllerName: openshift.io/gateway-controller
+  description: "Default OpenShift Ingress Operator GatewayClass backed by dynamic Envoy proxies"

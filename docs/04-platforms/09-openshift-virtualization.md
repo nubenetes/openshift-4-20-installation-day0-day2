@@ -102,6 +102,14 @@ Deploy production virtual machines using declarative Kubernetes CRDs:
 
 ---
 
+## 5. Direct Layer 4 / SNI VM Ingress via Kubernetes Gateway API
+
+Legacy NodePort and LoadBalancer services for virtual machines create operational friction. In OpenShift 4.20, route traffic directly to VirtualMachines using the **Kubernetes Gateway API**:
+- **Zero-Overhead SNI Passthrough**: Apply [`configs/gateway-api/tlsroute-vm-passthrough.yaml`](../../configs/gateway-api/tlsroute-vm-passthrough.yaml) to route encrypted client connections (MS SQL, PostgreSQL, RDP) directly to the VM guest OS without terminating TLS at the edge.
+- **Reference**: Detailed architecture guide in [`docs/03-network-and-connectivity/05-gateway-api-architecture.md`](../03-network-and-connectivity/05-gateway-api-architecture.md).
+
+---
+
 ## Verification & Management Commands
 
 ```bash

@@ -29,6 +29,13 @@ flowchart TD
     end
 ```
 
+
+### Step 7: Multi-Tenant API Ingress via Kubernetes Gateway API
+On the central management cluster, expose hundreds of hosted `kube-apiserver` endpoints (port 6443) cleanly using the **Kubernetes Gateway API**:
+1. Shared management `Gateway` binds external DNS listeners (`api.tenant-*.corp.cloud`).
+2. Declarative `TLSRoute` resources direct incoming TLS connections directly to each tenant's `kube-apiserver` Service without port exhaustion or TLS re-encryption overhead.
+3. Reference: [`docs/03-network-and-connectivity/05-gateway-api-architecture.md`](../03-network-and-connectivity/05-gateway-api-architecture.md).
+
 ---
 
 ## End-to-End Step-by-Step Implementation Procedure
@@ -78,5 +85,3 @@ flowchart TD
    oc patch hostedcluster tenant-alpha -n clusters --type=merge -p '{"spec":{"release":{"image":"quay.io/openshift-release-dev/ocp-release:4.20.1-x86_64"}}}'
    ```
 
----
-[Back to Topologies Index](README.md) • [Next Chapter: Provisioning Paradigms](../02-provisioning-paradigms/README.md)

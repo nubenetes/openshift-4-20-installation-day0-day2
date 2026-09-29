@@ -134,6 +134,15 @@ vLLM provides state-of-the-art LLM serving throughput via **PagedAttention**:
 
 ---
 
+
+4. **High-Throughput Streaming & Model Multiplexing via Gateway API**:
+   For low-latency gRPC and Server-Sent Events (SSE) token streaming without proxy buffer corruption, expose the vLLM service via the **Kubernetes Gateway API**:
+   - Apply native `GRPCRoute`: [`configs/gateway-api/grpcroute-ai-inference.yaml`](../../configs/gateway-api/grpcroute-ai-inference.yaml).
+   - Enables token-based canary traffic routing, automated model multiplexing, and zero-buffering HTTP/2 multiplexing across inference replicas.
+   - Reference: [`docs/03-network-and-connectivity/05-gateway-api-architecture.md`](../03-network-and-connectivity/05-gateway-api-architecture.md).
+
+---
+
 ## Verification & Monitoring Commands
 
 ```bash

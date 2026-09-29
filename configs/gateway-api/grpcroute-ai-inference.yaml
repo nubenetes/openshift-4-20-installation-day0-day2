@@ -1,0 +1,21 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: GRPCRoute
+metadata:
+  name: vllm-llama3-inference-grpc
+  namespace: rhoai-inference
+spec:
+  parentRefs:
+    - name: enterprise-gateway
+      namespace: openshift-ingress
+      sectionName: https-wildcard
+  hostnames:
+    - "llama3-grpc.apps.corp.local"
+  rules:
+    - matches:
+        - method:
+            service: inference.GRPCInferenceService
+            method: StreamingGenerate
+      backendRefs:
+        - name: vllm-llama3-service
+          port: 8033
+          weight: 100

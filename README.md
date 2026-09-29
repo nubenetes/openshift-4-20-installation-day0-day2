@@ -12,8 +12,8 @@ An exhaustive, enterprise-grade reference architecture, installation engineering
 Designed for Enterprise Platform Architects, Principal Site Reliability Engineers (SREs), and Hybrid Cloud Infrastructure Specialists, this repository bridges the complete operational continuum: from **Day 0** hardware/network capacity planning and preflight validation, to **Bootstrap-in-Place** media engineering, **Day 1** zero-trust security baselining, **Day 2** autonomous GitOps drift self-healing, **Modern Virtualization (KubeVirt/MTV)**, **Enterprise AI/GPU compute (RHOAI/vLLM)**, **Disaster Recovery (OADP/Metro-DR)**, and **Out-of-Band Emergency Runbooks** to resurrect dead clusters when the API server is unreachable.
 
 ### Key Repository Assets at a Glance:
-- 📚 **50 Exhaustive Engineering Modules (`docs/`)**: Organized across 9 operational domains covering every topology, hypervisor, public cloud, and incident scenario.
-- ⚙️ **29 Production Declarative Manifests (`configs/`)**: Validated Custom Resources for Agent-Based Installer, Keyless Cloud IPI, oc-mirror v2, Ingress PKI, GitOps root App-of-Apps, External Secrets Operator, cert-manager, OpenShift Virtualization, RHOAI, and vLLM ServingRuntime.
+- 📚 **51 Exhaustive Engineering Modules (`docs/`)**: Organized across 9 operational domains covering every topology, hypervisor, public cloud, Gateway API, and incident scenario.
+- ⚙️ **34 Production Declarative Manifests (`configs/`)**: Validated Custom Resources for Agent-Based Installer, Keyless Cloud IPI, oc-mirror v2, Gateway API, Ingress PKI, GitOps root App-of-Apps, External Secrets Operator, cert-manager, OpenShift Virtualization, RHOAI, and vLLM ServingRuntime.
 - 🛠️ **14 Production Automation Scripts (`scripts/`)**: Complete shell and PowerShell operational tools covering preflight validation, air-gap mirroring, automated etcd backups, canary cluster upgrades with Prometheus SLO gating, automated OADP restore drills, expired certificate recovery from the Helper Node, and single-member quorum restoration.
 - 🎯 **10-Step Deterministic Implementation Workflow**: A unified sequence linking Day 0 readiness through to autonomous lifecycle operations across all infrastructure targets.
 
@@ -83,6 +83,7 @@ Designed for Enterprise Platform Architects, Principal Site Reliability Engineer
     - [Air-Gapped Disconnected Deployments (`oc-mirror` v2)](docs/03-network-and-connectivity/02-air-gapped-oc-mirror-v2.md)
     - [Air-Gapped Core Services](docs/03-network-and-connectivity/03-air-gapped-core-services.md)
     - [OVN-Kubernetes Tuning](docs/03-network-and-connectivity/04-ovn-kubernetes-tuning.md)
+    - [Kubernetes Gateway API Architecture](docs/03-network-and-connectivity/05-gateway-api-architecture.md)
   - [04. Platform Specific Deployment Guides](#04-platform-specific-deployment-guides)
     - [Bare Metal Physical Hardware](docs/04-platforms/01-bare-metal-physical.md)
     - [VMware vSphere 8.x / 9.x](docs/04-platforms/02-vmware-vsphere.md)
@@ -145,6 +146,7 @@ Designed for Enterprise Platform Architects, Principal Site Reliability Engineer
     - [Public Cloud IPI (`configs/ipi-cloud/`)](configs/ipi-cloud/)
     - [Virtualization UPI (`configs/upi-vsphere/`)](configs/upi-vsphere/)
     - [Air-Gapped & Registry (`configs/airgap/`)](configs/airgap/)
+    - [Kubernetes Gateway API (`configs/gateway-api/`)](configs/gateway-api/)
     - [Day 1 Baselining & Hardening (`configs/day1/`)](configs/day1/)
     - [Day 2 Operations & DR (`configs/day2/`)](configs/day2/)
     - [GitOps App-of-Apps (`configs/gitops/`)](configs/gitops/)
@@ -223,6 +225,12 @@ This repository codifies the modern architectural paradigms, enterprise design d
 * **Resurrecting Expired Disconnected Clusters**: Dedicated procedural runbooks and automation scripts to recover clusters where kubelet client certificates expired after prolonged shutdowns (>30 days / 1 year) directly from the **Helper Node** via SSH, bypassing dead API servers to purge lockfiles, restore bootstrap credentials, and approve node CSRs.
 * **Catastrophic etcd Quorum Recovery**: Automated recovery procedures to rescue clusters from 2-of-3 master failures by forcing surviving control plane nodes into a single-member etcd cluster leader, restoring API server operations, and sequentially reintegrating new masters.
 * **Out-of-Band Bastion Jumping**: Intelligent SSH jump tools with automated SSH key discovery and direct Serial-Over-LAN (SOL) IPMI/Redfish console fallback for headless hardware debugging when Kubernetes networking is inoperative.
+
+### 11. Modern L4/L7 Traffic Management & Kubernetes Gateway API Standard
+* **Decoupled Role-Oriented Ingress**: Superseding legacy host-centric OpenShift `Route` resources with the **Kubernetes Gateway API (`gateway.networking.k8s.io`)** to enforce strict separation of duties between Platform Operators (`GatewayClass`), Cluster SREs (`Gateway`), and Application Developers (`HTTPRoute`, `GRPCRoute`, `TLSRoute`).
+* **Production Envoy Engine**: Backed by high-performance dynamic Envoy proxy instances managed by the OpenShift Ingress Operator and native **Red Hat OpenShift Service Mesh 3.x (OSSM 3.0 / Istio)**.
+* **Native Weighted Canary Traffic Splitting**: Declarative percentage-based traffic shifts (e.g. 90% production / 10% canary) and header-based overrides directly within `HTTPRoute` rules without third-party annotations.
+* **gRPC Streaming for AI & SNI Passthrough for VMs**: Native `GRPCRoute` enabling unbuffered token streaming for **vLLM / RHOAI** Large Language Models, and `TLSRoute` delivering zero-overhead L4 SNI passthrough routing directly to **OpenShift Virtualization** guest VMs.
 
 ---
 
@@ -520,6 +528,7 @@ To navigate and utilize this enterprise repository effectively, the directory st
     - `├──` 📄 [`02-air-gapped-oc-mirror-v2.md`](docs/03-network-and-connectivity/02-air-gapped-oc-mirror-v2.md) — *Disconnected mirroring standard with oc-mirror v2 & IDMS*
     - `├──` 📄 [`03-air-gapped-core-services.md`](docs/03-network-and-connectivity/03-air-gapped-core-services.md) — *Isolated infrastructure services (split DNS, Chrony, PKI)*
     - `├──` 📄 [`04-ovn-kubernetes-tuning.md`](docs/03-network-and-connectivity/04-ovn-kubernetes-tuning.md) — *OVN-Kubernetes CNI, MTU sizing, EgressIP & EgressFirewall*
+    - `├──` 📄 [`05-gateway-api-architecture.md`](docs/03-network-and-connectivity/05-gateway-api-architecture.md) — *Kubernetes Gateway API standard, canary routing & Route migration*
     - `└──` 📄 [`README.md`](docs/03-network-and-connectivity/README.md) — *Network architecture module guide*
   - `├──` 📁 **[`docs/04-platforms/`](docs/04-platforms/)** — *Infrastructure-specific installation blueprints*
     - `├──` 📄 [`01-bare-metal-physical.md`](docs/04-platforms/01-bare-metal-physical.md) — *Physical Bare Metal (Dell, HPE, Cisco UCS, Lenovo) via BMC*
@@ -582,6 +591,12 @@ To navigate and utilize this enterprise repository effectively, the directory st
   - `├──` 📁 **[`configs/airgap/`](configs/airgap/)** — *Disconnected & Air-Gapped cluster manifests*
     - `├──` 📄 [`imageset-config-v2.yaml`](configs/airgap/imageset-config-v2.yaml) — *oc-mirror v2 declarative image set mirroring specification*
     - `└──` 📄 [`local-registry-quay.yaml`](configs/airgap/local-registry-quay.yaml) — *On-prem mirror registry deployment manifest (Quay / Harbor)*
+  - `├──` 📁 **[`configs/gateway-api/`](configs/gateway-api/)** — *Kubernetes Gateway API declarative resources*
+    - `├──` 📄 [`gatewayclass-openshift.yaml`](configs/gateway-api/gatewayclass-openshift.yaml) — *OpenShift Ingress Operator / Envoy GatewayClass*
+    - `├──` 📄 [`enterprise-gateway.yaml`](configs/gateway-api/enterprise-gateway.yaml) — *Multi-tenant L4/L7 Gateway with cert-manager automated TLS*
+    - `├──` 📄 [`httproute-canary-split.yaml`](configs/gateway-api/httproute-canary-split.yaml) — *Weighted canary traffic split with header matching and rewrite*
+    - `├──` 📄 [`grpcroute-ai-inference.yaml`](configs/gateway-api/grpcroute-ai-inference.yaml) — *Native gRPC streaming route for vLLM AI model serving*
+    - `└──` 📄 [`tlsroute-vm-passthrough.yaml`](configs/gateway-api/tlsroute-vm-passthrough.yaml) — *L4 SNI TLS passthrough route for OpenShift Virtualization VMs*
   - `├──` 📁 **[`configs/day1/`](configs/day1/)** — *Day 1 baselining & security configuration manifests*
     - `├──` 📄 [`machineconfig-chrony.yaml`](configs/day1/machineconfig-chrony.yaml) — *Declarative Chrony NTP sync MachineConfig (stratum servers)*
     - `├──` 📄 [`cluster-proxy-trustedca.yaml`](configs/day1/cluster-proxy-trustedca.yaml) — *Cluster-wide corporate forward proxy & trustedCA bundle*
@@ -655,6 +670,7 @@ openshift-4-20-installation-day0-day2/
 │   │   ├── 02-air-gapped-oc-mirror-v2.md
 │   │   ├── 03-air-gapped-core-services.md
 │   │   ├── 04-ovn-kubernetes-tuning.md
+│   │   ├── 05-gateway-api-architecture.md
 │   │   └── README.md
 │   ├── 04-platforms/
 │   │   ├── 01-bare-metal-physical.md
@@ -717,6 +733,12 @@ openshift-4-20-installation-day0-day2/
 │   ├── airgap/
 │   │   ├── imageset-config-v2.yaml
 │   │   └── local-registry-quay.yaml
+│   ├── gateway-api/
+│   │   ├── gatewayclass-openshift.yaml
+│   │   ├── enterprise-gateway.yaml
+│   │   ├── httproute-canary-split.yaml
+│   │   ├── grpcroute-ai-inference.yaml
+│   │   └── tlsroute-vm-passthrough.yaml
 │   ├── day1/
 │   │   ├── machineconfig-chrony.yaml
 │   │   ├── cluster-proxy-trustedca.yaml
@@ -767,10 +789,10 @@ openshift-4-20-installation-day0-day2/
 ### Architectural Component Breakdown
 
 #### 1. Documentation Modules (`docs/`)
-The `docs/` tree contains **50 exhaustive, production-grade architectural blueprints** organized into 9 functional phases, cross-referenced from [`docs/00-navigation.md`](docs/00-navigation.md):
+The `docs/` tree contains **51 exhaustive, production-grade architectural blueprints** organized into 9 functional phases, cross-referenced from [`docs/00-navigation.md`](docs/00-navigation.md):
 - **Topologies ([`docs/01-architecture-topologies/`](docs/01-architecture-topologies/README.md))**: Footprint requirements, fault domain behavior, and resource overhead from Single Node OpenShift (SNO) up to massive Hosted Control Planes (HyperShift).
 - **Provisioning ([`docs/02-provisioning-paradigms/`](docs/02-provisioning-paradigms/README.md))**: Detailed mechanics of modern Agent-Based Installer (Bootstrap-in-Place) vs Cloud IPI vs legacy UPI vs fleet ZTP with ACM.
-- **Networking ([`docs/03-network-and-connectivity/`](docs/03-network-and-connectivity/README.md))**: Forward proxy configuration, `oc-mirror` v2 disconnected mirroring, core air-gap services (BIND9/Chrony), and OVN-Kubernetes CNI tuning.
+- **Networking ([`docs/03-network-and-connectivity/`](docs/03-network-and-connectivity/README.md))**: Forward proxy configuration, `oc-mirror` v2 disconnected mirroring, core air-gap services (BIND9/Chrony), OVN-Kubernetes CNI tuning, and the **Kubernetes Gateway API (`gateway.networking.k8s.io`)** standard.
 - **Platforms ([`docs/04-platforms/`](docs/04-platforms/README.md))**: Production recipes for Bare Metal, VMware vSphere 8/9, Nutanix AHV, KVM/RHOSO, AWS, Azure, GCP, Microsoft Hyper-V, and OpenShift Virtualization (KubeVirt & MTV).
 - **Day 0 Readiness ([`docs/05-day0-readiness/`](docs/05-day0-readiness/README.md))**: Capacity planning, DNS/load balancing matrices, OpenShift Data Foundation (ODF) architecture, and Helper Node engineering.
 - **Day 1 Baselining ([`docs/06-day1-baselining/`](docs/06-day1-baselining/README.md))**: ClusterOperator verification, custom Ingress TLS certs, OIDC identity federation, MachineConfigPool node tuning, automated certificate rotation (cert-manager), and External Secrets (ESO).
@@ -783,6 +805,7 @@ The `configs/` tree provides validated, production-grade YAML and daemon templat
 - **`configs/agent-based/`**: Declarative configurations (`agent-config.yaml`, `install-config-*.yaml`) defining static networking, bonded interfaces, and Rendezvous nodes.
 - **`configs/ipi-cloud/`**: Enterprise-grade cloud installation manifests utilizing keyless authentication (AWS STS, Azure Workload Identity, GCP Workload Identity Federation).
 - **`configs/airgap/`**: Modern `oc-mirror` v2 `ImageSetConfiguration` definitions and local Quay/Harbor registry manifests.
+- **`configs/gateway-api/`**: Production Kubernetes Gateway API manifests (`GatewayClass`, `Gateway`, `HTTPRoute` canary split, `GRPCRoute` AI streaming, and `TLSRoute` VM passthrough).
 - **`configs/day1/`**: Ready-to-apply Custom Resources for Ingress wildcard TLS, enterprise OIDC identity providers, NTP MachineConfigs, and dedicated infrastructure worker pools.
 - **`configs/day2/`**: Declarative definitions for OADP 1.4+ Kopia backup storage locations, automated etcd backup CronJobs, CIS Compliance suites, and cluster autoscaling.
 - **`configs/gitops/`**: GitOps Operator subscription and root App-of-Apps custom resources orchestrating cluster configuration.
@@ -803,8 +826,8 @@ The `scripts/` directory houses ready-to-run automation tools covering the compl
 | Operational Phase | Focus Areas & Objectives | Primary Documentation Modules | Production Manifests (`configs/`) | Operational Scripts (`scripts/`) |
 | :--- | :--- | :--- | :--- | :--- |
 | **Day 0: Planning & Provisioning** | Sizing, network design, air-gap mirroring, media generation, bootstrap-in-place | `docs/01-architecture-topologies/`<br/>`docs/02-provisioning-paradigms/`<br/>`docs/03-network-and-connectivity/`<br/>`docs/04-platforms/`<br/>`docs/05-day0-readiness/` | `configs/agent-based/`<br/>`configs/ipi-cloud/`<br/>`configs/upi-vsphere/`<br/>`configs/airgap/`<br/>`configs/helper-node/` | `scripts/preflight-check.sh`<br/>`scripts/generate-agent-iso.sh`<br/>`scripts/mirror-ocp420-airgap.sh`<br/>`scripts/deploy-hyperv-vms.ps1` |
-| **Day 1: Hardening & Baselining** | Operator validation, custom PKI Ingress TLS, OIDC SSO, dedicated infra MCPs, ODF storage, cert-manager & ESO | `docs/06-day1-baselining/` | `configs/day1/`<br/>`configs/security/` | `scripts/validate-cluster-health.sh` |
-| **Day 2: Operations, Upgrades & DR** | Observability, CIS compliance, GitOps App-of-Apps, OpenShift Virt, RHOAI & GPU, etcd backups, OADP DR drills, canary upgrades | `docs/07-day2-operations/`<br/>`docs/08-backup-dr-and-rebuild/` | `configs/day2/`<br/>`configs/gitops/`<br/>`configs/virt/`<br/>`configs/ai/` | `scripts/etcd-backup.sh`<br/>`scripts/pre-upgrade-health-check.sh`<br/>`scripts/automated-cluster-upgrade.sh`<br/>`scripts/airgap-upgrade.sh`<br/>`scripts/test-oadp-restore.sh` |
+| **Day 1: Hardening & Baselining** | Operator validation, custom PKI Ingress TLS, Gateway API listeners, OIDC SSO, dedicated infra MCPs, ODF storage, cert-manager & ESO | `docs/06-day1-baselining/`<br/>`docs/03-network-and-connectivity/` | `configs/day1/`<br/>`configs/security/`<br/>`configs/gateway-api/` | `scripts/validate-cluster-health.sh` |
+| **Day 2: Operations, Upgrades & DR** | Observability, CIS compliance, GitOps App-of-Apps, Gateway API traffic splitting, OpenShift Virt, RHOAI & GPU, etcd backups, OADP DR drills, canary upgrades | `docs/07-day2-operations/`<br/>`docs/08-backup-dr-and-rebuild/` | `configs/day2/`<br/>`configs/gitops/`<br/>`configs/virt/`<br/>`configs/ai/`<br/>`configs/gateway-api/` | `scripts/etcd-backup.sh`<br/>`scripts/pre-upgrade-health-check.sh`<br/>`scripts/automated-cluster-upgrade.sh`<br/>`scripts/airgap-upgrade.sh`<br/>`scripts/test-oadp-restore.sh` |
 | **Day 2: Emergency Triage & Recovery** | Expired cert recovery, Helper jumping, master/worker node replacement, single-member etcd recovery, MCP deadlocks | `docs/09-emergency-runbooks/` | `configs/helper-node/` | `scripts/recover-expired-certs.sh`<br/>`scripts/helper-ssh-jump.sh`<br/>`scripts/replace-control-plane-node.sh`<br/>`scripts/reinstall-worker-node.sh`<br/>`scripts/emergency-etcd-single-member.sh` |
 
 ---
@@ -906,6 +929,7 @@ Enterprise network design, proxy bypasses, air-gap mirroring, and CNI performanc
 - [Air-Gapped Disconnected Deployments (`oc-mirror` v2)](docs/03-network-and-connectivity/02-air-gapped-oc-mirror-v2.md): OCI catalogs, streaming ephemeral caches, and IDMS manifests.
 - [Air-Gapped Core Services](docs/03-network-and-connectivity/03-air-gapped-core-services.md): Split-horizon DNS, Chrony NTP clock sync (<500ms), and internal enterprise PKI.
 - [OVN-Kubernetes Tuning](docs/03-network-and-connectivity/04-ovn-kubernetes-tuning.md): MTU sizing (Geneve 100-byte overhead), deterministic EgressIPs, and EgressFirewalls.
+- [Kubernetes Gateway API Architecture](docs/03-network-and-connectivity/05-gateway-api-architecture.md): Next-gen role-oriented ingress, weighted canary traffic splits, gRPC AI streaming, VM SNI passthrough, and migration from OpenShift Routes.
 
 ### [04. Platform Specific Deployment Guides](docs/04-platforms/README.md)
 Exhaustive configuration blueprints across all physical and cloud infrastructures:
@@ -989,6 +1013,7 @@ All scripts and manifests are ready to execute from this repository:
 - **Public Cloud IPI**: [`configs/ipi-cloud/aws-install-config.yaml`](configs/ipi-cloud/aws-install-config.yaml), [`azure-install-config.yaml`](configs/ipi-cloud/azure-install-config.yaml), [`gcp-install-config.yaml`](configs/ipi-cloud/gcp-install-config.yaml).
 - **Virtualization UPI**: [`configs/upi-vsphere/vsphere-install-config.yaml`](configs/upi-vsphere/vsphere-install-config.yaml).
 - **Air-Gapped**: [`configs/airgap/imageset-config-v2.yaml`](configs/airgap/imageset-config-v2.yaml), [`local-registry-quay.yaml`](configs/airgap/local-registry-quay.yaml).
+- **Kubernetes Gateway API**: [`configs/gateway-api/gatewayclass-openshift.yaml`](configs/gateway-api/gatewayclass-openshift.yaml), [`configs/gateway-api/enterprise-gateway.yaml`](configs/gateway-api/enterprise-gateway.yaml), [`configs/gateway-api/httproute-canary-split.yaml`](configs/gateway-api/httproute-canary-split.yaml), [`configs/gateway-api/grpcroute-ai-inference.yaml`](configs/gateway-api/grpcroute-ai-inference.yaml), [`configs/gateway-api/tlsroute-vm-passthrough.yaml`](configs/gateway-api/tlsroute-vm-passthrough.yaml).
 - **Day 1**: [`configs/day1/machineconfig-chrony.yaml`](configs/day1/machineconfig-chrony.yaml), [`cluster-proxy-trustedca.yaml`](configs/day1/cluster-proxy-trustedca.yaml), [`ingresscontroller-custom-tls.yaml`](configs/day1/ingresscontroller-custom-tls.yaml), [`idp-keycloak-oidc.yaml`](configs/day1/idp-keycloak-oidc.yaml), [`mcp-infra-nodes.yaml`](configs/day1/mcp-infra-nodes.yaml).
 - **Day 2**: [`configs/day2/oadp-dpa-cr.yaml`](configs/day2/oadp-dpa-cr.yaml), [`etcd-backup-cronjob.yaml`](configs/day2/etcd-backup-cronjob.yaml), [`compliance-suite-cis.yaml`](configs/day2/compliance-suite-cis.yaml), [`cluster-autoscaler.yaml`](configs/day2/cluster-autoscaler.yaml).
 - **GitOps & App-of-Apps**: [`configs/gitops/gitops-operator-sub.yaml`](configs/gitops/gitops-operator-sub.yaml), [`configs/gitops/root-app-of-apps.yaml`](configs/gitops/root-app-of-apps.yaml).
