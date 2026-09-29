@@ -15,6 +15,122 @@ An exhaustive, state-of-the-art reference architecture, installation handbook, a
 
 ---
 
+## Table of Contents
+
+- [Executive Architecture Summary](#executive-architecture-summary)
+- [Master Architecture Decision Tree](#master-architecture-decision-tree)
+  - [Visual ASCII Decision Routing Tree](#visual-ascii-routing-tree)
+  - [Architecture Decision Criteria & Technical Specifications](#architecture-decision-criteria--technical-specifications)
+    - [Section 1: Public Cloud Deployments (AWS, Azure, GCP, OCI)](#section-1-public-cloud-deployments-aws-azure-gcp-oci)
+      - [1. Cloud IPI (Installer-Provisioned Infrastructure)](#cloud-ipi)
+      - [2. Cloud UPI (User-Provisioned Infrastructure)](#cloud-upi)
+      - [Public Cloud Provisioning Model Comparison Matrix](#cloud-comparison-matrix)
+    - [Section 2: Edge & Distributed Deployment Topologies](#section-2-edge--distributed-deployment-topologies)
+      - [1. Single Node OpenShift (SNO)](#sno-single-node)
+      - [2. 3-Node Compact Converged](#compact-3-node)
+      - [3. Remote Worker Nodes (WAN)](#remote-workers-wan)
+      - [4. Zero Touch Provisioning (ZTP) at Scale](#ztp-acm-gitops)
+      - [5. Hosted Control Planes / HyperShift (HCP)](#hypershift-hosted-cp)
+    - [Section 3: On-Premises Datacenter Platforms](#section-3-on-premises-datacenter-platforms)
+      - [1. Physical Bare Metal](#bare-metal-physical)
+      - [2. VMware vSphere (8.x / 9.x)](#vmware-vsphere)
+      - [3. Nutanix AHV HCI](#nutanix-ahv)
+      - [4. KVM & RHOSO (Red Hat OpenStack Services on OpenShift)](#kvm-openstack)
+      - [5. Microsoft Hyper-V / Azure Stack HCI](#microsoft-hyper-v)
+    - [Section 4: Network Isolation & Connectivity Paradigms](#section-4-network-isolation--connectivity-paradigms)
+      - [1. Fully Connected Network](#network-fully-connected)
+      - [2. Proxy-Restricted Enterprise Network](#network-proxy-restricted)
+      - [3. Air-Gapped / Disconnected Dark Site Network](#network-air-gapped)
+  - [Graphical Mermaid Flowchart](#graphical-mermaid-flowchart)
+- [Master Deployment & Architecture Matrix](#master-deployment--architecture-matrix)
+- [Complete End-to-End Master Implementation Workflow (Ordered Step-by-Step)](#complete-end-to-end-master-implementation-workflow-ordered-step-by-step)
+  - [Step 1: Preflight Infrastructure & Network Validation](#step-1-preflight-infrastructure--network-validation)
+  - [Step 2: Helper Node / Bastion Service Deployment](#step-2-helper-node--bastion-service-deployment)
+  - [Step 3: Declarative Configuration Definition](#step-3-declarative-configuration-definition)
+  - [Step 4: Installation Media Generation & Boot](#step-4-installation-media-generation--boot)
+  - [Step 5: Bootstrap-in-Place & Cluster Convergence](#step-5-bootstrap-in-place--cluster-convergence)
+  - [Step 6: Day 1 Ingress TLS & Identity Federation](#step-6-day-1-ingress-tls--identity-federation)
+  - [Step 7: MachineConfigPool Hardening & Storage Provisioning](#step-7-machineconfigpool-hardening--storage-provisioning)
+  - [Step 8: GitOps Foundation & Secret Management](#step-8-gitops-foundation--secret-management)
+  - [Step 9: Observability, Compliance & Backup Encampment](#step-9-observability-compliance--backup-encampment)
+  - [Step 10: Automated Lifecycle & Upgrade Orchestration](#step-10-automated-lifecycle--upgrade-orchestration)
+- [Complete Documentation Index](#complete-documentation-index)
+  - [01. Architecture & Cluster Topologies](#01-architecture--cluster-topologies)
+    - [Single Node OpenShift (SNO)](docs/01-architecture-topologies/01-sno-single-node.md)
+    - [3-Node Compact Converged](docs/01-architecture-topologies/02-compact-3-node-converged.md)
+    - [Standard Multi-Node HA](docs/01-architecture-topologies/03-standard-ha-multinode.md)
+    - [Remote Worker Nodes over WAN](docs/01-architecture-topologies/04-remote-workers-wan.md)
+    - [Hosted Control Planes (HyperShift)](docs/01-architecture-topologies/05-hypershift-hosted-cp.md)
+  - [02. Provisioning Paradigms](#02-provisioning-paradigms)
+    - [Agent-Based Installer (ABI)](docs/02-provisioning-paradigms/01-agent-based-installer.md)
+    - [Installer Provisioned Infrastructure (IPI)](docs/02-provisioning-paradigms/02-installer-provisioned-ipi.md)
+    - [User Provisioned Infrastructure (UPI)](docs/02-provisioning-paradigms/03-user-provisioned-upi.md)
+    - [Zero Touch Provisioning (ZTP)](docs/02-provisioning-paradigms/04-ztp-acm-gitops.md)
+  - [03. Network Architecture & Connectivity](#03-network-architecture--connectivity)
+    - [Connected with Corporate Proxies](docs/03-network-and-connectivity/01-connected-with-proxies.md)
+    - [Air-Gapped Disconnected Deployments (`oc-mirror` v2)](docs/03-network-and-connectivity/02-air-gapped-oc-mirror-v2.md)
+    - [Air-Gapped Core Services](docs/03-network-and-connectivity/03-air-gapped-core-services.md)
+    - [OVN-Kubernetes Tuning](docs/03-network-and-connectivity/04-ovn-kubernetes-tuning.md)
+  - [04. Platform Specific Deployment Guides](#04-platform-specific-deployment-guides)
+    - [Bare Metal Physical Hardware](docs/04-platforms/01-bare-metal-physical.md)
+    - [VMware vSphere 8.x / 9.x](docs/04-platforms/02-vmware-vsphere.md)
+    - [Nutanix AHV](docs/04-platforms/03-nutanix-ahv.md)
+    - [KVM & OpenStack (RHOSO)](docs/04-platforms/04-kvm-openstack.md)
+    - [Amazon Web Services (AWS)](docs/04-platforms/05-aws.md)
+    - [Microsoft Azure](docs/04-platforms/06-azure.md)
+    - [Google Cloud Platform (GCP)](docs/04-platforms/07-gcp.md)
+    - [Microsoft Hyper-V & Azure Stack HCI](docs/04-platforms/08-microsoft-hyper-v.md)
+  - [05. Day 0 Infrastructure Readiness](#05-day-0-infrastructure-readiness)
+    - [Hardware & Capacity Sizing](docs/05-day0-readiness/01-hardware-and-sizing.md)
+    - [DNS & Load Balancing Matrix](docs/05-day0-readiness/02-dns-loadbalancer-matrix.md)
+    - [Storage Architecture & ODF](docs/05-day0-readiness/03-storage-architecture-odf.md)
+    - [Helper Node Architecture & Engineering](docs/05-day0-readiness/04-helper-node-architecture.md)
+  - [06. Day 1 Post-Install Hardening](#06-day-1-post-install-hardening)
+    - [Cluster Operator Verification](docs/06-day1-baselining/01-cluster-operator-hardening.md)
+    - [Ingress & Custom Certificates](docs/06-day1-baselining/02-ingress-and-custom-certs.md)
+    - [Identity Providers & RBAC Hardening](docs/06-day1-baselining/03-identity-providers-rbac.md)
+    - [MachineConfigPools & Node Tuning](docs/06-day1-baselining/04-machineconfigpools-tuning.md)
+  - [07. Day 2 Operations & Lifecycle](#07-day-2-operations--lifecycle)
+    - [Enterprise Observability Stack](docs/07-day2-operations/01-observability-stack.md)
+    - [Security & Compliance](docs/07-day2-operations/02-security-and-compliance.md)
+    - [GitOps Foundation](docs/07-day2-operations/03-gitops-foundation.md)
+    - [Cluster Lifecycle & Upgrades](docs/07-day2-operations/04-lifecycle-and-upgrades.md)
+    - [Automated Upgrades & Pre-Upgrade Mandates](docs/07-day2-operations/05-automated-upgrades.md)
+  - [08. Disaster Recovery, Backup & GitOps Rebuild](#08-disaster-recovery-backup--gitops-rebuild)
+    - [etcd Backup, Recovery & Quorum Loss](docs/08-backup-dr-and-rebuild/01-etcd-backup-restore.md)
+    - [OADP vs Vanilla Velero Deep-Dive](docs/08-backup-dr-and-rebuild/02-oadp-vs-velero-deepdive.md)
+    - [Metro-DR & Regional-DR Multi-Cluster](docs/08-backup-dr-and-rebuild/03-metro-dr-and-regional-dr.md)
+    - [Declarative GitOps Rebuild from Scratch](docs/08-backup-dr-and-rebuild/04-declarative-rebuild-gitops.md)
+- [Production Automation Scripts & Manifests](#production-automation-scripts--manifests)
+  - [Shell Scripts (`scripts/`)](#shell-scripts-scripts)
+    - [`preflight-check.sh`](scripts/preflight-check.sh) - Preflight DNS, NTP, and Network Connectivity Auditor
+    - [`generate-agent-iso.sh`](scripts/generate-agent-iso.sh) - Agent-Based Installer Boot ISO Generator
+    - [`mirror-ocp420-airgap.sh`](scripts/mirror-ocp420-airgap.sh) - `oc-mirror` v2 Disconnected Registry Mirroring
+    - [`etcd-backup.sh`](scripts/etcd-backup.sh) - Automated Control Plane etcd Snapshot & Retention Engine
+    - [`validate-cluster-health.sh`](scripts/validate-cluster-health.sh) - ClusterOperator & Infrastructure Health Auditor
+    - [`deploy-hyperv-vms.ps1`](scripts/deploy-hyperv-vms.ps1) - Automated PowerShell Gen 2 Hyper-V VM Deployment
+    - [`pre-upgrade-health-check.sh`](scripts/pre-upgrade-health-check.sh) - Pre-Upgrade Health & etcd Freshness Gating
+    - [`automated-cluster-upgrade.sh`](scripts/automated-cluster-upgrade.sh) - Canary MCP-Gated Upgrade Orchestrator
+    - [`airgap-upgrade.sh`](scripts/airgap-upgrade.sh) - Disconnected oc-mirror v2 Release Upgrade Orchestrator
+  - [Production Manifests (`configs/`)](#production-manifests-configs)
+    - [Agent-Based Installer (`configs/agent-based/`)](configs/agent-based/)
+    - [Public Cloud IPI (`configs/ipi-cloud/`)](configs/ipi-cloud/)
+    - [Virtualization UPI (`configs/upi-vsphere/`)](configs/upi-vsphere/)
+    - [Air-Gapped & Registry (`configs/airgap/`)](configs/airgap/)
+    - [Day 1 Baselining & Hardening (`configs/day1/`)](configs/day1/)
+    - [Day 2 Operations & DR (`configs/day2/`)](configs/day2/)
+    - [Helper Node Configurations (`configs/helper-node/`)](configs/helper-node/)
+- [Technical Deep-Dive: The Velero Question](#technical-deep-dive-the-velero-question)
+  - [Why Vanilla Velero Fails on OpenShift:](#why-vanilla-velero-fails-on-openshift)
+- [Classified Real References & External Standards (September 2026)](#classified-real-references--external-standards-september-2026)
+  - [1. Official Red Hat Product Documentation & Architecture](#1-official-red-hat-product-documentation--architecture)
+  - [2. Red Hat Knowledgebase (KCS) & Solution Blueprints](#2-red-hat-knowledgebase-kcs--solution-blueprints)
+  - [3. Open Source Upstream & Core Tooling Repositories](#3-open-source-upstream--core-tooling-repositories)
+  - [4. Enterprise Security, Benchmarks & Compliance](#4-enterprise-security-benchmarks--compliance)
+  - [5. Infrastructure Vendor Reference Guides](#5-infrastructure-vendor-reference-guides)
+- [License](#license)
+---
+
 ## Executive Architecture Summary
 
 By **September 2026**, OpenShift 4.20 establishes the enterprise foundation for hybrid cloud and AI infrastructure. This repository codifies the modern architectural paradigms:
@@ -29,6 +145,7 @@ By **September 2026**, OpenShift 4.20 establishes the enterprise foundation for 
 
 ## Master Architecture Decision Tree
 
+<a id="visual-ascii-routing-tree"></a>
 Use this deterministic ASCII decision tree to determine the optimal installation method, cluster footprint, platform configuration, and networking mode with full text and zero truncation:
 
 ```text
@@ -72,6 +189,7 @@ Use this deterministic ASCII decision tree to determine the optimal installation
 
 #### Section 1: Public Cloud Deployments (AWS, Azure, GCP, OCI)
 
+<a id="cloud-ipi"></a>
 - **1. Cloud IPI (Installer-Provisioned Infrastructure)**
   - **Mechanism**: Fully automated end-to-end installation and cloud infrastructure lifecycle.
   - **Target Clouds**: AWS, Azure, Google Cloud (GCP), Oracle Cloud Infrastructure (OCI).
@@ -81,6 +199,7 @@ Use this deterministic ASCII decision tree to determine the optimal installation
   - **Compute Scaling**: Automated MachineSets dynamically provision, scale, and heal worker node instances.
   - **Architecture & Guide**: [`docs/02-provisioning-paradigms/02-installer-provisioned-ipi.md`](docs/02-provisioning-paradigms/02-installer-provisioned-ipi.md) • Cloud Guides: [AWS](docs/04-platforms/05-aws.md) | [Azure](docs/04-platforms/06-azure.md) | [GCP](docs/04-platforms/07-gcp.md)
 
+<a id="cloud-upi"></a>
 - **2. Cloud UPI (User-Provisioned Infrastructure)**
   - **Mechanism**: User, Security, or Terraform pre-provisioned cloud infrastructure.
   - **Target Clouds**: AWS, Azure, Google Cloud (GCP), Oracle Cloud Infrastructure (OCI).
@@ -90,6 +209,7 @@ Use this deterministic ASCII decision tree to determine the optimal installation
   - **Compute Scaling**: Semi-automated MachineSets or custom enterprise Infrastructure-as-Code (Terraform / Ansible).
   - **Architecture & Guide**: [`docs/02-provisioning-paradigms/03-user-provisioned-upi.md`](docs/02-provisioning-paradigms/03-user-provisioned-upi.md) • Cloud Guides: [AWS](docs/04-platforms/05-aws.md) | [Azure](docs/04-platforms/06-azure.md) | [GCP](docs/04-platforms/07-gcp.md)
 
+<a id="cloud-comparison-matrix"></a>
 | Provisioning Model | Key Characteristics & Architecture | Authentication & Governance | Primary Use Case & Documentation |
 | :--- | :--- | :--- | :--- |
 | **Cloud IPI** *(Installer-Provisioned)* | • **Fully automated** end-to-end cloud infrastructure creation<br/>• Dynamic VPC/VNet, private subnets, route tables, and internal/external LBs<br/>• Automated MachineSets dynamically manage worker compute lifecycle | • **Keyless IAM**: AWS STS with IRSA, Azure Workload Identity, GCP Workload Identity Federation<br/>• Supports `publish: Internal` for zero-public-IP private clusters | **Standard Enterprise Cloud**<br/>👉 [`docs/02-provisioning-paradigms/02-installer-provisioned-ipi.md`](docs/02-provisioning-paradigms/02-installer-provisioned-ipi.md)<br/>• Cloud Guides: [AWS](docs/04-platforms/05-aws.md) \| [Azure](docs/04-platforms/06-azure.md) \| [GCP](docs/04-platforms/07-gcp.md) |
@@ -97,12 +217,14 @@ Use this deterministic ASCII decision tree to determine the optimal installation
 
 #### Section 2: Edge & Distributed Deployment Topologies
 
+<a id="sno-single-node"></a>
 - **1. Single Node OpenShift (SNO)** `[1 Physical or Virtual Host]`
   - **Footprint**: Collocated master control plane and application workloads on a single node (minimum 8 vCPU, 16–32 GB RAM, 120 GB SSD/NVMe).
   - **Operational Profile**: Zero control plane overhead; autonomous agent ISO boot; continues operation during prolonged upstream WAN loss.
   - **Target Scenarios**: Cell towers, retail branch kiosks, far-edge IoT gateways, remote defense/medical field equipment.
   - **Documentation**: [`docs/01-architecture-topologies/01-sno-single-node.md`](docs/01-architecture-topologies/01-sno-single-node.md)
 
+<a id="compact-3-node"></a>
 - **2. 3-Node Compact Converged** `[3 Schedulable Master Nodes]`
   - **Footprint**: Full 3-node etcd Raft quorum; masters run compute workloads without dedicated workers (`mastersSchedulable: true`).
   - **Storage Architecture**: Collocated OpenShift Data Foundation (ODF) 3-node Ceph storage providing HA persistent block and file storage.
@@ -110,6 +232,7 @@ Use this deterministic ASCII decision tree to determine the optimal installation
   - **Target Scenarios**: Medium branch offices, ROBO sites, space/power-constrained server rooms, edge micro-datacenters.
   - **Documentation**: [`docs/01-architecture-topologies/02-compact-3-node-converged.md`](docs/01-architecture-topologies/02-compact-3-node-converged.md)
 
+<a id="remote-workers-wan"></a>
 - **3. Remote Worker Nodes** `[Central Core Control Plane + Distributed WAN Edge Workers]`
   - **Footprint**: Central 3-node HA control plane hosted in core datacenter; worker nodes deployed at remote edge sites over WAN.
   - **Tuning**: Tuned Kubelet heartbeats (`node-status-update-frequency: 10s`) and resilient pod eviction tolerances for WAN blips.
@@ -117,6 +240,7 @@ Use this deterministic ASCII decision tree to determine the optimal installation
   - **Target Scenarios**: Smart factories, distribution warehouses, connected hospital networks, intelligent retail outlets.
   - **Documentation**: [`docs/01-architecture-topologies/04-remote-workers-wan.md`](docs/01-architecture-topologies/04-remote-workers-wan.md)
 
+<a id="ztp-acm-gitops"></a>
 - **4. Zero Touch Provisioning (ZTP) at Scale** `[Fleet Automation via ACM 2.12+ & TALM]`
   - **Footprint**: Central Red Hat ACM Fleet Hub orchestrates declarative GitOps `SiteConfig` and `PolicyGenerator` Custom Resources.
   - **Automation**: Out-of-band Redfish BMC bare-metal hardware discovery, BIOS configuration, and automated ISO streaming.
@@ -124,6 +248,7 @@ Use this deterministic ASCII decision tree to determine the optimal installation
   - **Target Scenarios**: 5G Telco Distributed Units (DU/CU), nationwide retail store chains, smart energy grid substations.
   - **Documentation**: [`docs/02-provisioning-paradigms/04-ztp-acm-gitops.md`](docs/02-provisioning-paradigms/04-ztp-acm-gitops.md)
 
+<a id="hypershift-hosted-cp"></a>
 - **5. Hosted Control Planes / HyperShift (HCP)** `[Centralized Containerized Control Plane Pods]`
   - **Footprint**: Control plane components (`etcd`, `kube-apiserver`, CVO) run as containerized pods inside a central hosting cluster.
   - **Efficiency**: Delivers up to 60% compute hardware savings, sub-15 minute cluster provisioning, and strict tenant isolation.
@@ -132,6 +257,7 @@ Use this deterministic ASCII decision tree to determine the optimal installation
 
 #### Section 3: On-Premises Datacenter Platforms
 
+<a id="bare-metal-physical"></a>
 - **1. Physical Bare Metal** `(Dell PowerEdge / HPE ProLiant / Cisco UCS / Supermicro / Lenovo)`
   - **Provisioning**: Agent-Based Installer (ABI) or Assisted Installer via Redfish BMC Virtual Media (Bootstrap-in-Place).
   - **Networking**: NMState declarative static IP bonding (LACP / 802.3ad) with VLAN tagging and jumbo frames (MTU 9000).
@@ -139,6 +265,7 @@ Use this deterministic ASCII decision tree to determine the optimal installation
   - **Best For**: Maximum compute throughput, deterministic low latency, Telco vRAN, and GPU/AI training clusters.
   - **Documentation**: [`docs/04-platforms/01-bare-metal-physical.md`](docs/04-platforms/01-bare-metal-physical.md)
 
+<a id="vmware-vsphere"></a>
 - **2. VMware vSphere (8.x / 9.x)**
   - **Provisioning**: vSphere IPI (fully automated vCenter VM lifecycle) or Agent-Based Installer (ABI).
   - **Storage**: VMware vSphere CSI Driver integrated with VMware vSAN, VMFS datastores, or enterprise SAN arrays.
@@ -146,6 +273,7 @@ Use this deterministic ASCII decision tree to determine the optimal installation
   - **Best For**: Enterprise private clouds with existing VMware vSphere investments and storage tiering.
   - **Documentation**: [`docs/04-platforms/02-vmware-vsphere.md`](docs/04-platforms/02-vmware-vsphere.md)
 
+<a id="nutanix-ahv"></a>
 - **3. Nutanix AHV HCI**
   - **Provisioning**: Nutanix IPI directly integrated with Prism Central (PC) and Prism Element (PE) REST APIs.
   - **Storage**: Nutanix CSI driver supporting Nutanix Volumes (Block) and Nutanix Files (NFS) storage classes.
@@ -153,6 +281,7 @@ Use this deterministic ASCII decision tree to determine the optimal installation
   - **Best For**: Organizations standardizing on Nutanix Hyperconverged Infrastructure for datacenter compute.
   - **Documentation**: [`docs/04-platforms/03-nutanix-ahv.md`](docs/04-platforms/03-nutanix-ahv.md)
 
+<a id="kvm-openstack"></a>
 - **4. KVM & RHOSO (Red Hat OpenStack Services on OpenShift)**
   - **Provisioning**: OpenStack IPI (using openstack-installer) or Agent-Based ISO booted on Libvirt / KVM hypervisors.
   - **Storage**: OpenStack Cinder CSI driver for persistent block storage backed by Ceph RBD or NetApp arrays.
@@ -160,6 +289,7 @@ Use this deterministic ASCII decision tree to determine the optimal installation
   - **Best For**: Telco Network Function Virtualization (NFV) and enterprise open-source private cloud datacenters.
   - **Documentation**: [`docs/04-platforms/04-kvm-openstack.md`](docs/04-platforms/04-kvm-openstack.md)
 
+<a id="microsoft-hyper-v"></a>
 - **5. Microsoft Hyper-V / Azure Stack HCI**
   - **Provisioning**: Agent-Based Installer (ABI) paired with automated PowerShell VM deployment and lifecycle scripts.
   - **Architecture**: Generation 2 (Gen 2) UEFI VMs with `MicrosoftUEFICertificateAuthority` template.
@@ -170,12 +300,14 @@ Use this deterministic ASCII decision tree to determine the optimal installation
 
 #### Section 4: Network Isolation & Connectivity Paradigms
 
+<a id="network-fully-connected"></a>
 - **1. Fully Connected Network** `[Direct Internet / Red Hat CDN]`
   - **Egress Connectivity**: Direct outbound HTTPS access to `registry.redhat.io`, `quay.io`, and OpenShift release repositories.
   - **Lifecycle Management**: Automated Cincinnati / OpenShift Update Service (OSUS) channel tracking (`fast-4.20`, `stable-4.20`, `eus-4.20`).
   - **Helper Node**: Optional; cloud-native DHCP, Route53 / Cloud DNS, and native cloud load balancers satisfy all requirements.
   - **Documentation**: [`docs/03-network-and-connectivity/01-connected-with-proxies.md`](docs/03-network-and-connectivity/01-connected-with-proxies.md)
 
+<a id="network-proxy-restricted"></a>
 - **2. Proxy-Restricted Enterprise Network** `[Corporate Forward Proxy + TLS Inspection]`
   - **Egress Connectivity**: All outbound traffic routed strictly through enterprise forward proxy (Squid, BlueCoat, Zscaler).
   - **Cluster Configuration**: Global cluster `Proxy` resource defines `httpProxy`, `httpsProxy`, and `noProxy` bypass CIDRs.
@@ -183,6 +315,7 @@ Use this deterministic ASCII decision tree to determine the optimal installation
   - **Helper Node**: Recommended on-premises for internal proxy bypass, DNS resolution, and Keepalived VIP load balancing.
   - **Documentation**: [`docs/03-network-and-connectivity/01-connected-with-proxies.md`](docs/03-network-and-connectivity/01-connected-with-proxies.md)
 
+<a id="network-air-gapped"></a>
 - **3. Air-Gapped / Disconnected Dark Site Network** `[Zero Internet Connectivity]`
   - **Egress Connectivity**: Strictly zero external internet access; air-gapped datacenter, tactical edge, or isolated enclave.
   - **Enterprise Mirroring**: `oc-mirror` v2 CLI with declarative `ImageSetConfiguration` v2 and local OCI cache streaming.
@@ -191,6 +324,7 @@ Use this deterministic ASCII decision tree to determine the optimal installation
   - **Documentation**: [`docs/03-network-and-connectivity/02-air-gapped-oc-mirror-v2.md`](docs/03-network-and-connectivity/02-air-gapped-oc-mirror-v2.md) & [`docs/05-day0-readiness/04-helper-node-architecture.md`](docs/05-day0-readiness/04-helper-node-architecture.md)
 
 
+<a id="graphical-mermaid-flowchart"></a>
 <details>
 <summary><b>Click to view Graphical Mermaid Flowchart</b></summary>
 
