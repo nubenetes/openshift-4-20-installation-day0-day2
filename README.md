@@ -74,6 +74,78 @@ flowchart TD
 
 ---
 
+## Complete End-to-End Master Implementation Workflow (Ordered Step-by-Step)
+
+Regardless of the selected infrastructure or cloud platform, every production OpenShift 4.20 deployment follows this deterministic 10-step enterprise implementation lifecycle:
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Admin as Enterprise Architect & SRE
+    participant Helper as Helper / Bastion Node
+    participant Infra as Target Physical / Cloud Infra
+    participant OCP as OpenShift 4.20 Cluster
+    participant GitOps as OpenShift GitOps (ArgoCD)
+
+    Admin->>Helper: 1. Deploy Helper Node & Validate Pre-reqs (scripts/preflight-check.sh)
+    Admin->>Helper: 2. Generate install-config.yaml & agent-config.yaml
+    Admin->>Helper: 3. Build bootable Agent ISO (scripts/generate-agent-iso.sh)
+    Admin->>Infra: 4. Mount ISO via Redfish / Virtual Media & boot nodes
+    Infra->>OCP: 5. Automated Bootstrap-in-Place & Raft quorum formation
+    Admin->>OCP: 6. Day 1 Hardening: Replace Ingress TLS, configure IDP & lock down RBAC
+    Admin->>OCP: 7. Carve dedicated Infra MachineConfigPools & deploy ODF storage
+    Admin->>GitOps: 8. Establish GitOps App-of-Apps & External Secrets Operator (ESO)
+    Admin->>OCP: 9. Configure OADP Backup, etcd CronJob & CIS Compliance scanning
+    Admin->>OCP: 10. Execute Automated Lifecycle Upgrades (scripts/automated-cluster-upgrade.sh)
+```
+
+### Step 1: Preflight Infrastructure & Network Validation
+1. Verify machine subnet allocations, forward DNS (`api`, `api-int`, `*.apps`), and reverse PTR records.
+2. Ensure low-latency disk IOPS (<10ms `fdatasync`) on control plane storage.
+3. Execute [`scripts/preflight-check.sh`](scripts/preflight-check.sh) from the Helper/Bastion host.
+
+### Step 2: Helper Node / Bastion Service Deployment
+1. For on-premises, bare-metal, or air-gapped environments, deploy the Helper Node ([`docs/05-day0-readiness/04-helper-node-architecture.md`](docs/05-day0-readiness/04-helper-node-architecture.md)).
+2. Configure authoritative BIND9 DNS, HAProxy load balancing, local Stratum Chrony NTP, and local container mirror registry.
+
+### Step 3: Declarative Configuration Definition
+1. Formulate `install-config.yaml` with the chosen platform, network CIDRs, and pull secret.
+2. For Agent-Based installations, define `agent-config.yaml` specifying static NMState IP addresses and Rendezvous node.
+
+### Step 4: Installation Media Generation & Boot
+1. Build the bootable ISO via [`scripts/generate-agent-iso.sh`](scripts/generate-agent-iso.sh) or execute cloud IPI via `openshift-install create cluster`.
+2. For bare-metal/hypervisors, mount `agent.x86_64.iso` via BMC Virtual Media (or [`scripts/deploy-hyperv-vms.ps1`](scripts/deploy-hyperv-vms.ps1) on Hyper-V) and power on all nodes.
+
+### Step 5: Bootstrap-in-Place & Cluster Convergence
+1. The Rendezvous node initializes the Assisted Service and starts an ephemeral control plane.
+2. Peer master nodes discover the Rendezvous host, format target OS disks, and assemble 3-node etcd quorum.
+3. The Rendezvous host pivots into permanent `master-0`.
+
+### Step 6: Day 1 Ingress TLS & Identity Federation
+1. Replace default self-signed ingress certificates with enterprise wildcard PKI certificates ([`configs/day1/ingresscontroller-custom-tls.yaml`](configs/day1/ingresscontroller-custom-tls.yaml)).
+2. Configure enterprise SSO (Keycloak, Microsoft Entra ID, LDAP) via OAuth ([`configs/day1/idp-keycloak-oidc.yaml`](configs/day1/idp-keycloak-oidc.yaml)).
+3. Revoke default `self-provisioner` role and decommission the temporary `kubeadmin` account.
+
+### Step 7: MachineConfigPool Hardening & Storage Provisioning
+1. Carve out dedicated `infra` nodes for Ingress, Registry, and Monitoring ([`configs/day1/mcp-infra-nodes.yaml`](configs/day1/mcp-infra-nodes.yaml)).
+2. Deploy OpenShift Data Foundation (ODF) for multi-tenant Ceph block (RBD) and file (CephFS) storage classes.
+
+### Step 8: GitOps Foundation & Secret Management
+1. Deploy Red Hat OpenShift GitOps (ArgoCD v3+).
+2. Connect Git repository containing declarative manifests under the App-of-Apps pattern.
+3. Deploy External Secrets Operator (ESO) to sync secrets dynamically from HashiCorp Vault or Cloud KMS.
+
+### Step 9: Observability, Compliance & Backup Encampment
+1. Enable User Workload Monitoring (UWM) and deploy LokiStack + Vector logging.
+2. Bind CIS OpenShift Benchmark scans via Compliance Operator ([`configs/day2/compliance-suite-cis.yaml`](configs/day2/compliance-suite-cis.yaml)).
+3. Schedule automated daily etcd snapshots ([`configs/day2/etcd-backup-cronjob.yaml`](configs/day2/etcd-backup-cronjob.yaml)) and deploy OADP DataProtectionApplication ([`configs/day2/oadp-dpa-cr.yaml`](configs/day2/oadp-dpa-cr.yaml)).
+
+### Step 10: Automated Lifecycle & Upgrade Orchestration
+1. Prior to any cluster upgrade, execute [`scripts/pre-upgrade-health-check.sh`](scripts/pre-upgrade-health-check.sh) to verify operator health, API deprecations, and etcd snapshot freshness.
+2. Trigger the automated upgrade via [`scripts/automated-cluster-upgrade.sh`](scripts/automated-cluster-upgrade.sh) to pause worker MCPs, upgrade the control plane CVO, and perform sequential worker node rolling updates.
+
+---
+
 ## Complete Documentation Index
 
 The complete documentation suite is divided into 8 focused engineering sections with bidirectional navigation:

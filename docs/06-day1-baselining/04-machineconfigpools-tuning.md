@@ -4,27 +4,59 @@ The Machine Config Operator (MCO) ensures that operating system configurations (
 
 ---
 
-## Dedicated Infrastructure Nodes
-Prevent system routers and logging components from competing with customer workloads by carving out dedicated `infra` nodes:
+## End-to-End Step-by-Step Implementation Procedure
 
-1. Label nodes:
+### Step 1: Define Custom MachineConfigPool (e.g. Infra Pool)
+1. Deploy the `infra` MachineConfigPool definition (see [`configs/day1/mcp-infra-nodes.yaml`](../../configs/day1/mcp-infra-nodes.yaml)):
    ```bash
-   oc label node worker-0.corp node-role.kubernetes.io/infra=""
-   oc label node worker-0.corp node-role.kubernetes.io/worker-
+   oc apply -f configs/day1/mcp-infra-nodes.yaml
    ```
-2. Apply taint:
+
+### Step 2: Label and Taint Target Infrastructure Nodes
+1. Label selected worker nodes to move them into the infra pool:
    ```bash
-   oc adm taint node worker-0.corp node-role.kubernetes.io/infra=reserved:NoSchedule
+   oc label node worker-0.corp.local node-role.kubernetes.io/infra=""
+   oc label node worker-0.corp.local node-role.kubernetes.io/worker-
    ```
-3. Create `MachineConfigPool` (see [`configs/day1/mcp-infra-nodes.yaml`](../../configs/day1/mcp-infra-nodes.yaml)).
+2. Apply taints so general user applications are prevented from scheduling:
+   ```bash
+   oc adm taint node worker-0.corp.local node-role.kubernetes.io/infra=reserved:NoSchedule
+   ```
 
----
+### Step 3: Configure Node-Level NTP (Chrony)
+1. Apply the Chrony MachineConfig pointing to the Helper Node / internal NTP server:
+   ```bash
+   oc apply -f configs/day1/machineconfig-chrony.yaml
+   ```
+2. The Machine Config Operator rolls out `/etc/chrony.conf` to all nodes and restarts `chronyd`.
 
-## Performance Profile & Node Tuning Operator
-For low-latency, Telco, and AI workloads, tune kernel parameters via Node Tuning Operator:
-- Real-time kernel (`kernel-rt`)
-- Hugepages (1GB / 2MB pages)
-- CPU isolation & pinning (`reservedSystemCPUs: "0,1"`)
+### Step 4: Deploy Node Tuning Operator for Low Latency / Real-Time
+1. Apply a `PerformanceProfile` for CPU isolation and real-time kernel (`kernel-rt`):
+   ```yaml
+   apiVersion: performance.openshift.io/v2
+   kind: PerformanceProfile
+   metadata:
+     name: realtime-telco-profile
+   spec:
+     cpu:
+       isolated: "2-15"
+       reserved: "0-1"
+     hugepages:
+       defaultHugepagesSize: "1G"
+       pages:
+         - size: "1G"
+           count: 8
+     realTimeKernel:
+       enabled: true
+     nodeSelector:
+       node-role.kubernetes.io/worker-rt: ""
+   ```
+
+### Step 5: Verify MachineConfigPool Health
+1. Ensure all MCPs reach `Updated=True` and `Degraded=False`:
+   ```bash
+   oc get mcp
+   ```
 
 ---
 [Back to Day 1 Index](README.md) • [Next Chapter: Day 2 Operations](../07-day2-operations/README.md)

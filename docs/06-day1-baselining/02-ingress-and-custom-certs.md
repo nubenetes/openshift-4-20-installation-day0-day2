@@ -4,22 +4,40 @@ By default, OpenShift issues a self-signed ingress certificate (`*.apps.<cluster
 
 ---
 
-## Replacing the Wildcard Certificate
+## End-to-End Step-by-Step Implementation Procedure
 
-1. **Prepare Certificate and Private Key**:
-   - Ensure the certificate contains `CN=*.apps.<cluster>.<baseDomain>` and all intermediate certificates up to the root CA.
-2. **Create Secret in `openshift-ingress`**:
+### Step 1: Obtain Enterprise Wildcard TLS Certificate
+1. Generate a certificate signing request (CSR) for `*.apps.<cluster>.<baseDomain>`.
+2. Have your enterprise internal PKI sign the CSR.
+3. Bundle the certificate, intermediate CAs, and root CA in order:
    ```bash
-   oc create secret tls wildcard-apps-tls-cert       --cert=fullchain.pem       --key=privkey.pem       -n openshift-ingress
+   cat server.crt intermediate.crt root.crt > fullchain.pem
    ```
-3. **Patch the IngressController**:
+
+### Step 2: Create Ingress TLS Secret
+1. Create a Kubernetes TLS secret in namespace `openshift-ingress`:
+   ```bash
+   oc create secret tls wildcard-apps-tls-cert       --cert=fullchain.pem       --key=privkey.key       -n openshift-ingress
+   ```
+
+### Step 3: Patch IngressController Custom Resource
+1. Update the default IngressController to consume the new wildcard secret:
    ```bash
    oc patch ingresscontroller.operator default       --type=merge -p       '{"spec":{"defaultCertificate":{"name":"wildcard-apps-tls-cert"}}}'       -n openshift-ingress-operator
    ```
-4. **Verification**:
+
+### Step 4: Monitor Ingress Router Pod Rolling Restart
+1. Monitor the rolling update of HAProxy router pods in `openshift-ingress`:
    ```bash
-   echo | openssl s_client -connect console-openshift-console.apps.<cluster>.<baseDomain>:443 -servername console-openshift-console.apps.<cluster>.<baseDomain> 2>/dev/null | openssl x509 -noout -issuer -subject -dates
+   oc rollout status deployment/router-default -n openshift-ingress
    ```
+
+### Step 5: Verify TLS Handshake & Expiry
+1. Verify the certificate using `openssl`:
+   ```bash
+   echo | openssl s_client -connect console-openshift-console.apps.ocp420.corp.local:443        -servername console-openshift-console.apps.ocp420.corp.local 2>/dev/null | openssl x509 -noout -issuer -subject -dates
+   ```
+2. Confirm the issuer reflects your corporate CA and not `openshift-ingress`.
 
 ---
 [Next: Identity Providers & RBAC](03-identity-providers-rbac.md) • [Back to Day 1 Index](README.md)
