@@ -1,6 +1,6 @@
-# 06 - GitOps App-of-Apps: Fleet Orchestration & Drift Elimination
+# 06 - GitOps App-of-Apps: Fleet Orchestration & Drift Elimination (Argo CD 3.5+)
 
-The **App-of-Apps** pattern is the architectural standard for enterprise OpenShift 4.20. Rather than managing disparate YAML files or relying on manual console edits, a single root ArgoCD `Application` declaratively drives the deployment of all child applications, operators, policies, and workloads across clusters.
+The **App-of-Apps** pattern is the architectural standard for enterprise OpenShift 4.20. Powered by the upstream **Argo CD 3.5+** engine within Red Hat OpenShift GitOps, a single root Argo CD `Application` declaratively drives the deployment of all child applications, operators, policies, and workloads across clusters with native Server-Side Apply (SSA) and sub-second drift elimination.
 
 ---
 
@@ -108,6 +108,7 @@ syncPolicy:
     - CreateNamespace=true
     - ApplyOutOfSyncOnly=true
     - RespectIgnoreDifferences=true
+    - ServerSideApply=true         # Argo CD 3.5+ standard for huge OpenShift CRDs and field management
 ```
 
 If an administrator manually edits an IngressController, weakens an SCC, or modifies a MachineConfig, ArgoCD detects the divergence within **180 seconds** (or immediately via Webhook) and reverts the live cluster back to the immutable state committed in Git.

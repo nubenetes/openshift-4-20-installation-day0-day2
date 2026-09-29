@@ -13,7 +13,7 @@
 [![CNI OVN](https://img.shields.io/badge/CNI-OVN--Kubernetes-1F618D.svg)](docs/03-network-and-connectivity/04-ovn-kubernetes-tuning.md)
 [![Air-Gap Standard](https://img.shields.io/badge/Air--Gap-oc--mirror%20v2-critical.svg)](docs/03-network-and-connectivity/02-air-gapped-oc-mirror-v2.md)
 [![Storage Ceph](https://img.shields.io/badge/Storage-ODF%20Ceph%204.16+-E03C11.svg?logo=ceph&logoColor=white)](docs/05-day0-readiness/03-storage-architecture-odf.md)
-[![GitOps](https://img.shields.io/badge/GitOps-ArgoCD%20v3+-EF6C00.svg?logo=argo&logoColor=white)](docs/07-day2-operations/04-gitops-app-of-apps.md)
+[![GitOps](https://img.shields.io/badge/GitOps-Argo%20CD%203.5+-EF6C00.svg?logo=argo&logoColor=white)](docs/07-day2-operations/06-gitops-app-of-apps.md)
 <br/>
 [![Backup OADP](https://img.shields.io/badge/Backup-OADP%201.4+%20(Kopia)-2E7D32.svg)](docs/08-backup-dr-and-rebuild/02-oadp-backup-restore.md)
 [![Lifecycle Upgrades](https://img.shields.io/badge/Lifecycle-Canary%20Upgrades-00897B.svg)](docs/07-day2-operations/05-automated-upgrades.md)
@@ -224,8 +224,8 @@ This repository codifies the modern architectural paradigms, enterprise design d
 * **External Secrets Operator (ESO)**: Secure secret hydration from centralized enterprise secret stores (HashiCorp Vault, AWS Secrets Manager, Azure Key Vault). Secrets are never committed to Git; instead, `ExternalSecret` custom resources continuously reconcile and inject native Kubernetes `Secrets` dynamically.
 
 ### 5. Autonomous GitOps App-of-Apps & Drift Management
-* **Declarative Cluster Desired State**: The entire cluster lifecycle—from operators to storage, networking, security policies, and application workloads—is managed declaratively in Git via **Red Hat OpenShift GitOps (ArgoCD v3+)**.
-* **Root App-of-Apps Architecture**: A single root ArgoCD Application coordinates all subordinate configuration applications using deterministic **Sync Waves** (Phase 1: Operators -> Phase 2: CRDs -> Phase 3: Storage/Security -> Phase 4: Workloads).
+* **Declarative Cluster Desired State**: The entire cluster lifecycle—from operators to storage, networking, security policies, and application workloads—is managed declaratively in Git via **Red Hat OpenShift GitOps (Argo CD 3.5+)**.
+* **Root App-of-Apps Architecture**: A single root Argo CD Application coordinates all subordinate configuration applications using deterministic **Sync Waves** (Phase 1: Operators -> Phase 2: CRDs -> Phase 3: Storage/Security -> Phase 4: Workloads).
 * **Automated Drift Self-Healing**: Continuous drift detection with active remediation (`selfHeal: true`, `prune: true`) guarantees that unauthorized manual out-of-band changes applied via CLI are automatically overwritten back to the audited Git state within seconds.
 
 ### 6. Modernized Unified Virtualization (OpenShift Virtualization & MTV)
@@ -585,7 +585,7 @@ To navigate and utilize this enterprise repository effectively, the directory st
   - `├──` 📁 **[`docs/07-day2-operations/`](docs/07-day2-operations/)** — *Day 2 enterprise operations, observability & lifecycle*
     - `├──` 📄 [`01-observability-stack.md`](docs/07-day2-operations/01-observability-stack.md) — *User Workload Monitoring, LokiStack logging & Tempo tracing*
     - `├──` 📄 [`02-security-and-compliance.md`](docs/07-day2-operations/02-security-and-compliance.md) — *CIS Benchmark & NIST SP 800-53 via Compliance Operator*
-    - `├──` 📄 [`03-gitops-foundation.md`](docs/07-day2-operations/03-gitops-foundation.md) — *Red Hat OpenShift GitOps (ArgoCD v3+) & External Secrets*
+    - `├──` 📄 [`03-gitops-foundation.md`](docs/07-day2-operations/03-gitops-foundation.md) — *Red Hat OpenShift GitOps (Argo CD 3.5+) & External Secrets*
     - `├──` 📄 [`04-lifecycle-and-upgrades.md`](docs/07-day2-operations/04-lifecycle-and-upgrades.md) — *Cluster lifecycle, EUS-to-EUS upgrades & MCP canary rollout*
     - `├──` 📄 [`05-automated-upgrades.md`](docs/07-day2-operations/05-automated-upgrades.md) — *Automated upgrade workflows, etcd snapshot preflight gating*
     - `├──` 📄 [`06-gitops-app-of-apps.md`](docs/07-day2-operations/06-gitops-app-of-apps.md) — *GitOps App-of-Apps, drift self-healing & multi-environment promotion*
@@ -917,7 +917,7 @@ sequenceDiagram
 2. Deploy OpenShift Data Foundation (ODF) for multi-tenant Ceph block (RBD) and file (CephFS) storage classes.
 
 ### Step 8: GitOps Foundation & Secret Management
-1. Deploy Red Hat OpenShift GitOps (ArgoCD v3+).
+1. Deploy Red Hat OpenShift GitOps (Argo CD 3.5+).
 2. Connect Git repository containing declarative manifests under the App-of-Apps pattern.
 3. Deploy External Secrets Operator (ESO) to sync secrets dynamically from HashiCorp Vault or Cloud KMS.
 
@@ -990,10 +990,10 @@ Baselining, security lockdowns, and enterprise integration:
 Observability, compliance, GitOps, and upgrade management:
 - [Enterprise Observability Stack](docs/07-day2-operations/01-observability-stack.md): User Workload Monitoring, LokiStack + Vector logging, Tempo distributed tracing.
 - [Security & Compliance](docs/07-day2-operations/02-security-and-compliance.md): Automated CIS Benchmark and NIST SP 800-53 enforcement via Compliance Operator.
-- [GitOps Foundation](docs/07-day2-operations/03-gitops-foundation.md): Red Hat OpenShift GitOps (ArgoCD v3+), App-of-Apps, and External Secrets Operator (ESO).
+- [GitOps Foundation](docs/07-day2-operations/03-gitops-foundation.md): Red Hat OpenShift GitOps (Argo CD 3.5+), App-of-Apps, and External Secrets Operator (ESO).
 - [Cluster Lifecycle & Upgrades](docs/07-day2-operations/04-lifecycle-and-upgrades.md): EUS-to-EUS upgrade paths, paused MCP canary rollouts, node drain safety.
 - [Automated Upgrades & Pre-Upgrade Mandates](docs/07-day2-operations/05-automated-upgrades.md): Deep architectural rationale for why upgrades must be strictly orchestrated, why fresh etcd snapshots are non-negotiable before upgrading, paused worker MCP rollouts, and automated scripts.
-- [GitOps App-of-Apps & Configuration Drift Management](docs/07-day2-operations/06-gitops-app-of-apps.md): ArgoCD App-of-Apps pattern, automated drift self-healing, sync waves, and multi-tenant repository segregation.
+- [GitOps App-of-Apps & Configuration Drift Management](docs/07-day2-operations/06-gitops-app-of-apps.md): Argo CD 3.5+ App-of-Apps pattern, automated drift self-healing, sync waves, and multi-tenant repository segregation.
 - [Enterprise AI & GPU Acceleration (RHOAI & vLLM)](docs/07-day2-operations/07-openshift-ai-gpu.md): NVIDIA GPU Operator, time-slicing/MIG, Red Hat OpenShift AI (RHOAI 2.16+), and vLLM ServingRuntime for local LLM inference.
 
 ### [08. Disaster Recovery, Backup & GitOps Rebuild](docs/08-backup-dr-and-rebuild/README.md)

@@ -1,17 +1,17 @@
-# GitOps Foundation: ArgoCD & External Secrets
+# GitOps Foundation: Argo CD 3.5+ & External Secrets
 
-Declarative management of all Day 1 and Day 2 cluster configurations eliminates configuration drift across multi-cluster fleets.
+Declarative management of all Day 1 and Day 2 cluster configurations eliminates configuration drift across multi-cluster fleets. In OpenShift 4.20, **Red Hat OpenShift GitOps** is powered by the upstream **Argo CD 3.5+** engine, bringing native **Server-Side Apply (SSA)**, multi-source applications, enhanced resource tracking, and sub-second drift detection.
 
 ---
 
 ## End-to-End Step-by-Step Implementation Procedure
 
-### Step 1: Install Red Hat OpenShift GitOps Operator
+### Step 1: Install Red Hat OpenShift GitOps Operator (Argo CD 3.5+)
 1. Subscribe to **Red Hat OpenShift GitOps** from OperatorHub:
    ```bash
-   oc apply -f configs/day2/gitops-operator-sub.yaml
+   oc apply -f configs/gitops/gitops-operator-sub.yaml
    ```
-2. OpenShift GitOps automatically creates a cluster-wide ArgoCD instance in namespace `openshift-gitops`.
+2. OpenShift GitOps automatically creates a cluster-wide Argo CD 3.5+ instance in namespace `openshift-gitops`.
 
 ### Step 2: Structure Cluster Fleet Git Repository
 1. Organize your declarative Git repository into App-of-Apps hierarchy:
