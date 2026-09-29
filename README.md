@@ -30,7 +30,7 @@ Designed for Enterprise Platform Architects, Principal Site Reliability Engineer
 ### Key Repository Assets at a Glance:
 - 📚 **51 Exhaustive Engineering Modules (`docs/`)**: Organized across 9 operational domains covering every topology, hypervisor, public cloud, Gateway API, and incident scenario.
 - ⚙️ **34 Production Declarative Manifests (`configs/`)**: Validated Custom Resources for Agent-Based Installer, Keyless Cloud IPI, oc-mirror v2, Gateway API, Ingress PKI, GitOps root App-of-Apps, External Secrets Operator, cert-manager, OpenShift Virtualization, RHOAI, and vLLM ServingRuntime.
-- 🛠️ **14 Production Automation Scripts (`scripts/`)**: Complete shell and PowerShell operational tools covering preflight validation, air-gap mirroring, automated etcd backups, canary cluster upgrades with Prometheus SLO gating, automated OADP restore drills, expired certificate recovery from the Helper Node, and single-member quorum restoration.
+- 🛠️ **15 Production Automation Scripts ([`scripts/`](scripts/README.md))**: Complete shell and PowerShell operational tools covering preflight validation, air-gap mirroring, automated etcd backups, canary cluster upgrades with Prometheus SLO gating, automated OADP restore drills, expired certificate recovery from the Helper Node, and single-member quorum restoration (documented in the [Scripts Manual](scripts/README.md)).
 - 🎯 **10-Step Deterministic Implementation Workflow**: A unified sequence linking Day 0 readiness through to autonomous lifecycle operations across all infrastructure targets.
 
 ### Core Architecture & Technical Taxonomy Tags:
@@ -687,7 +687,8 @@ To navigate and utilize this enterprise repository effectively, the directory st
   - `└──` 📁 **[`configs/helper-node/`](configs/helper-node/)** — *On-premises / Air-Gapped Helper Node daemon configurations*
     - `├──` 📄 [`haproxy.cfg`](configs/helper-node/haproxy.cfg) — *HAProxy Layer 4 load balancing for API (6443) & Apps (80/443)*
     - `└──` 📄 [`named.conf`](configs/helper-node/named.conf) — *Authoritative BIND9 DNS split-horizon zone configuration*
-- `└──` 📁 **[`scripts/`](scripts/)** — *Production Automation Tooling & Operational Scripts*
+- `└──` 📁 **[`scripts/`](scripts/README.md)** — *Production Automation Tooling & Operational Scripts*
+  - `├──` 📄 [`README.md`](scripts/README.md) — *Exhaustive operational & architectural manual for all 15 production scripts*
   - `├──` 📄 [`preflight-check.sh`](scripts/preflight-check.sh) — *Day 0 DNS, PTR, NTP, MTU, proxy, and latency preflight audit*
   - `├──` 📄 [`generate-agent-iso.sh`](scripts/generate-agent-iso.sh) — *Agent-Based Installer boot ISO builder (SNO/Compact/Standard)*
   - `├──` 📄 [`mirror-ocp420-airgap.sh`](scripts/mirror-ocp420-airgap.sh) — *oc-mirror v2 automated mirroring to local Quay/Harbor registry*
@@ -876,8 +877,8 @@ The `configs/` tree provides validated, production-grade YAML and daemon templat
 - **`configs/ai/`**: NVIDIA GPU Operator ClusterPolicy, RHOAI DataScienceCluster, and vLLM ServingRuntime inference manifests.
 - **`configs/helper-node/`**: Authoritative BIND9 DNS zones and HAProxy Layer 4 load balancer configurations ready to deploy on bastion infrastructure.
 
-#### 3. Automation Tooling & Operational Scripts (`scripts/`)
-The `scripts/` directory houses ready-to-run automation tools covering the complete lifecycle:
+#### 3. Automation Tooling & Operational Scripts ([`scripts/`](scripts/README.md))
+The [`scripts/`](scripts/README.md) directory houses 15 ready-to-run automation tools covering the complete lifecycle (see comprehensive engineering documentation in the [Operational Tooling Manual](scripts/README.md)):
 - **Preflight & Day 0**: [`scripts/preflight-check.sh`](scripts/preflight-check.sh) audits network prerequisites; [`scripts/generate-agent-iso.sh`](scripts/generate-agent-iso.sh) builds bootable media; [`scripts/mirror-ocp420-airgap.sh`](scripts/mirror-ocp420-airgap.sh) mirrors air-gapped images; [`scripts/deploy-hyperv-vms.ps1`](scripts/deploy-hyperv-vms.ps1) provisions Gen 2 Hyper-V VMs.
 - **Post-Install & Day 1**: [`scripts/validate-cluster-health.sh`](scripts/validate-cluster-health.sh) performs health auditing across all cluster operators, storage classes, and worker nodes.
 - **Day 2, Upgrades & DR**: [`scripts/etcd-backup.sh`](scripts/etcd-backup.sh) automates control plane snapshots; [`scripts/pre-upgrade-health-check.sh`](scripts/pre-upgrade-health-check.sh) enforces safety gating; [`scripts/automated-cluster-upgrade.sh`](scripts/automated-cluster-upgrade.sh) executes canary-controlled upgrades with Prometheus SLO gating; [`scripts/airgap-upgrade.sh`](scripts/airgap-upgrade.sh) manages disconnected release upgrades; [`scripts/test-oadp-restore.sh`](scripts/test-oadp-restore.sh) automates end-to-end disaster recovery drill verification.
@@ -1052,6 +1053,10 @@ Tactical out-of-band triage and recovery procedures when the cluster API server 
 All scripts and manifests are ready to execute from this repository:
 
 ### Shell Scripts (`scripts/`)
+
+> [!TIP]
+> **Complete Operational Manual**: For in-depth architectural breakdowns, motivation, hands-on recipes, ASCII/Mermaid flowcharts, parameter references, and failure triage protocols for all 15 tools, consult the **[Production Automation & Operational Tooling Manual (`scripts/README.md`)](scripts/README.md)**.
+
 | Script | Description | Usage |
 | :--- | :--- | :--- |
 | [`scripts/preflight-check.sh`](scripts/preflight-check.sh) | Validates DNS, reverse PTR, NTP, proxy settings, and port connectivity. | `./scripts/preflight-check.sh` |
