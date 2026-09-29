@@ -1,0 +1,21 @@
+apiVersion: config.openshift.io/v1
+kind: Proxy
+metadata:
+  name: cluster
+spec:
+  httpProxy: http://proxy.internal.corp:3128
+  httpsProxy: http://proxy.internal.corp:3128
+  noProxy: .internal.corp,.example.com,10.128.0.0/14,172.30.0.0/16,192.168.10.0/24
+  trustedCA:
+    name: enterprise-custom-ca
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: enterprise-custom-ca
+  namespace: openshift-config
+data:
+  ca-bundle.crt: |
+    -----BEGIN CERTIFICATE-----
+    MIIExtCCA0mgAwIBAgIUWc68Xv...ENTERPRISE_INTERNAL_ROOT_CA...
+    -----END CERTIFICATE-----

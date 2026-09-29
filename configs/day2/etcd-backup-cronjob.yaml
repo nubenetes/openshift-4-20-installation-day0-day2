@@ -1,0 +1,43 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: etcd-automated-backup
+  namespace: openshift-etcd
+spec:
+  schedule: "0 2 * * *"  # Daily at 02:00 AM
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 5
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: backup-etcd-sa
+          restartPolicy: OnFailure
+          nodeSelector:
+            node-role.kubernetes.io/control-plane: ""
+          tolerations:
+            - key: node-role.kubernetes.io/master
+              operator: Exists
+              effect: NoSchedule
+            - key: node-role.kubernetes.io/control-plane
+              operator: Exists
+              effect: NoSchedule
+          hostNetwork: true
+          containers:
+            - name: etcd-backup
+              image: registry.redhat.io/openshift4/ose-cli:v4.20
+              command:
+                - /bin/bash
+                - -c
+                - |
+                  chroot /host /usr/local/bin/cluster-backup.sh /var/home/core/assets/backup/etcd-20260929_151128
+              securityContext:
+                privileged: true
+              volumeMounts:
+                - mountPath: /host
+                  name: host-root
+          volumes:
+            - name: host-root
+              hostPath:
+                path: /

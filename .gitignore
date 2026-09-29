@@ -1,0 +1,15 @@
+# OpenShift installation artifacts
+*.iso
+*.raw
+*.qcow2
+*.vmdk
+auth/
+.openshift_install*
+terraform.tfstate*
+*.key
+*.pem
+*.tar.gz
+*.tar
+kubeconfig
+kubeadmin-password
+.cache/

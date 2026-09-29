@@ -1,0 +1,34 @@
+apiVersion: oadp.openshift.io/v1alpha1
+kind: DataProtectionApplication
+metadata:
+  name: dpa-enterprise-prod
+  namespace: openshift-adp
+spec:
+  configuration:
+    velero:
+      defaultPlugins:
+        - openshift
+        - aws
+        - csi
+      logLevel: info
+    nodeAgent:
+      enable: true
+      uploaderType: kopia
+  backupLocations:
+    - velero:
+        provider: aws
+        default: true
+        objectStorage:
+          bucket: ocp-backups-bucket
+          prefix: ocp420-cluster
+        config:
+          region: eu-west-1
+          s3Url: https://s3.eu-west-1.amazonaws.com
+        credential:
+          key: cloud
+          name: cloud-credentials
+  snapshotLocations:
+    - velero:
+        provider: aws
+        config:
+          region: eu-west-1

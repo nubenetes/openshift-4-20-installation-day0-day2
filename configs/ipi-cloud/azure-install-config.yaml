@@ -1,0 +1,41 @@
+apiVersion: v1
+baseDomain: cloud.example.com
+metadata:
+  name: ocp-azure-prod
+publish: Internal
+credentialsMode: Manual
+controlPlane:
+  name: master
+  replicas: 3
+  platform:
+    azure:
+      osDisk:
+        diskSizeGB: 1024
+        diskType: Premium_LRS
+      type: Standard_D8s_v5
+      zones:
+        - "1"
+        - "2"
+        - "3"
+compute:
+  - name: worker
+    replicas: 3
+    platform:
+      azure:
+        type: Standard_D16s_v5
+        zones:
+          - "1"
+          - "2"
+          - "3"
+networking:
+  networkType: OVNKubernetes
+platform:
+  azure:
+    baseDomainResourceGroupName: rg-dns-zones
+    networkResourceGroupName: rg-network-prod
+    virtualNetwork: vnet-ocp-prod
+    controlPlaneSubnet: snet-control-plane
+    computeSubnet: snet-compute
+    region: westeurope
+pullSecret: '{"auths":{"YOUR_PULL_SECRET_HERE":{"auth":"..."}}}'
+sshKey: 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI... admin@example.com'

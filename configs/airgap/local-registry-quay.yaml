@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: quay-config
+  namespace: quay-enterprise
+data:
+  config.yaml: |
+    FEATURE_BUILD_SUPPORT: false
+    FEATURE_QUOTA_MANAGEMENT: true
+    SERVER_HOSTNAME: quay.internal.corp:8443
+    REGISTRY_TITLE: Enterprise Air-Gapped Quay Registry
+    AUTHENTICATION_TYPE: Database
+    DEFAULT_TAG_EXPIRATION: 104w
+    TAG_EXPIRATION_OPTIONS:
+      - 2w
+      - 4w
+      - 104w

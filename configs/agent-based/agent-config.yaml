@@ -1,0 +1,87 @@
+apiVersion: v1alpha1
+kind: AgentConfig
+metadata:
+  name: ocp420-agent
+rendezvousIP: 192.168.10.11
+hosts:
+  - hostname: master-0.ocp420.example.com
+    role: master
+    rootDeviceHints:
+      deviceName: /dev/sda
+    interfaces:
+      - name: eth0
+        macAddress: '52:54:00:11:22:33'
+    networkConfig:
+      interfaces:
+        - name: eth0
+          type: ethernet
+          state: up
+          ipv4:
+            enabled: true
+            address:
+              - ip: 192.168.10.11
+                prefix-length: 24
+            dhcp: false
+      dns-resolver:
+        config:
+          server:
+            - 192.168.10.1
+      routes:
+        config:
+          - destination: 0.0.0.0/0
+            next-hop-address: 192.168.10.1
+            next-hop-interface: eth0
+  - hostname: master-1.ocp420.example.com
+    role: master
+    rootDeviceHints:
+      deviceName: /dev/sda
+    interfaces:
+      - name: eth0
+        macAddress: '52:54:00:11:22:34'
+    networkConfig:
+      interfaces:
+        - name: eth0
+          type: ethernet
+          state: up
+          ipv4:
+            enabled: true
+            address:
+              - ip: 192.168.10.12
+                prefix-length: 24
+            dhcp: false
+      dns-resolver:
+        config:
+          server:
+            - 192.168.10.1
+      routes:
+        config:
+          - destination: 0.0.0.0/0
+            next-hop-address: 192.168.10.1
+            next-hop-interface: eth0
+  - hostname: master-2.ocp420.example.com
+    role: master
+    rootDeviceHints:
+      deviceName: /dev/sda
+    interfaces:
+      - name: eth0
+        macAddress: '52:54:00:11:22:35'
+    networkConfig:
+      interfaces:
+        - name: eth0
+          type: ethernet
+          state: up
+          ipv4:
+            enabled: true
+            address:
+              - ip: 192.168.10.13
+                prefix-length: 24
+            dhcp: false
+      dns-resolver:
+        config:
+          server:
+            - 192.168.10.1
+      routes:
+        config:
+          - destination: 0.0.0.0/0
+            next-hop-address: 192.168.10.1
+            next-hop-interface: eth0

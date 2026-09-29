@@ -1,0 +1,33 @@
+apiVersion: config.openshift.io/v1
+kind: OAuth
+metadata:
+  name: cluster
+spec:
+  identityProviders:
+    - name: Enterprise-Keycloak
+      mappingMethod: claim
+      type: OpenID
+      openID:
+        clientID: openshift-auth
+        clientSecret:
+          name: keycloak-client-secret
+        claims:
+          preferredUsername:
+            - preferred_username
+            - email
+          name:
+            - name
+          email:
+            - email
+          groups:
+            - groups
+        issuer: https://sso.internal.corp:8443/realms/enterprise
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: keycloak-client-secret
+  namespace: openshift-config
+type: Opaque
+stringData:
+  clientSecret: SuperSecureKeycloakClientSecret2026!
