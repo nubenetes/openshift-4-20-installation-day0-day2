@@ -28,6 +28,14 @@ sequenceDiagram
     SRE-->>SRE: Cluster fully restored in ~40 minutes!
 ```
 
+#### Architectural Breakdown: Immutable Rebuild & GitOps Restoration Workflow
+
+- **Phase 1: Bare Infrastructure Re-Provisioning (Step 1)**: Reset disks and power cycle physical nodes or cloud instances to pristine state via Out-of-Band Redfish, VMware vCenter API, or Terraform.
+- **Phase 2: Automated ABI / IPI Cluster Bootstrap (Step 2)**: Boot the nodes from pre-generated `agent.x86_64.iso` or cloud installer; cluster converges autonomously to a healthy bare-metal OpenShift 4.20 state with default configurations in ~25 minutes.
+- **Phase 3: GitOps App-of-Apps Bootstrap (Steps 3 & 4)**: SRE applies a single root Argo CD bootstrap manifest; OpenShift GitOps connects to the central Git repository and reconciles the entire cluster state (Day 1 hardening, custom PKI, Ingress TLS, machine pools, Operators, and workload manifests) in ~3 minutes.
+- **Phase 4: OADP Stateful Data Restoration (Step 5)**: OpenShift API for Data Protection (OADP / Velero) restores persistent volume (PV) snapshots from S3/MinIO object storage, re-binding application databases and stateful queues in ~10 minutes.
+- **Recovery SLA**: Entire Tier-0/Tier-1 cluster restored to 100% operational fidelity in under 40 minutes, completely eliminating manual configuration drift and fragile runtime patches.
+
 ---
 
 ## End-to-End Step-by-Step Implementation Procedure

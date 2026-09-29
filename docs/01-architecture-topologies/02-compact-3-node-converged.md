@@ -29,6 +29,13 @@ flowchart LR
     Node3 <-->|etcd Quorum + Ceph Sync| Node1
 ```
 
+#### Architectural Breakdown: 3-Node Compact Converged Quorum
+
+- **Collocated Control & Compute**: All three nodes act simultaneously as control plane masters and schedulable compute workers (`schedulableMasters: true`), eliminating the hardware cost of dedicated worker nodes.
+- **High-Availability etcd Raft Quorum**: A 3-member etcd cluster maintains distributed state; tolerates the failure of exactly 1 node (`(N-1)/2 = 1`) without loss of API availability or cluster operations.
+- **Converged Ceph Storage (ODF)**: Each node hosts an ODF Ceph OSD daemon backed by dedicated NVMe/SSD drives, forming a 3-way replicated Ceph pool (`size: 3, min_size: 2`) providing shared block (RBD) and file (CephFS) storage without external SAN/NAS.
+- **Network Synchronization**: Requires low-latency (<5ms RTT) interconnects with bonded 10GbE/25GbE interfaces to ensure strict Raft heartbeat synchronization and Ceph write replication.
+
 ---
 
 ## Hardware Sizing Table (Per Node)

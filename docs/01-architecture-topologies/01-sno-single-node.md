@@ -25,6 +25,13 @@ flowchart TB
     end
 ```
 
+#### Architectural Breakdown: SNO Converged Stack
+
+- **Unified Operating Environment**: RHCOS core system runs directly on a single physical server or VM with all Kubernetes control plane components, CNI, storage, and customer workloads converged onto a single node.
+- **Single-Member etcd Engine**: Operates with a single etcd instance; quorum checks are disabled (`--listen-client-urls`, no peer clustering), eliminating split-brain risks while retaining full Kubernetes API functionality.
+- **Integrated Local Storage & CNI**: Local Storage Operator (LSO) or Single-Node ODF provisions persistent volumes from local NVMe/SSD disks, while OVN-Kubernetes provides internal loopback and SDN routing without cross-node network encapsulation overhead.
+- **Autonomous Edge Survivability**: Operates continuously without requiring network connectivity to a central datacenter, making it ideal for tactical edge, retail, industrial IoT, and far-edge AI inference.
+
 ---
 
 ## Technical Specifications & Resource Baselines

@@ -37,6 +37,13 @@ flowchart TD
     ControlPlane -.->|API & Scheduler| WorkerPool
 ```
 
+#### Architectural Breakdown: Multi-Tier Infrastructure Separation
+
+- **Dedicated Control Plane Pool (3 Master Nodes)**: Purely hosts `kube-apiserver`, `etcd`, `kube-controller-manager`, and `openshift-apiserver`. Tainted with `node-role.kubernetes.io/master:NoSchedule` to prevent user workloads from impacting Raft stability and cluster coordination.
+- **Dedicated Infrastructure Pool (`infra-0` to `infra-2`)**: Segregates cluster-wide ingress routers, Keepalived VIP handlers, Prometheus/Thanos/Loki monitoring, and the OpenShift internal image registry away from worker nodes, preventing subscription licensing consumption and noisy-neighbor interference.
+- **Dedicated ODF Storage Pool (`storage-0` to `storage-2+`)**: Isolates storage daemons (Ceph OSDs, MONs, MGRs) on servers with high-speed NVMe drives and dedicated 25GbE storage networking to deliver guaranteed IOPS to database and stateful workloads.
+- **General Worker Pool (`worker-01` to `worker-NN`)**: Horizontally scalable compute nodes running user application containers, AI inferencing pods, and OpenShift Virtualization VMs, completely decoupled from control plane lifecycles.
+
 ---
 
 ## End-to-End Step-by-Step Implementation Procedure

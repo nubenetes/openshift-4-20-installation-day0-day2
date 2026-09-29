@@ -50,5 +50,12 @@ flowchart TD
     GeneveTunnel <--> Gateway
 ```
 
+#### Architectural Breakdown: OVN-Kubernetes SDN & Gateway Ingress Integration
+
+- **Node Underlay Network**: Physical bare-metal or hypervisor NICs (e.g., `eth0` / `bond0`) operate on the machine subnet (`192.168.10.0/24`) configured with standard (1500) or Jumbo (9000) MTU.
+- **Geneve Encapsulation Overlay**: Encapsulates east-west and pod-to-pod traffic inside UDP 6081 datagrams, introducing a 100-byte encapsulation header (requiring overlay MTU sizing of 1400 or 8900 to eliminate IP packet fragmentation).
+- **In-Kernel OpenFlow Routing**: OVN-Kubernetes eliminates legacy `iptables` and `kube-proxy` bottlenecks by handling Service `ClusterIP` load balancing directly within Open vSwitch (OVS) kernel flow tables.
+- **Enterprise Ingress & Gateway Integration**: External ingress traffic reaches Gateway API Envoy listeners or legacy Ingress routers, which route directly through Geneve overlay tunnels to destination pods across any worker node.
+
 ---
 [Back to Global Navigation](../00-navigation.md)

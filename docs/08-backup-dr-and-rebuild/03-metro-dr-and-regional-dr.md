@@ -22,6 +22,17 @@ flowchart TD
     end
 ```
 
+#### Architectural Breakdown: Metro-DR (Sync) vs. Regional-DR (Async)
+
+- **Metro-DR (Synchronous Storage Replication — RPO = 0, RTO < 5 mins)**:
+  - **Latency SLA**: Strictly mandates low-latency network interconnects (<5ms-10ms RTT) between Site A and Site B (typically within the same metropolitan area).
+  - **Stretch Cluster & Arbiter**: Utilizes a single stretched Ceph storage cluster across two active datacenters, with an independent third location hosting an Arbiter node for MON quorum tiebreaking to prevent split-brain.
+  - **Zero Data Loss**: Every write operation is synchronously acknowledged across both datacenters before completing, guaranteeing zero data loss (RPO=0) during an unexpected site failure.
+- **Regional-DR (Asynchronous Replication — RPO = Minutes, RTO < 15 mins)**:
+  - **Unlimited Geographic Distance**: Accommodates long-distance cross-region WAN connections (e.g., Frankfurt to Dublin or US-East to US-West) where network latency exceeds 10ms.
+  - **ODF Block & File Mirroring**: Storage pools replicate asynchronously at periodic snapshot intervals (typically 1 to 5 minutes) via Ceph RBD mirroring and CephFS async mirrors.
+  - **RamenDR & ACM Orchestration**: Red Hat Advanced Cluster Management (ACM) paired with the open-source RamenDR Operator automates application failover and failback by orchestrating GitOps subscription redirection and PVC volume replication claims across clusters.
+
 ---
 
 ## End-to-End Step-by-Step Implementation Procedure

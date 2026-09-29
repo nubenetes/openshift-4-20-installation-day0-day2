@@ -90,6 +90,34 @@ flowchart TD
     class TR,SvcVM virtStyle;
 ```
 
+#### Architectural Breakdown: Role-Oriented Resource Hierarchy
+
+The Kubernetes Gateway API decouples ingress and egress lifecycle responsibilities into a strict, role-oriented three-tier hierarchy that aligns directly with enterprise organizational boundaries:
+
+- **1. Platform Operator Layer (Cluster-Wide Scope & Infrastructure Engine)**:
+  - **Resource Definition**: `GatewayClass` (e.g., `openshift-default` or `openshift-ingress`).
+  - **Ownership & RBAC**: Managed exclusively by Platform Engineering / Core SRE teams with `cluster-admin` privileges.
+  - **Controller Binding**: Defines the underlying proxy controller implementation (`openshift.io/gateway-controller`, Red Hat OpenShift Service Mesh 3.x / Envoy, or Cloud-native controllers like AWS VPC Lattice or Azure Application Gateway for Containers).
+  - **Standardization & Abstraction**: Establishes global ingress capabilities, default proxy buffer limits, connection pooling thresholds, and hardware acceleration offload rules across the entire fleet without exposing infrastructure internals to tenant developers.
+
+- **2. Cluster Administrator Layer (Infrastructure Namespace & Perimeter Security)**:
+  - **Resource Definition**: `Gateway` (e.g., `enterprise-gateway` in namespace `infra-gateway`).
+  - **Ownership & RBAC**: Governed by Network Operations (NetOps) and Security Operations (SecOps) teams.
+  - **Multi-Port & Protocol Listeners**: Declares concrete L4/L7 network entrypoints, including:
+    - **Port 80 (HTTP)**: Configured for automatic 301/308 redirects to secure HTTPS.
+    - **Port 443 (HTTPS)**: High-performance TLS termination with HTTP/1.1 and HTTP/2 protocol negotiation.
+    - **Port 8443 (TLS Passthrough)**: Encrypted L4 SNI passthrough for zero-trust workloads.
+  - **Automated Enterprise PKI**: Integrates seamlessly with `cert-manager` via a `ClusterIssuer` (e.g., HashiCorp Vault, Active Directory Certificate Services, or Let's Encrypt) to provision, inject, and auto-renew wildcard certificates (`enterprise-wildcard-tls`) without application intervention.
+  - **Multi-Tenant Access Governance (`allowedRoutes`)**: Explicitly controls which namespaces and workload personas are authorized to bind routes to each listener using `namespaces.from: All` or label-based selectors (`selector.matchLabels`).
+
+- **3. Application & Workload Developer Layer (Multi-Namespace Self-Service)**:
+  - **Ownership & RBAC**: Controlled autonomously by individual application and engineering teams within project-isolated namespaces (`payments-prod`, `rhoai-inference`, `ocp-virt-vms`) using standard developer roles (`admin` or `edit` on their namespace).
+  - **Specialized Route Primitives**:
+    - **`HTTPRoute` (Web & Microservices)**: In namespace `payments-prod`, developers configure path-prefix routing (`/api`), header matching (`X-Canary-Test`), URL rewrites, and fine-grained canary traffic splitting (90% to stable `payments-v1` and 10% to `payments-v2`).
+    - **`GRPCRoute` (AI / Machine Learning)**: In namespace `rhoai-inference`, AI engineers bind high-throughput inference endpoints directly matching gRPC service signatures (`StreamingGenerate`) with zero proxy buffering to `vllm-llama3-service`.
+    - **`TLSRoute` (OpenShift Virtualization)**: In namespace `ocp-virt-vms`, virtualization administrators route raw encrypted TCP traffic (port 1433) directly to Windows Server/RHEL VM instances matching SNI hostnames without exposing private keys at the gateway.
+  - **Parent Reference Attachment (`parentRefs`)**: Routes declaratively bind to `parentRefs: [{ name: enterprise-gateway, namespace: infra-gateway }]`. The binding only activates when the parent Gateway's listener security policy explicitly allows the tenant namespace, guaranteeing cryptographic and isolation guardrails.
+
 ---
 
 ## Architectural Comparison: Route vs. Ingress vs. Gateway API
@@ -215,6 +243,29 @@ flowchart LR
     class Override,PodV2 canary;
 ```
 
+#### Architectural Breakdown: Zero-Downtime Canary Traffic Engineering & Header Overrides
+
+The flow illustrates how the Gateway API Envoy proxy evaluates incoming HTTP/HTTPS traffic through declarative rules to enable progressive delivery, safe canary rollouts, and targeted internal testing:
+
+- **1. Ingress Ingestion & TLS Handshake**:
+  - External clients (browsers, mobile apps, third-party APIs) initiate an HTTPS session to `payments.apps.corp.local:443`.
+  - The `Gateway` terminates the TLS connection using the corporate wildcard certificate, decrypts the session, and presents the raw HTTP/1.1 or HTTP/2 stream to the internal Envoy route matching engine.
+
+- **2. Sequential Rule Matching & Precedence Evaluation**:
+  - The `HTTPRoute` defines an ordered array of routing rules executed sequentially from top to bottom:
+  - **Rule 1 — Diagnostic & QA Header Override (`X-Canary-Test: enabled`)**:
+    - Evaluates incoming HTTP request headers for explicit canary triggers (e.g., `X-Canary-Test: enabled` or `X-Canary: beta-tester`).
+    - **Filter Execution**: If matched, Envoy applies an inline URL rewrite filter (e.g., modifying the request path prefix to `/api/v2`) and bypasses all statistical traffic splits.
+    - **100% Canary Routing**: The entire request is dispatched directly to the Canary workload (`Pod Replica v2`), enabling QA engineers, automated end-to-end test suites, and internal stakeholders to validate production builds against live database backends before public release.
+  - **Rule 2 — Statistical Weighted Traffic Splitting (Default Public Path)**:
+    - If the request lacks diagnostic canary headers, it falls through to Rule 2, which governs standard production user traffic.
+    - **90% Production Baseline (`Pod Replica v1`)**: 90% of requests are routed to stable, battle-tested `payments-v1` pods, guaranteeing high availability and baseline SLO compliance.
+    - **10% Canary Sampling (`Pod Replica v2`)**: 10% of real-world user requests are automatically diverted to `payments-v2` pods to gather real-time telemetry (Prometheus latency metrics, p99 distribution, error rates, and OpenTelemetry distributed traces).
+
+- **3. Operational Safety, Observability & Automated Rollback**:
+  - **Dynamic In-Flight Adjustments**: Modifying traffic ratios (e.g., promoting from 10% to 50% or 100%) requires editing a single numeric field in the `HTTPRoute` YAML. The Envoy control plane applies the update in sub-second time without pod restarts or connection drops.
+  - **Automated Circuit Breaking**: Integrated with OpenShift Monitoring and Argo CD Rollouts; if 5xx HTTP response codes exceed 0.5% on the canary pods, automated controllers immediately reset the weight to 0%, shielding 99.5% of end users from regressions.
+
 * **Canary Specification**: 90% of traffic routes to production (`v1`), 10% to canary (`v2`), with an immediate 100% override if the HTTP header `X-Canary: beta-tester` is present:
   ```yaml
   apiVersion: gateway.networking.k8s.io/v1
@@ -280,6 +331,35 @@ flowchart LR
     class GPU gpu;
 ```
 
+#### Architectural Breakdown: Low-Latency AI & vLLM Inference Streaming via GRPCRoute
+
+This architecture depicts the high-throughput, low-latency streaming pipeline required for modern Large Language Model (LLM) serving in Red Hat OpenShift AI (RHOAI) using `GRPCRoute`:
+
+- **1. AI Client Invocation & HTTP/2 Multiplexing**:
+  - Enterprise AI clients (chatbots, autonomous coding agents, retrieval-augmented generation pipelines) initiate gRPC streaming calls to `llama3-grpc.apps.corp.local`.
+  - HTTP/2 binary framing is established natively, multiplexing dozens of concurrent inference requests over a single TCP connection, drastically lowering socket overhead and TCP handshake delays.
+
+- **2. Gateway API Envoy Listener & Zero-Buffering Optimization**:
+  - **The Streaming Latency Challenge**: Legacy reverse proxies and Ingress controllers buffer entire HTTP responses before flushing packets downstream. For generative AI, buffering delays the first token until the entire multi-thousand-token sequence finishes generating, introducing severe latency spikes and causing timeout errors.
+  - **Zero-Buffering Direct Forwarding**: The Gateway API Envoy proxy is tuned with zero response buffering (`downstream_buffer_limit_bytes: 0`). Each individual token generated by the model is immediately flushed to the client socket as an HTTP/2 data frame.
+  - **Long-Lived Stream Persistence**: Gateway idle timeouts are tuned to 3600 seconds (`requestTimeout: 0s` / infinite streaming), preventing connection drops during extensive reasoning chain generation.
+
+- **3. GRPCRoute Method-Level Routing**:
+  - Rather than coarse URI path prefixes, `GRPCRoute` matches natively on gRPC package, service, and method primitives:
+    - **Service Match**: `inference.GRPCInferenceService` (KServe v2 open inference protocol).
+    - **Method Match**: `StreamingGenerate` or `ServerStreamingModelInfer`.
+  - Dispatches requests directly to the backend Service `vllm-llama3-service:8033` in the `rhoai-inference` tenant namespace.
+
+- **4. KServe v2 Data Plane & vLLM ServingRuntime Acceleration**:
+  - The request lands on the **KServe v2 data plane**, which orchestrates dynamic batching and autoscales model replicas via KEDA metrics (tracking queue depth and GPU memory).
+  - The **vLLM ServingRuntime** ingests the prompt and utilizes two cutting-edge architectural engines:
+    - **PagedAttention**: Manages the Key-Value (KV) cache like virtual memory pages, eliminating memory fragmentation and allowing 2-4x higher concurrent request batching.
+    - **Continuous / Iteration-Level Batching**: Dynamically inserts newly arrived requests into the running GPU compute cycle on every token generation step, preventing GPU idle cycles.
+
+- **5. GPU Hardware Acceleration & Direct Token Streaming**:
+  - Compute is distributed across enterprise GPUs (NVIDIA H100 / A100 SXM4) using **Tensor Parallelism (`TP=2`)** over high-speed NVLink interconnects.
+  - As each token is generated, it streams directly from the GPU kernel through vLLM, through the Gateway API Envoy listener, and back to the AI client with sub-15ms Time-To-First-Token (TTFT) and sustained 80+ tokens/second throughput.
+
 * **GRPCRoute for Low-Latency Inference**: Using `GRPCRoute` ensures native HTTP/2 multiplexing, zero buffering, and direct streaming to **vLLM** and **KServe** model runtimes:
   ```yaml
   apiVersion: gateway.networking.k8s.io/v1
@@ -327,6 +407,28 @@ flowchart LR
     class TLSR,Svc route;
     class VMI vm;
 ```
+
+#### Architectural Breakdown: Layer 4 SNI Passthrough for OpenShift Virtualization
+
+This architectural flow illustrates how Gateway API `TLSRoute` provides direct, non-terminating, enterprise-grade access to virtual machine workloads running inside OpenShift Virtualization (KubeVirt):
+
+- **1. External Enterprise Client Ingress on Dedicated L4 Port**:
+  - Legacy enterprise clients (Microsoft SQL Server Management Studio, Windows Remote Desktop / RDP, PostgreSQL administrative tools, or proprietary financial transaction clients) establish a TLS connection to port `8443` on the external Gateway VIP.
+  - The initial TLS `ClientHello` handshake packet embeds the target Virtual Machine hostname within the Server Name Indication (SNI) extension (e.g., `win-sql-01.vms.corp.local`).
+
+- **2. Gateway Listener in Zero-Decryption Passthrough Mode**:
+  - **Zero TLS Decryption**: The Gateway listener on port `8443` is configured with `tls.mode: Passthrough`.
+  - **SNI Header Inspection**: The Envoy proxy reads the plain-text SNI field from the initial TLS handshake packet to determine routing, but does NOT perform TLS termination, decryption, or certificate inspection.
+  - **Zero Trust & Compliance Guarantee**: Intermediate ingress infrastructure never handles or possesses the private encryption keys for the virtual machines. This satisfies strict banking, healthcare, and federal regulatory standards (FIPS 140-3, HIPAA, PCI-DSS) that require end-to-end payload confidentiality between the client and the guest operating system.
+
+- **3. TLSRoute Resolution & Namespace Isolation**:
+  - The Gateway routes the connection to the `TLSRoute` (`win-sql-vm-passthrough`) configured in the tenant namespace `ocp-virt-vms`.
+  - Maps the raw TCP stream to the target Kubernetes Service (`win-sql-01-vm-service:1433`) without translating or wrapping the payload into HTTP.
+
+- **4. VirtualMachineInstance (VMI) Direct Delivery**:
+  - The traffic traverses the OVN-Kubernetes CNI SDN overlay directly to the `virt-launcher` pod hosting the Windows Server 2025 or RHEL guest VM.
+  - The guest OS network stack receives the native, unmodified TLS stream.
+  - **Guest-Level Cryptographic Termination**: The guest operating system terminates TLS internally using its own Active Directory domain certificate, SQL Server enterprise certificate, or custom enterprise PKI credentials, maintaining total cryptographic sovereignty.
 
 * **Zero-Overhead SNI Passthrough via `TLSRoute`**:
   Routes encrypted TLS traffic directly to the VM guest OS without terminating TLS at the ingress boundary, preserving end-to-end encryption and custom guest certificates:

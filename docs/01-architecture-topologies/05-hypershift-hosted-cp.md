@@ -29,12 +29,12 @@ flowchart TD
     end
 ```
 
+#### Architectural Breakdown: Classic OpenShift vs. Hosted Control Planes (HyperShift)
 
-### Step 7: Multi-Tenant API Ingress via Kubernetes Gateway API
-On the central management cluster, expose hundreds of hosted `kube-apiserver` endpoints (port 6443) cleanly using the **Kubernetes Gateway API**:
-1. Shared management `Gateway` binds external DNS listeners (`api.tenant-*.corp.cloud`).
-2. Declarative `TLSRoute` resources direct incoming TLS connections directly to each tenant's `kube-apiserver` Service without port exhaustion or TLS re-encryption overhead.
-3. Reference: [`docs/03-network-and-connectivity/05-gateway-api-architecture.md`](../03-network-and-connectivity/05-gateway-api-architecture.md).
+- **Classic OpenShift Model**: Requires at least three dedicated control plane instances (physical bare-metal servers or VMs) per cluster, running dedicated RHCOS operating systems, independent etcd clusters, and fixed compute footprints.
+- **Hosted Control Plane (HCP) Model**: Consolidates the control plane into standard containerized Kubernetes pods (`kube-apiserver`, `etcd` StatefulSet, `kube-controller-manager`) deployed in dedicated tenant namespaces inside a central OpenShift Management Cluster.
+- **Data Plane (Tenant Workers)**: Tenant clusters consist solely of worker nodes (on bare metal, VMware, or cloud instances) that connect back to the hosted control plane pods over secure Konnectivity/VPN tunnels.
+- **Cost & Provisioning Benefits**: Reduces infrastructure hardware overhead by up to 60%, shrinks cluster spin-up time from 40 minutes to under 15 minutes, and enables multi-tenant API ingress exposure via Kubernetes Gateway API.
 
 ---
 
@@ -84,4 +84,11 @@ On the central management cluster, expose hundreds of hosted `kube-apiserver` en
    ```bash
    oc patch hostedcluster tenant-alpha -n clusters --type=merge -p '{"spec":{"release":{"image":"quay.io/openshift-release-dev/ocp-release:4.20.1-x86_64"}}}'
    ```
+
+### Step 7: Multi-Tenant API Ingress via Kubernetes Gateway API
+On the central management cluster, expose hundreds of hosted `kube-apiserver` endpoints (port 6443) cleanly using the **Kubernetes Gateway API**:
+1. Shared management `Gateway` binds external DNS listeners (`api.tenant-*.corp.cloud`).
+2. Declarative `TLSRoute` resources direct incoming TLS connections directly to each tenant's `kube-apiserver` Service without port exhaustion or TLS re-encryption overhead.
+3. Reference: [`docs/03-network-and-connectivity/05-gateway-api-architecture.md`](../03-network-and-connectivity/05-gateway-api-architecture.md).
+
 

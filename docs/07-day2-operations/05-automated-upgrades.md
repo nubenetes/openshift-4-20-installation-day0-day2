@@ -31,6 +31,15 @@ flowchart TD
     UnpauseWorker --> PostVerify[6. Execute validate-cluster-health.sh]
 ```
 
+#### Architectural Breakdown: Safe Upgrade Gatekeeper Workflow
+
+- **Gate 1: ClusterOperator Integrity Audit**: All 34+ core ClusterOperators must report `Available=True`, `Progressing=False`, and `Degraded=False`. An upgrade must NEVER be initiated against a degraded cluster.
+- **Gate 2: Fresh etcd Snapshot Verification**: OpenShift does NOT support rollbacks once schema migrations begin; an etcd backup younger than 24 hours (preferably <1 hour) is mandatory before upgrading.
+- **Gate 3: Deprecated API Evaluation**: Scans cluster audit logs for deprecated Kubernetes API requests from running workloads to prevent breakage when the API version advances.
+- **Gate 4: MachineConfigPool Worker Pausing**: Pausing the worker pool (`spec.paused: true`) ensures the control plane upgrades and stabilizes completely before any worker node is rebooted, preventing multi-tier failure cascades.
+- **Gate 5: Controlled Worker Rolling Pivot**: Unpausing the worker pool allows nodes to drain and pivot sequentially under `maxUnavailable: 1` (or canary pool segmentation), preserving application SLOs throughout the upgrade.
+- **Gate 6: Post-Upgrade Validation**: Automated health validation verifies cluster operators, CNI pod networking, and node readiness before declaring the upgrade successful.
+
 ---
 
 ## Upgrade Scenarios & Automation Scripts

@@ -31,6 +31,13 @@ flowchart TD
     CoreDC <== "WAN Link (Latency <= 100ms RTT)" ==> EdgeSiteB
 ```
 
+#### Architectural Breakdown: Centralized Control with Remote WAN Edge Workers
+
+- **Centralized Core Control Plane**: A 3-node master cluster in a central tier-3 datacenter or cloud VPC manages the Kubernetes API, scheduler, and etcd quorum, eliminating the cost of running control plane infrastructure at remote sites.
+- **WAN Latency & Resilience Constraints**: Designed to operate across WAN connections with round-trip times (RTT) up to 100ms and minimal bandwidth (10 Mbps+), provided jitter and packet loss remain within SLA boundaries.
+- **Kubelet & Node Eviction Tuning**: The Kubelet node status update frequency and node lifecycle controller eviction thresholds are tuned (`node-monitor-grace-period: 5m`) to prevent pod eviction storms during transient WAN disconnects.
+- **Local Workload Survivability**: Edge applications continue processing locally during WAN outages; image caching via local pull-through registries ensures pods restart even when the central registry is unreachable.
+
 ---
 
 ## End-to-End Step-by-Step Implementation Procedure
