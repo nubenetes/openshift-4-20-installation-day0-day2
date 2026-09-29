@@ -1040,38 +1040,66 @@ All scripts and manifests are ready to execute from this repository:
 ## Classified Real References & External Standards (September 2026)
 
 ### 1. Official Red Hat Product Documentation & Architecture
-- [Red Hat OpenShift Container Platform 4.20 Documentation Suite](https://docs.openshift.com/container-platform/4.20/welcome/index.html)
-- [OpenShift 4.20 Installing with the Agent-based Installer](https://docs.openshift.com/container-platform/4.20/installing/installing_with_agent_based_installer/preparing-to-install-with-agent-based-installer.html)
-- [OpenShift 4.20 Disconnected Installation Mirroring with oc-mirror v2](https://docs.openshift.com/container-platform/4.20/installing/disconnected_install/installing-mirroring-disconnected-v2.html)
-- [Red Hat OpenShift Data Foundation (ODF) 4.16+ Architecture](https://docs.redhat.com/en/documentation/red_hat_openshift_data_foundation)
-- [Red Hat Advanced Cluster Management for Kubernetes (ACM 2.12+)](https://docs.redhat.com/en/documentation/red_hat_advanced_cluster_management_for_kubernetes)
-- [Red Hat OpenShift API for Data Protection (OADP 1.4+) Guide](https://docs.openshift.com/container-platform/4.20/backup_and_restore/application_backup_and_restore/oadp-features.html)
+- [Red Hat OpenShift Container Platform 4.20 Documentation Suite](https://docs.openshift.com/container-platform/4.20/welcome/index.html) — Official product documentation, architectural specifications, and release notes.
+- [OpenShift 4.20 Installing with the Agent-based Installer](https://docs.openshift.com/container-platform/4.20/installing/installing_with_agent_based_installer/preparing-to-install-with-agent-based-installer.html) — Bootstrap-in-place workflow, NMState static networking, and rendezvous node assembly.
+- [OpenShift 4.20 Disconnected Installation Mirroring with oc-mirror v2](https://docs.openshift.com/container-platform/4.20/installing/disconnected_install/installing-mirroring-disconnected-v2.html) — `ImageSetConfiguration` v2, local OCI streaming cache, and IDMS/ITMS cluster mirroring.
+- [OpenShift 4.20 Kubernetes Gateway API Ingress Architecture](https://docs.openshift.com/container-platform/4.20/networking/gateway-api/about-gateway-api.html) — Envoy-backed Ingress Operator GatewayClass, HTTPRoute, GRPCRoute, and TLSRoute specifications.
+- [Red Hat OpenShift Service Mesh 3.x (OSSM 3.0 / Istio Gateway API)](https://docs.redhat.com/en/documentation/red_hat_openshift_service_mesh) — Service mesh standardization on Kubernetes Gateway API primitives.
+- [Red Hat OpenShift Data Foundation (ODF) 4.16+ Architecture](https://docs.redhat.com/en/documentation/red_hat_openshift_data_foundation) — Rook-Ceph tri-modal block (RBD), filesystem (CephFS), and object (RGW) storage.
+- [Red Hat OpenShift Data Foundation Disaster Recovery (ODF-MCDR)](https://docs.redhat.com/en/documentation/red_hat_openshift_data_foundation/4.16/html-single/configuring_openshift_data_foundation_disaster_recovery_for_openshift_workloads/index) — Multi-cluster Metro-DR (synchronous Ceph stretch cluster with Arbiter) and Regional-DR (asynchronous mirroring).
+- [Red Hat Advanced Cluster Management for Kubernetes (ACM 2.12+)](https://docs.redhat.com/en/documentation/red_hat_advanced_cluster_management_for_kubernetes) — Multi-cluster fleet governance, ZTP edge site management, and Submariner cross-cluster networking.
+- [Red Hat OpenShift API for Data Protection (OADP 1.4+) Guide](https://docs.openshift.com/container-platform/4.20/backup_and_restore/application_backup_and_restore/oadp-features.html) — Enterprise Velero distribution, Kopia data mover, and CSI VolumeSnapshot backup/restore.
+- [Red Hat OpenShift Virtualization (KubeVirt 4.16+) Guide](https://docs.openshift.com/container-platform/4.20/virt/about_virt/about-virt.html) — Converged VM hypervisor, L4 SNI routing, live migration, and Migration Toolkit for Virtualization (Forklift).
+- [Red Hat OpenShift AI (RHOAI 2.16+) & vLLM ServingRuntime](https://docs.redhat.com/en/documentation/red_hat_openshift_ai_self-managed) — Large Language Model serving, KServe v2 open inference protocol, PagedAttention, and continuous batching.
+- [Hosted Control Planes (HyperShift) Architecture & Deployment](https://docs.openshift.com/container-platform/4.20/hosted_control_planes/index.html) — Centralized containerized master components, isolated tenant namespaces, and multi-tenant Gateway API exposure.
 
 ### 2. Red Hat Knowledgebase (KCS) & Solution Blueprints
-- [KCS 4290531: Recommended etcd performance baselines and disk latency troubleshooting](https://access.redhat.com/solutions/4290531)
-- [KCS 5493261: OpenShift 4 etcd Disaster Recovery and Quorum Restoration](https://access.redhat.com/solutions/5493261)
-- [KCS 6958471: Migration from oc-mirror v1 to oc-mirror v2 for disconnected clusters](https://access.redhat.com/solutions/6958471)
-- [KCS 3986601: Setting up corporate proxy and custom CA certificates in OpenShift 4](https://access.redhat.com/solutions/3986601)
+- [KCS 4893921: How to recover OpenShift 4 cluster when certificates have expired while cluster was shut down](https://access.redhat.com/solutions/4893921) — Authoritative procedure for recovering control plane and kubelet certificates via out-of-band Helper Node jump.
+- [KCS 3985471: Manual renewal and approval of kubelet certificates in OpenShift 4](https://access.redhat.com/solutions/3985471) — Step-by-step renewal of expired node client/server CSRs and bootstrap-kubeconfig restoration.
+- [KCS 5493261: OpenShift 4 etcd Disaster Recovery and Quorum Restoration](https://access.redhat.com/solutions/5493261) — Official disaster recovery runbook for recovering from lost etcd quorum and control plane member corruption.
+- [KCS 4943941: Restoring an OpenShift 4 cluster from a single surviving control plane node](https://access.redhat.com/solutions/4943941) — Emergency procedure for forcing an etcd single-member cluster to resurrect the API server.
+- [KCS 4235891: How to replace an unhealthy control plane (master) node in OpenShift 4](https://access.redhat.com/solutions/4235891) — Removing failed members from etcd membership, de-registering stale nodes, and reprovisioning master replacements.
+- [KCS 4652251: How to replace a failed worker or infra node in OpenShift 4](https://access.redhat.com/solutions/4652251) — Safe cordon, drain, Machine resource deletion, and replacement node admission.
+- [KCS 4290531: Recommended etcd performance baselines and disk latency troubleshooting](https://access.redhat.com/solutions/4290531) — Fio disk write latency benchmark criteria (fdatasync < 10ms at p99) to prevent Raft leader election failures.
+- [KCS 4543781: Best practices for pausing Worker MachineConfigPools during cluster upgrades](https://access.redhat.com/solutions/4543781) — Decoupling control plane upgrades from worker nodes to prevent concurrent rolling reboot outages.
+- [KCS 6958471: Migration from oc-mirror v1 to oc-mirror v2 for disconnected clusters](https://access.redhat.com/solutions/6958471) — Architectural shift to v2 OCI streaming format and local workspace cache.
+- [KCS 3986601: Setting up corporate proxy and custom CA certificates in OpenShift 4](https://access.redhat.com/solutions/3986601) — Cluster-wide `Proxy` resource, `noProxy` bypass rules, and `additionalTrustBundle` injection.
+- [KCS 4771741: Network services and architecture prerequisites for User-Provisioned / Agent-Based Infrastructure](https://access.redhat.com/solutions/4771741) — Authoritative Helper Node requirements for BIND9 DNS, HAProxy L4 load balancing, and Stratum Chrony NTP.
 
 ### 3. Open Source Upstream & Core Tooling Repositories
-- [OpenShift Installer GitHub Repository (`openshift/installer`)](https://github.com/openshift/installer)
-- [OpenShift Assisted Service & Agent Installer (`openshift/assisted-service`)](https://github.com/openshift/assisted-service)
-- [OpenShift oc-mirror Plugin CLI v2 (`openshift/oc-mirror`)](https://github.com/openshift/oc-mirror)
-- [OpenShift Machine Config Operator (`openshift/machine-config-operator`)](https://github.com/openshift/machine-config-operator)
-- [OpenShift OVN-Kubernetes CNI Driver (`ovn-org/ovn-kubernetes`)](https://github.com/ovn-org/ovn-kubernetes)
-- [OpenShift API for Data Protection Operator (`openshift/oadp-operator`)](https://github.com/openshift/oadp-operator)
-- [Topology Aware Lifecycle Manager for ZTP (`openshift-kni/cluster-group-upgrades-operator`)](https://github.com/openshift-kni/cluster-group-upgrades-operator)
+- [Kubernetes Gateway API Standard (`gateway.networking.k8s.io`)](https://gateway-api.sigs.k8s.io/) — Official SIG-Network standard for role-oriented L4/L7 ingress and traffic splitting.
+- [OpenShift Cluster Ingress Operator (`openshift/cluster-ingress-operator`)](https://github.com/openshift/cluster-ingress-operator) — Controller managing Envoy and HAProxy routing topologies.
+- [Kuadrant Operator & Architecture (`kuadrant/kuadrant-operator`)](https://github.com/Kuadrant/kuadrant-operator) — Multi-cluster API management, Authorino OIDC/RBAC auth, and Limitador rate-limiting on Gateway API.
+- [KServe v2 Data Plane Specification (`kserve/kserve`)](https://github.com/kserve/kserve) — Multi-model serving and streaming gRPC open inference protocol.
+- [vLLM High-Throughput LLM Engine (`vllm-project/vllm`)](https://github.com/vllm-project/vllm) — PagedAttention memory management, continuous batching, and tensor parallelism engine.
+- [KubeVirt Virtualization Engine (`kubevirt/kubevirt`)](https://github.com/kubevirt/kubevirt) — Core runtime enabling VMs to execute as native Kubernetes pods with L4 SNI routing.
+- [Forklift Migration Toolkit for Virtualization (`kubevirt/forklift`)](https://github.com/kubevirt/forklift) — Automated bulk migration engine from VMware vSphere and Red Hat Virtualization to KubeVirt.
+- [OpenShift HyperShift Engine (`openshift/hypershift`)](https://github.com/openshift/hypershift) — Hosted Control Planes engine decoupling master pods from worker data planes.
+- [OpenShift Installer (`openshift/installer`)](https://github.com/openshift/installer) — Core installation engine for Agent-Based, IPI, and UPI workflows.
+- [OpenShift Assisted Service (`openshift/assisted-service`)](https://github.com/openshift/assisted-service) — On-premises automated bootstrap-in-place Discovery ISO generation and hardware assembly.
+- [OpenShift oc-mirror Plugin CLI v2 (`openshift/oc-mirror`)](https://github.com/openshift/oc-mirror) — Next-generation container image mirroring CLI for air-gapped deployments.
+- [OpenShift Machine Config Operator (`openshift/machine-config-operator`)](https://github.com/openshift/machine-config-operator) — Operating system configuration daemon orchestrating RHCOS in-place ostree updates and kernel tunings.
+- [OpenShift OVN-Kubernetes CNI Driver (`ovn-org/ovn-kubernetes`)](https://github.com/ovn-org/ovn-kubernetes) — Geneve overlay CNI (UDP 6081) with OpenFlow in-kernel load balancing.
+- [OpenShift API for Data Protection Operator (`openshift/oadp-operator`)](https://github.com/openshift/oadp-operator) — Enterprise data protection operator integrating Velero, Kopia, and CSI snapshot drivers.
+- [RamenDR Multi-Cluster Disaster Recovery Operator (`ramendr/ramen`)](https://github.com/ramendr/ramen) — Open-source foundation for ODF-MCDR multi-cluster failover and replication.
+- [Topology Aware Lifecycle Manager for ZTP (`openshift-kni/cluster-group-upgrades-operator`)](https://github.com/openshift-kni/cluster-group-upgrades-operator) — Fleet-scale progressive upgrades and canary rollout engine for ACM.
+- [External Secrets Operator (`external-secrets/external-secrets`)](https://github.com/external-secrets/external-secrets) — Kubernetes operator synchronizing secrets from HashiCorp Vault, AWS Secrets Manager, and Azure Key Vault.
+- [cert-manager (`cert-manager/cert-manager`)](https://github.com/cert-manager/cert-manager) — Cloud-native X.509 certificate management for Ingress, Gateway API, and internal mTLS.
 
 ### 4. Enterprise Security, Benchmarks & Compliance
-- [CIS Red Hat OpenShift Container Platform 4 Benchmark](https://www.cisecurity.org/benchmark/red_hat_openshift)
-- [NIST Special Publication 800-53 Rev. 5: Security Controls for Information Systems](https://csrc.nist.gov/publications/detail/sp/800-53/rev-5/final)
-- [Red Hat OpenShift Compliance Operator Profiles & Scanning](https://github.com/ComplianceAsCode/content)
+- [CIS Red Hat OpenShift Container Platform 4 Benchmark](https://www.cisecurity.org/benchmark/red_hat_openshift) — Prescriptive security configuration benchmarks for control plane, etcd, kubelet, and worker OS hardening.
+- [NIST Special Publication 800-53 Rev. 5: Security Controls for Information Systems](https://csrc.nist.gov/publications/detail/sp/800-53/rev-5/final) — Federal security compliance catalog addressed by the OpenShift Compliance Operator.
+- [Red Hat OpenShift Compliance Operator Profiles & Scanning (ComplianceAsCode)](https://github.com/ComplianceAsCode/content) — Declarative automated compliance auditing for CIS, PCI-DSS, and NIST-High profiles.
+- [US DoD DISA Container Platform Security Technical Implementation Guide (STIG)](https://public.cyber.mil/stigs/downloads/) — Department of Defense STIG requirements for container host hardening and FIPS 140-3 cryptography.
+- [PCI-DSS v4.0 Network Segmentation & TLS Ingress Standards](https://www.pcisecuritystandards.org/) — Payment Card Industry data security standards governing L4/L7 encryption, SNI passthrough, and zero-trust egress.
 
 ### 5. Infrastructure Vendor Reference Guides
-- [VMware vSphere with Tanzu & OpenShift Best Practices (Broadcom)](https://core.vmware.com)
-- [Nutanix OpenShift Reference Architecture (Tech Note TN-2070)](https://www.nutanix.com/solutions/openshift)
-- [AWS Security Token Service (STS) with OpenShift IRSA Guide](https://docs.aws.amazon.com/STS/latest/UsingSTS/Welcome.html)
-- [Microsoft Azure Workload Identity Federation for Kubernetes](https://learn.microsoft.com/en-us/azure/aks/workload-identity-overview)
+- [VMware vSphere with Tanzu & OpenShift Best Practices (Broadcom / VMware Core)](https://core.vmware.com) — Architecture guidelines for vSphere 8/9, vSAN CSI integration, and DRS anti-affinity rules.
+- [Nutanix OpenShift Reference Architecture (Tech Note TN-2070)](https://www.nutanix.com/solutions/openshift) — Nutanix AHV HCI integration, Nutanix CSI Volumes/Files, and Prism Element/Central management.
+- [AWS Security Token Service (STS) with OpenShift IRSA Guide](https://docs.aws.amazon.com/STS/latest/UsingSTS/Welcome.html) — Keyless workload identity federation using IAM Roles for Service Accounts (IRSA).
+- [Microsoft Azure Workload Identity Federation for Kubernetes](https://learn.microsoft.com/en-us/azure/aks/workload-identity-overview) — Keyless OIDC federation eliminating Azure client secrets and service principal credentials.
+- [Google Cloud Workload Identity Federation for Kubernetes & OpenShift](https://cloud.google.com/iam/docs/workload-identity-federation) — Short-lived Google IAM credentials for OpenShift Cloud Controller Manager and CSI storage drivers.
+- [NVIDIA GPU Operator & Container Toolkit Architecture](https://docs.nvidia.com/datacenter/cloud-native/gpu-operator/latest/index.html) — GPU provisioning, MIG slicing, DCGM metrics, and CUDA runtime driver lifecycle on OpenShift.
 
 ---
 
