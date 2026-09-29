@@ -109,6 +109,12 @@ An exhaustive, state-of-the-art reference architecture, installation handbook, a
     - [OADP vs Vanilla Velero Deep-Dive](docs/08-backup-dr-and-rebuild/02-oadp-vs-velero-deepdive.md)
     - [Metro-DR & Regional-DR Multi-Cluster](docs/08-backup-dr-and-rebuild/03-metro-dr-and-regional-dr.md)
     - [Declarative GitOps Rebuild from Scratch](docs/08-backup-dr-and-rebuild/04-declarative-rebuild-gitops.md)
+  - [09. Emergency Runbooks & Disaster Troubleshooting](#09-emergency-runbooks--disaster-troubleshooting)
+    - [Expired Certificates Recovery](docs/09-emergency-runbooks/01-expired-certs-recovery.md)
+    - [Helper Node Emergency Access & Jumping](docs/09-emergency-runbooks/02-helper-node-access-and-jumping.md)
+    - [Node Reinstallation & Replacement](docs/09-emergency-runbooks/03-node-reinstallation-and-replacement.md)
+    - [etcd Quorum Loss Recovery](docs/09-emergency-runbooks/04-etcd-quorum-loss-recovery.md)
+    - [MachineConfig & Storage Recovery](docs/09-emergency-runbooks/05-machineconfig-and-storage-recovery.md)
 - [Production Automation Scripts & Manifests](#production-automation-scripts--manifests)
   - [Shell Scripts (`scripts/`)](#shell-scripts-scripts)
     - [`preflight-check.sh`](scripts/preflight-check.sh) - Preflight DNS, NTP, and Network Connectivity Auditor
@@ -121,6 +127,11 @@ An exhaustive, state-of-the-art reference architecture, installation handbook, a
     - [`automated-cluster-upgrade.sh`](scripts/automated-cluster-upgrade.sh) - Canary MCP-Gated Upgrade Orchestrator
     - [`airgap-upgrade.sh`](scripts/airgap-upgrade.sh) - Disconnected oc-mirror v2 Release Upgrade Orchestrator
     - [`test-oadp-restore.sh`](scripts/test-oadp-restore.sh) - Automated DR Verification & Restore Drill Engine
+    - [`recover-expired-certs.sh`](scripts/recover-expired-certs.sh) - Helper Node Expired Certificates Recovery Engine
+    - [`helper-ssh-jump.sh`](scripts/helper-ssh-jump.sh) - Out-of-Band SSH Jump & IPMI SOL Console Tool
+    - [`replace-control-plane-node.sh`](scripts/replace-control-plane-node.sh) - Control Plane Master Node Replacement Assistant
+    - [`reinstall-worker-node.sh`](scripts/reinstall-worker-node.sh) - Worker & Infra Node Drain and Reinstallation Engine
+    - [`emergency-etcd-single-member.sh`](scripts/emergency-etcd-single-member.sh) - Single-Member etcd Quorum Recovery Tool
   - [Production Manifests (`configs/`)](#production-manifests-configs)
     - [Agent-Based Installer (`configs/agent-based/`)](configs/agent-based/)
     - [Public Cloud IPI (`configs/ipi-cloud/`)](configs/ipi-cloud/)
@@ -156,6 +167,7 @@ By **September 2026**, OpenShift 4.20 establishes the enterprise foundation for 
 6. **GitOps App-of-Apps & Autonomous Day 2**: End-to-end self-healing cluster configuration via **Red Hat OpenShift GitOps** orchestrated by a root Application, combined with **External Secrets Operator (ESO)** and **cert-manager** for automated key/secret hydration and TLS certificate lifecycle management.
 7. **Unified Modern Virtualization**: Running and migrating legacy enterprise virtual machines side-by-side with cloud-native containers via **OpenShift Virtualization 4.18/4.20** and the **Migration Toolkit for Virtualization (MTV 2.8+)**, eliminating hypervisor licensing lock-in.
 8. **Enterprise AI & Model Serving**: First-class support for GPU-accelerated computing through the **NVIDIA GPU Operator 24.x**, **Red Hat OpenShift AI (RHOAI 2.16+)**, and **vLLM ServingRuntime** for low-latency, private Large Language Model inference.
+9. **Emergency Triage & Out-of-Band Disaster Recovery**: Autonomous runbooks and Helper Node orchestration tools to resurrect dead clusters without API server access (expired kubelet certificates after prolonged disconnection, single-member etcd quorum revival, IPMI Serial-Over-LAN jumping, and zero-downtime node replacement).
 
 ---
 
@@ -487,12 +499,19 @@ To navigate and utilize this enterprise repository effectively, the directory st
     - `├──` 📄 [`06-gitops-app-of-apps.md`](docs/07-day2-operations/06-gitops-app-of-apps.md) — *GitOps App-of-Apps, drift self-healing & multi-environment promotion*
     - `├──` 📄 [`07-openshift-ai-gpu.md`](docs/07-day2-operations/07-openshift-ai-gpu.md) — *Enterprise AI workloads, GPU Operator & vLLM model serving*
     - `└──` 📄 [`README.md`](docs/07-day2-operations/README.md) — *Day 2 operational runbooks overview*
-  - `└──` 📁 **[`docs/08-backup-dr-and-rebuild/`](docs/08-backup-dr-and-rebuild/)** — *Business continuity, disaster recovery & rapid rebuild*
+  - `├──` 📁 **[`docs/08-backup-dr-and-rebuild/`](docs/08-backup-dr-and-rebuild/)** — *Business continuity, disaster recovery & rapid rebuild*
     - `├──` 📄 [`01-etcd-backup-restore.md`](docs/08-backup-dr-and-rebuild/01-etcd-backup-restore.md) — *Control plane etcd snapshot automation & disaster recovery*
     - `├──` 📄 [`02-oadp-vs-velero-deepdive.md`](docs/08-backup-dr-and-rebuild/02-oadp-vs-velero-deepdive.md) — *Technical deep-dive: why vanilla Velero fails vs OADP Kopia*
     - `├──` 📄 [`03-metro-dr-and-regional-dr.md`](docs/08-backup-dr-and-rebuild/03-metro-dr-and-regional-dr.md) — *Metro-DR (RPO=0) vs Regional-DR (RPO<5m) multi-cluster*
     - `├──` 📄 [`04-declarative-rebuild-gitops.md`](docs/08-backup-dr-and-rebuild/04-declarative-rebuild-gitops.md) — *Full cluster rebuild in <45 minutes via GitOps & ACM*
     - `└──` 📄 [`README.md`](docs/08-backup-dr-and-rebuild/README.md) — *Backup & DR module overview*
+  - `└──` 📁 **[`docs/09-emergency-runbooks/`](docs/09-emergency-runbooks/)** — *Emergency incident recovery & out-of-band triage*
+    - `├──` 📄 [`01-expired-certs-recovery.md`](docs/09-emergency-runbooks/01-expired-certs-recovery.md) — *Reviving clusters with expired certificates after prolonged shutdown*
+    - `├──` 📄 [`02-helper-node-access-and-jumping.md`](docs/09-emergency-runbooks/02-helper-node-access-and-jumping.md) — *Helper Node SSH jumping, serial console & IPMI/Redfish SOL*
+    - `├──` 📄 [`03-node-reinstallation-and-replacement.md`](docs/09-emergency-runbooks/03-node-reinstallation-and-replacement.md) — *Control plane & worker replacement (CLI, UI, ACM)*
+    - `├──` 📄 [`04-etcd-quorum-loss-recovery.md`](docs/09-emergency-runbooks/04-etcd-quorum-loss-recovery.md) — *Emergency etcd single-member restoration & split-brain recovery*
+    - `├──` 📄 [`05-machineconfig-and-storage-recovery.md`](docs/09-emergency-runbooks/05-machineconfig-and-storage-recovery.md) — *Unsticking degraded MCPs & container storage overlay exhaustion*
+    - `└──` 📄 [`README.md`](docs/09-emergency-runbooks/README.md) — *Emergency runbooks index & severity classification*
 - `├──` 📁 **[`configs/`](configs/)** — *Production Declarative Manifests & Configurations*
   - `├──` 📁 **[`configs/agent-based/`](configs/agent-based/)** — *Declarative Agent-Based Installer (ABI) manifests*
     - `├──` 📄 [`agent-config.yaml`](configs/agent-based/agent-config.yaml) — *Static NMState host IP bonding and Rendezvous node config*
@@ -546,7 +565,12 @@ To navigate and utilize this enterprise repository effectively, the directory st
   - `├──` 📄 [`automated-cluster-upgrade.sh`](scripts/automated-cluster-upgrade.sh) — *End-to-end upgrade orchestrator with paused worker MCP canary*
   - `├──` 📄 [`airgap-upgrade.sh`](scripts/airgap-upgrade.sh) — *Disconnected upgrade orchestrator: mirrors release & applies IDMS*
   - `├──` 📄 [`deploy-hyperv-vms.ps1`](scripts/deploy-hyperv-vms.ps1) — *Automated PowerShell Gen 2 VM provisioner for Hyper-V / HCI*
-  - `└──` 📄 [`test-oadp-restore.sh`](scripts/test-oadp-restore.sh) — *Automated disaster recovery drill & backup restoration auditor*
+  - `├──` 📄 [`test-oadp-restore.sh`](scripts/test-oadp-restore.sh) — *Automated disaster recovery drill & backup restoration auditor*
+  - `├──` 📄 [`recover-expired-certs.sh`](scripts/recover-expired-certs.sh) — *Helper Node expired certificates recovery orchestrator*
+  - `├──` 📄 [`helper-ssh-jump.sh`](scripts/helper-ssh-jump.sh) — *Out-of-band SSH jump & IPMI SOL console access utility*
+  - `├──` 📄 [`replace-control-plane-node.sh`](scripts/replace-control-plane-node.sh) — *Control plane master node replacement assistant*
+  - `├──` 📄 [`reinstall-worker-node.sh`](scripts/reinstall-worker-node.sh) — *Worker & infra node drain and reprovisioning orchestrator*
+  - `└──` 📄 [`emergency-etcd-single-member.sh`](scripts/emergency-etcd-single-member.sh) — *Emergency single-member etcd quorum restoration engine*
 
 <details>
 <summary><b>Click to view Raw Plain-Text Monospace Directory Tree</b></summary>
@@ -610,11 +634,18 @@ openshift-4-20-installation-day0-day2/
 │   │   ├── 06-gitops-app-of-apps.md
 │   │   ├── 07-openshift-ai-gpu.md
 │   │   └── README.md
-│   └── 08-backup-dr-and-rebuild/
-│       ├── 01-etcd-backup-restore.md
-│       ├── 02-oadp-vs-velero-deepdive.md
-│       ├── 03-metro-dr-and-regional-dr.md
-│       ├── 04-declarative-rebuild-gitops.md
+│   ├── 08-backup-dr-and-rebuild/
+│   │   ├── 01-etcd-backup-restore.md
+│   │   ├── 02-oadp-vs-velero-deepdive.md
+│   │   ├── 03-metro-dr-and-regional-dr.md
+│   │   ├── 04-declarative-rebuild-gitops.md
+│   │   └── README.md
+│   └── 09-emergency-runbooks/
+│       ├── 01-expired-certs-recovery.md
+│       ├── 02-helper-node-access-and-jumping.md
+│       ├── 03-node-reinstallation-and-replacement.md
+│       ├── 04-etcd-quorum-loss-recovery.md
+│       ├── 05-machineconfig-and-storage-recovery.md
 │       └── README.md
 ├── configs/
 │   ├── agent-based/
@@ -669,14 +700,19 @@ openshift-4-20-installation-day0-day2/
     ├── automated-cluster-upgrade.sh
     ├── airgap-upgrade.sh
     ├── deploy-hyperv-vms.ps1
-    └── test-oadp-restore.sh
+    ├── test-oadp-restore.sh
+    ├── recover-expired-certs.sh
+    ├── helper-ssh-jump.sh
+    ├── replace-control-plane-node.sh
+    ├── reinstall-worker-node.sh
+    └── emergency-etcd-single-member.sh
 ```
 </details>
 
 ### Architectural Component Breakdown
 
 #### 1. Documentation Modules (`docs/`)
-The `docs/` tree contains **44 exhaustive, production-grade architectural blueprints** organized into 8 functional phases, cross-referenced from [`docs/00-navigation.md`](docs/00-navigation.md):
+The `docs/` tree contains **50 exhaustive, production-grade architectural blueprints** organized into 9 functional phases, cross-referenced from [`docs/00-navigation.md`](docs/00-navigation.md):
 - **Topologies ([`docs/01-architecture-topologies/`](docs/01-architecture-topologies/README.md))**: Footprint requirements, fault domain behavior, and resource overhead from Single Node OpenShift (SNO) up to massive Hosted Control Planes (HyperShift).
 - **Provisioning ([`docs/02-provisioning-paradigms/`](docs/02-provisioning-paradigms/README.md))**: Detailed mechanics of modern Agent-Based Installer (Bootstrap-in-Place) vs Cloud IPI vs legacy UPI vs fleet ZTP with ACM.
 - **Networking ([`docs/03-network-and-connectivity/`](docs/03-network-and-connectivity/README.md))**: Forward proxy configuration, `oc-mirror` v2 disconnected mirroring, core air-gap services (BIND9/Chrony), and OVN-Kubernetes CNI tuning.
@@ -685,6 +721,7 @@ The `docs/` tree contains **44 exhaustive, production-grade architectural bluepr
 - **Day 1 Baselining ([`docs/06-day1-baselining/`](docs/06-day1-baselining/README.md))**: ClusterOperator verification, custom Ingress TLS certs, OIDC identity federation, MachineConfigPool node tuning, automated certificate rotation (cert-manager), and External Secrets (ESO).
 - **Day 2 Operations ([`docs/07-day2-operations/`](docs/07-day2-operations/README.md))**: Full observability stack (User Workload Monitoring, Loki, Tempo), CIS compliance, ArgoCD GitOps foundation, automated canary upgrade workflows, GitOps App-of-Apps drift self-healing, and Enterprise AI GPU acceleration (RHOAI & vLLM).
 - **Disaster Recovery ([`docs/08-backup-dr-and-rebuild/`](docs/08-backup-dr-and-rebuild/README.md))**: etcd snapshot & restoration, OADP vs vanilla Velero analysis, Metro-DR/Regional-DR, and declarative GitOps disaster recovery.
+- **Emergency Runbooks ([`docs/09-emergency-runbooks/`](docs/09-emergency-runbooks/README.md))**: Tactical out-of-band triage and recovery runbooks when the cluster API server is down, covering expired certificates recovery, helper node jumping, node replacement, single-member etcd quorum revival, and MCP storage unsticking.
 
 #### 2. Declarative Configurations (`configs/`)
 The `configs/` tree provides validated, production-grade YAML and daemon templates:
@@ -704,6 +741,7 @@ The `scripts/` directory houses ready-to-run automation tools covering the compl
 - **Preflight & Day 0**: [`scripts/preflight-check.sh`](scripts/preflight-check.sh) audits network prerequisites; [`scripts/generate-agent-iso.sh`](scripts/generate-agent-iso.sh) builds bootable media; [`scripts/mirror-ocp420-airgap.sh`](scripts/mirror-ocp420-airgap.sh) mirrors air-gapped images; [`scripts/deploy-hyperv-vms.ps1`](scripts/deploy-hyperv-vms.ps1) provisions Gen 2 Hyper-V VMs.
 - **Post-Install & Day 1**: [`scripts/validate-cluster-health.sh`](scripts/validate-cluster-health.sh) performs health auditing across all cluster operators, storage classes, and worker nodes.
 - **Day 2, Upgrades & DR**: [`scripts/etcd-backup.sh`](scripts/etcd-backup.sh) automates control plane snapshots; [`scripts/pre-upgrade-health-check.sh`](scripts/pre-upgrade-health-check.sh) enforces safety gating; [`scripts/automated-cluster-upgrade.sh`](scripts/automated-cluster-upgrade.sh) executes canary-controlled upgrades with Prometheus SLO gating; [`scripts/airgap-upgrade.sh`](scripts/airgap-upgrade.sh) manages disconnected release upgrades; [`scripts/test-oadp-restore.sh`](scripts/test-oadp-restore.sh) automates end-to-end disaster recovery drill verification.
+- **Emergency Operations & Triage**: [`scripts/recover-expired-certs.sh`](scripts/recover-expired-certs.sh) restores expired certificates from the Helper Node; [`scripts/helper-ssh-jump.sh`](scripts/helper-ssh-jump.sh) provides out-of-band SSH and IPMI SOL jumping; [`scripts/replace-control-plane-node.sh`](scripts/replace-control-plane-node.sh) manages master node replacement; [`scripts/reinstall-worker-node.sh`](scripts/reinstall-worker-node.sh) drains and reprovisions workers; [`scripts/emergency-etcd-single-member.sh`](scripts/emergency-etcd-single-member.sh) recovers single-member etcd quorum.
 
 ### Lifecycle Alignment Matrix (Day 0, Day 1, Day 2)
 
@@ -712,6 +750,7 @@ The `scripts/` directory houses ready-to-run automation tools covering the compl
 | **Day 0: Planning & Provisioning** | Sizing, network design, air-gap mirroring, media generation, bootstrap-in-place | `docs/01-architecture-topologies/`<br/>`docs/02-provisioning-paradigms/`<br/>`docs/03-network-and-connectivity/`<br/>`docs/04-platforms/`<br/>`docs/05-day0-readiness/` | `configs/agent-based/`<br/>`configs/ipi-cloud/`<br/>`configs/upi-vsphere/`<br/>`configs/airgap/`<br/>`configs/helper-node/` | `scripts/preflight-check.sh`<br/>`scripts/generate-agent-iso.sh`<br/>`scripts/mirror-ocp420-airgap.sh`<br/>`scripts/deploy-hyperv-vms.ps1` |
 | **Day 1: Hardening & Baselining** | Operator validation, custom PKI Ingress TLS, OIDC SSO, dedicated infra MCPs, ODF storage, cert-manager & ESO | `docs/06-day1-baselining/` | `configs/day1/`<br/>`configs/security/` | `scripts/validate-cluster-health.sh` |
 | **Day 2: Operations, Upgrades & DR** | Observability, CIS compliance, GitOps App-of-Apps, OpenShift Virt, RHOAI & GPU, etcd backups, OADP DR drills, canary upgrades | `docs/07-day2-operations/`<br/>`docs/08-backup-dr-and-rebuild/` | `configs/day2/`<br/>`configs/gitops/`<br/>`configs/virt/`<br/>`configs/ai/` | `scripts/etcd-backup.sh`<br/>`scripts/pre-upgrade-health-check.sh`<br/>`scripts/automated-cluster-upgrade.sh`<br/>`scripts/airgap-upgrade.sh`<br/>`scripts/test-oadp-restore.sh` |
+| **Day 2: Emergency Triage & Recovery** | Expired cert recovery, Helper jumping, master/worker node replacement, single-member etcd recovery, MCP deadlocks | `docs/09-emergency-runbooks/` | `configs/helper-node/` | `scripts/recover-expired-certs.sh`<br/>`scripts/helper-ssh-jump.sh`<br/>`scripts/replace-control-plane-node.sh`<br/>`scripts/reinstall-worker-node.sh`<br/>`scripts/emergency-etcd-single-member.sh` |
 
 ---
 
@@ -857,6 +896,14 @@ RTO/RPO evaluation, etcd restoration, and declarative rebuilding:
 - [Metro-DR & Regional-DR Multi-Cluster](docs/08-backup-dr-and-rebuild/03-metro-dr-and-regional-dr.md): Synchronous Metro-DR (RPO=0) vs Asynchronous Regional-DR with ACM and ODF.
 - [Declarative GitOps Rebuild from Scratch](docs/08-backup-dr-and-rebuild/04-declarative-rebuild-gitops.md): Rebuilding entire production clusters in <45 mins from Git repositories.
 
+### [09. Emergency Runbooks & Disaster Troubleshooting](docs/09-emergency-runbooks/README.md)
+Tactical out-of-band triage and recovery procedures when the cluster API server is down:
+- [Expired Certificates Recovery](docs/09-emergency-runbooks/01-expired-certs-recovery.md): Reviving clusters with expired kubelet certificates after prolonged offline periods via Helper Node SSH.
+- [Helper Node Emergency Access & Jumping](docs/09-emergency-runbooks/02-helper-node-access-and-jumping.md): SSH bastion jumping, CoreOS private key management, and IPMI / Redfish Serial-Over-LAN (SOL) consoles.
+- [Node Reinstallation & Replacement](docs/09-emergency-runbooks/03-node-reinstallation-and-replacement.md): Safely replacing degraded control plane nodes (etcd member eviction) and workers via CLI, Agent ISO, Web UI, and ACM.
+- [etcd Quorum Loss Recovery](docs/09-emergency-runbooks/04-etcd-quorum-loss-recovery.md): Recovering from catastrophic 2-master loss by forcing a single-member etcd cluster leader.
+- [MachineConfig & Storage Recovery](docs/09-emergency-runbooks/05-machineconfig-and-storage-recovery.md): Resolving MachineConfigPool deadlocks, drain timeouts, and container storage (`/var/lib/containers`) overlay exhaustion.
+
 ---
 
 ## Production Automation Scripts & Manifests
@@ -876,6 +923,11 @@ All scripts and manifests are ready to execute from this repository:
 | [`scripts/automated-cluster-upgrade.sh`](scripts/automated-cluster-upgrade.sh) | End-to-end upgrade orchestrator: pre-audit -> automated etcd backup -> worker MCP pause -> CVO upgrade -> canary rollout. | `./scripts/automated-cluster-upgrade.sh 4.20.1` |
 | [`scripts/airgap-upgrade.sh`](scripts/airgap-upgrade.sh) | Air-gapped upgrade orchestrator: mirrors target release via oc-mirror v2, applies IDMS, and triggers upgrade. | `./scripts/airgap-upgrade.sh 4.20.1` |
 | [`scripts/test-oadp-restore.sh`](scripts/test-oadp-restore.sh) | Automated DR verification: provisions drill namespace, creates test workload, executes backup & restore, audits data integrity. | `./scripts/test-oadp-restore.sh` |
+| [`scripts/recover-expired-certs.sh`](scripts/recover-expired-certs.sh) | Emergency cert recovery from Helper Node: purges expired kubelet certs, restores bootstrap kubeconfig, approves CSRs. | `./scripts/recover-expired-certs.sh` |
+| [`scripts/helper-ssh-jump.sh`](scripts/helper-ssh-jump.sh) | Out-of-band SSH jumping from Helper Node to any cluster node with automatic IPMI Serial-Over-LAN (SOL) fallback. | `./scripts/helper-ssh-jump.sh master-0` |
+| [`scripts/replace-control-plane-node.sh`](scripts/replace-control-plane-node.sh) | Control plane node replacement: evicts failed member from etcd quorum, deletes node, auto-approves CSRs for replacement. | `./scripts/replace-control-plane-node.sh master-1.corp.local` |
+| [`scripts/reinstall-worker-node.sh`](scripts/reinstall-worker-node.sh) | Worker & infra node replacement: cordons, drains, deletes node, monitors reprovisioning, and auto-approves CSRs. | `./scripts/reinstall-worker-node.sh worker-2.corp.local` |
+| [`scripts/emergency-etcd-single-member.sh`](scripts/emergency-etcd-single-member.sh) | Catastrophic quorum recovery: forces a surviving master into a functional 1-node etcd cluster to restore API server. | `./scripts/emergency-etcd-single-member.sh master-0.corp.local` |
 
 ### Production Manifests (`configs/`)
 - **Agent-Based**: [`configs/agent-based/agent-config.yaml`](configs/agent-based/agent-config.yaml), [`install-config-sno.yaml`](configs/agent-based/install-config-sno.yaml), [`install-config-compact.yaml`](configs/agent-based/install-config-compact.yaml), [`install-config-standard.yaml`](configs/agent-based/install-config-standard.yaml).

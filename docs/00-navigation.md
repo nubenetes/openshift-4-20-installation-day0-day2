@@ -2,7 +2,7 @@
 
 Welcome to the definitive architectural, installation, and lifecycle engineering repository for **Red Hat OpenShift Container Platform (OCP) 4.20** (current to September/October 2026).
 
-This documentation suite is organized across 8 core operational domains designed for Enterprise Platform Architects, Site Reliability Engineers, and Infrastructure Specialists.
+This documentation suite is organized across 9 core operational domains designed for Enterprise Platform Architects, Site Reliability Engineers, and Infrastructure Specialists.
 
 ---
 
@@ -19,6 +19,7 @@ This documentation suite is organized across 8 core operational domains designed
 | **06. Day 1 Baselining** | Operator validation, TLS Ingress, IDP & RBAC, MCPs, Secrets & cert-manager | [Index](06-day1-baselining/README.md) • [Operator Hardening](06-day1-baselining/01-cluster-operator-hardening.md) • [Ingress & Wildcard TLS](06-day1-baselining/02-ingress-and-custom-certs.md) • [IDP & RBAC](06-day1-baselining/03-identity-providers-rbac.md) • [MachineConfigPools](06-day1-baselining/04-machineconfigpools-tuning.md) • [Secrets & cert-manager](06-day1-baselining/05-secrets-and-cert-rotation.md) |
 | **07. Day 2 Operations** | Observability, Compliance, GitOps Foundation, Upgrades, App-of-Apps, RHOAI | [Index](07-day2-operations/README.md) • [Observability Stack](07-day2-operations/01-observability-stack.md) • [Security & Compliance](07-day2-operations/02-security-and-compliance.md) • [GitOps & ArgoCD](07-day2-operations/03-gitops-foundation.md) • [Upgrades & Lifecycle](07-day2-operations/04-lifecycle-and-upgrades.md) • [Automated Upgrades](07-day2-operations/05-automated-upgrades.md) • [App-of-Apps](07-day2-operations/06-gitops-app-of-apps.md) • [OpenShift AI & GPUs](07-day2-operations/07-openshift-ai-gpu.md) |
 | **08. Backup, DR & Rebuild** | etcd recovery, OADP vs Velero, Metro-DR, GitOps Rebuild | [Index](08-backup-dr-and-rebuild/README.md) • [etcd Backup & Restore](08-backup-dr-and-rebuild/01-etcd-backup-restore.md) • [OADP vs Velero Analysis](08-backup-dr-and-rebuild/02-oadp-vs-velero-deepdive.md) • [Metro-DR & Regional-DR](08-backup-dr-and-rebuild/03-metro-dr-and-regional-dr.md) • [Declarative GitOps Rebuild](08-backup-dr-and-rebuild/04-declarative-rebuild-gitops.md) |
+| **09. Emergency Runbooks** | Expired certs, Helper jumping, node replacement, etcd quorum loss, MCP deadlocks | [Index](09-emergency-runbooks/README.md) • [Expired Certs](09-emergency-runbooks/01-expired-certs-recovery.md) • [Helper Jumping](09-emergency-runbooks/02-helper-node-access-and-jumping.md) • [Node Replacement](09-emergency-runbooks/03-node-reinstallation-and-replacement.md) • [etcd Quorum Loss](09-emergency-runbooks/04-etcd-quorum-loss-recovery.md) • [MCP & Disk Recovery](09-emergency-runbooks/05-machineconfig-and-storage-recovery.md) |
 
 ---
 
@@ -28,3 +29,4 @@ This documentation suite is organized across 8 core operational domains designed
 3. **Platform Deployment**: Select your hypervisor or cloud target in [Platforms](04-platforms/README.md) or deploy [OpenShift Virtualization](04-platforms/09-openshift-virtualization.md).
 4. **Hardening**: Execute Day 1 post-installation procedures in [Day 1 Baselining](06-day1-baselining/README.md) and establish automated secret rotation via [Secrets & cert-manager](06-day1-baselining/05-secrets-and-cert-rotation.md).
 5. **Continuous Ops & Disaster Recovery**: Implement [Day 2 Operations](07-day2-operations/README.md), establish fleet GitOps via [App-of-Apps](07-day2-operations/06-gitops-app-of-apps.md), configure [OpenShift AI](07-day2-operations/07-openshift-ai-gpu.md), and enforce continuous recovery SLAs with [Backup, DR & Rebuild](08-backup-dr-and-rebuild/README.md).
+6. **Emergency Triage & Recovery**: In the event of catastrophic API failure, expired certificates, node degradation, or quorum loss, reference [Emergency Runbooks](09-emergency-runbooks/README.md) and execute recovery automation directly from the Helper Node.
