@@ -40,25 +40,25 @@ In enterprise OpenShift deployments, automation scripts must function across dis
 
 ```mermaid
 flowchart TD
-    subgraph CTX["Execution Contexts"]
-        HN["Helper Node / Bastion Host<br/>Out-of-Band &amp; Day 0 Engine"]
-        WS["Admin Workstation / CI/CD<br/>Kubernetes Cluster API Client"]
-        CP["Control Plane Masters<br/>RHCOS Direct Local Execution"]
-        HV["Hypervisor Host<br/>PowerShell VM Management"]
+    subgraph CTX["Execution Hosts"]
+        HN["Helper Node<br/>Out-of-Band Host"]
+        WS["Workstation<br/>CLI / CI Runner"]
+        CP["Master Node<br/>RHCOS Local Shell"]
+        HV["Hypervisor<br/>PowerShell Host"]
     end
 
     subgraph ENV["Target Environments"]
-        PRE["Day 0 Pre-Install Services<br/>DNS, VIPs, NTP, Mirrors"]
-        API["Live OpenShift API Server<br/>ClusterOperators &amp; MCPs"]
-        ETCD["etcd Raft Consensus Cluster<br/>Quorum &amp; Snapshot Databases"]
-        VMS["Virtual Machines &amp; Metal<br/>Agent Boot Media &amp; BMC"]
+        PRE["Day 0 Services<br/>DNS &amp; VIP Network"]
+        API["OpenShift API<br/>Cluster Control"]
+        ETCD["etcd Database<br/>Raft Quorum"]
+        VMS["Target Nodes<br/>VMs &amp; Bare Metal"]
     end
 
     HN -->|"Audit &amp; Media"| PRE
-    HN -->|"Emergency SSH"| CP
-    WS -->|"API &amp; Metrics"| API
-    CP -->|"Direct etcdctl"| ETCD
-    HV -->|"VM Provisioning"| VMS
+    HN -->|"Rescue SSH"| CP
+    WS -->|"oc Client"| API
+    CP -->|"etcdctl"| ETCD
+    HV -->|"New VM"| VMS
 ```
 
 ### Execution Context Matrix
@@ -122,14 +122,41 @@ The script runs on the **Helper Node / Bastion Host** or the installation workst
 
 ```mermaid
 flowchart TD
-    A["Start Preflight Audit<br/><code>preflight-check.sh</code>"] --> B["1. Core DNS Resolution<br/>api, api-int, and *.apps VIPs"]
-    B --> C["2. Reverse PTR Audit<br/>Forward and reverse mapping parity"]
-    C --> D["3. Clock Drift Audit<br/>Chrony RMS offset &lt; 500ms"]
-    D --> E["4. Proxy Configuration<br/>Audit HTTP_PROXY and NO_PROXY"]
-    E --> F["5. Port Accessibility<br/>Probing TCP 6443, 22623, and 443"]
-    F --> G{"Preflight<br/>Status?"}
-    G -->|"Failures &gt; 0"| H["Exit Code 1<br/>Abort Node Boot"]
-    G -->|"All Passed"| I["Exit Code 0<br/>Ready for Install"]
+    A["Preflight Audit<br/>Start Script"] --> B["1. DNS Forward<br/>api &amp; apps VIPs"]
+    B --> C["2. Reverse PTR<br/>Check IP Names"]
+    C --> D["3. Clock Sync<br/>Chrony Drift"]
+    D --> E["4. Proxy Rules<br/>Check Bypass"]
+    E --> F["5. Core Ports<br/>6443 &amp; 22623"]
+    F --> G["6. Result Check<br/>Any Failures?"]
+    G -->|"Errors"| H["Exit Code 1<br/>Halt Install"]
+    G -->|"Passed"| I["Exit Code 0<br/>Ready to Boot"]
+```
+
+```text
+[ Start: preflight-check.sh ]
+             │
+             ▼
+[ 1. Check Core DNS (api, api-int, *.apps VIPs) ]
+             │
+             ▼
+[ 2. Check Reverse PTR (Validate IP to Hostname) ]
+             │
+             ▼
+[ 3. Check Clock Sync (Chrony RMS Offset < 500ms) ]
+             │
+             ▼
+[ 4. Check Proxy Settings (HTTP_PROXY & NO_PROXY) ]
+             │
+             ▼
+[ 5. Probe Target Ports (TCP 6443, 22623, 443) ]
+             │
+             ▼
+      < Any Failures? >
+       /             \
+ [ Yes: Fail > 0 ]   [ No: All Passed ]
+       │                     │
+       ▼                     ▼
+[ Exit 1: Abort Boot ]  [ Exit 0: Proceed ]
 ```
 
 #### Hands-On CLI Execution
@@ -202,13 +229,38 @@ Executes on the **Helper Node / Workstation** with outbound internet access (or 
 
 ```mermaid
 flowchart TD
-    A["Start ISO Build<br/><code>generate-agent-iso.sh</code>"] --> B["1. Toolchain Audit<br/>Verify openshift-install binary"]
-    B --> C["2. Clean Workspace<br/>Initialize build directory"]
-    C --> D["3. Select Topology<br/>SNO, Compact, or Standard"]
-    D --> E["4. Pull Secret Audit<br/>Validate Red Hat credentials"]
-    E --> F["5. Generate Boot Image<br/>Execute agent create image"]
-    F --> G["6. Artifact Checksum<br/>Compute SHA-256 hash"]
-    G --> H["7. Boot Media Ready<br/><code>agent.x86_64.iso</code>"]
+    A["Start Build<br/>Agent Installer"] --> B["1. Tool Check<br/>openshift-install"]
+    B --> C["2. Workspace<br/>Clean Directory"]
+    C --> D["3. Topology<br/>SNO or Multi-Node"]
+    D --> E["4. Pull Secret<br/>Validate Token"]
+    E --> F["5. Build Image<br/>Create Agent ISO"]
+    F --> G["6. Checksum<br/>SHA-256 Hash"]
+    G --> H["7. Boot Media<br/>agent.x86_64.iso"]
+```
+
+```text
+[ Start: generate-agent-iso.sh ]
+               │
+               ▼
+[ 1. Verify openshift-install CLI in PATH ]
+               │
+               ▼
+[ 2. Initialize Clean Build Directory (/var/tmp/ocp-agent-build) ]
+               │
+               ▼
+[ 3. Copy Topology Config (SNO / Compact / Standard) ]
+               │
+               ▼
+[ 4. Validate Pull Secret (Reject Dummy Strings) ]
+               │
+               ▼
+[ 5. Run: openshift-install agent create image ]
+               │
+               ▼
+[ 6. Generate SHA-256 Checksum ]
+               │
+               ▼
+[ Output: Bootable agent.x86_64.iso Media Ready ]
 ```
 
 #### Hands-On CLI Execution
@@ -246,11 +298,24 @@ Executes on a dual-homed **Mirror Host / Helper Node** that has access to the de
 
 ```mermaid
 flowchart TD
-    A["ImageSetConfiguration<br/><code>imageset-config-v2.yaml</code>"] --> B["oc-mirror v2 Engine<br/>Mirror-to-Mirror Streaming"]
-    B --> C["Local Disk Cache<br/>Cache Directory"]
-    B --> D["Enterprise Registry<br/>Internal Quay or Harbor Target"]
-    B --> E["Results Workspace<br/>Generated IDMS &amp; Catalogs"]
-    E --> F["Cluster Enforcement<br/><code>oc apply -f results-*/</code>"]
+    A["ImageSet Config<br/>Target YAML"] --> B["oc-mirror v2<br/>Streaming Engine"]
+    B --> C["Disk Cache<br/>Local Workspace"]
+    B --> D["Internal Quay<br/>Target Registry"]
+    B --> E["Results Output<br/>IDMS &amp; Catalogs"]
+    E --> F["Enforce State<br/>oc apply -f"]
+```
+
+```text
+[ ImageSetConfiguration (imageset-config-v2.yaml) ]
+                        │
+                        ▼
+       [ oc-mirror v2 Streaming Engine ]
+        /               │              \
+       ▼                ▼               ▼
+[ Disk Cache ]   [ Quay / Harbor ]   [ Results Workspace ]
+                                                │
+                                                ▼
+                                    [ Apply IDMS to Cluster ]
 ```
 
 #### Hands-On CLI Execution
@@ -399,28 +464,43 @@ Upgrading enterprise OpenShift clusters without orchestration causes massive wor
 ```mermaid
 sequenceDiagram
     autonumber
-    participant Admin as Automation<br/>Script
-    participant Pre as Pre-Upgrade<br/>Auditor
+    participant Admin as Admin<br/>Script
+    participant Pre as Pre-Check<br/>Audit
     participant etcd as etcd<br/>Backup
-    participant CVO as ClusterVersion<br/>Operator
-    participant MCO as Machine Config<br/>Operator
-    participant Canary as Canary Node<br/>(Worker)
-    participant Prom as Prometheus<br/>SLO Gates
+    participant CVO as CVO<br/>Operator
+    participant MCO as MCO<br/>Operator
+    participant Canary as Canary<br/>Node
+    participant Prom as Prom<br/>SLOs
     participant Fleet as Worker<br/>Fleet
 
-    Admin->>Pre: 1. Run pre-upgrade health check
-    Admin->>etcd: 2. Capture fresh etcd snapshot
-    Admin->>MCO: 3. Pause worker MCP (prevent reboots)
-    Admin->>CVO: 4. Trigger ClusterVersion upgrade
-    Admin->>CVO: 5. Monitor control plane completion
-    Admin->>Canary: 6. Upgrade canary worker & soak
-    Admin->>Prom: Query 5xx rate (<2%) & restarts (<25)
-    alt Telemetry SLO Breach
-        Admin-->>Fleet: Abort rollout! Keep worker MCP paused!
-    else Telemetry SLO Healthy
-        Admin->>MCO: 7. Unpause worker MCP for fleet rollout
-        Admin->>Fleet: Wait for Updated=True across fleet
+    Admin->>Pre: 1. Audit health
+    Admin->>etcd: 2. etcd snapshot
+    Admin->>MCO: 3. Pause worker MCP
+    Admin->>CVO: 4. Trigger upgrade
+    Admin->>CVO: 5. Wait for masters
+    Admin->>Canary: 6. Canary node soak
+    Admin->>Prom: Query 5xx & restarts
+    alt Telemetry SLO Failure
+        Admin-->>Fleet: Halt! Keep MCP paused
+    else Telemetry SLO Passed
+        Admin->>MCO: 7. Unpause worker MCP
+        Admin->>Fleet: Rollout fleet update
     end
+```
+
+```text
+Admin Script       Pre-Audit     etcd Backup      CVO Operator     MCO Operator    Canary Node     Prometheus     Worker Fleet
+     │                 │              │                │                │               │              │               │
+     ├──1. Audit──────►│              │                │                │               │              │               │
+     ├──2. Snapshot──────────────────►│                │                │               │              │               │
+     ├──3. Pause Worker MCP────────────────────────────────────────────►│               │              │               │
+     ├──4. Trigger Upgrade────────────────────────────►│                │               │              │               │
+     ├──5. Wait for Masters Available─────────────────►│                │               │              │               │
+     ├──6. Upgrade & Soak Canary Node──────────────────────────────────────────────────►│              │               │
+     ├──Query Ingress 5xx & Restarts──────────────────────────────────────────────────────────────────►│               │
+     │ [ SLO Failure: Halt Rollout, Keep Worker MCP Paused ]                                                           │
+     ├──7. SLO Passed: Unpause Worker MCP──────────────────────────────►│                                              │
+     └──Wait for Fleet Convergence (Updated=True)─────────────────────────────────────────────────────────────────────►│
 ```
 
 #### Hands-On CLI Execution
@@ -495,18 +575,39 @@ When an OpenShift cluster remains powered off or disconnected for longer than th
 
 ```mermaid
 flowchart TD
-    HN["Helper Node<br/><code>recover-expired-certs.sh</code>"]
-    M0["Seed Master Node<br/><code>master-0</code>"]
-    KUB["Node Kubelet<br/>Service Daemon"]
-    API["Control Plane<br/><code>kube-apiserver</code>"]
-    FLEET["Cluster Fleet<br/>Masters &amp; Workers"]
+    HN["Helper Node<br/>Out-of-Band Host"]
+    M0["Seed Master<br/>master-0 Node"]
+    KUB["Node Kubelet<br/>Agent Service"]
+    API["API Server<br/>kube-apiserver"]
+    FLEET["Cluster Fleet<br/>Remaining Nodes"]
 
-    HN -->|"1. Step chrony clock"| M0
-    HN -->|"2. Restore bootstrap kubeconfig"| M0
-    M0 -->|"3. Restart kubelet"| KUB
-    KUB -->|"4. Request new certificates"| API
-    HN -->|"5. Auto-approve CSRs via admin config"| API
-    API -->|"6. Re-establish cluster quorum"| FLEET
+    HN -->|"1. Chrony Step"| M0
+    HN -->|"2. Reset Config"| M0
+    M0 -->|"3. Restart"| KUB
+    KUB -->|"4. Emit CSRs"| API
+    HN -->|"5. Approve CSRs"| API
+    API -->|"6. Recover Fleet"| FLEET
+```
+
+```text
+[ Helper Node (Out-of-Band SSH) ]
+              │
+              ├─► 1. Synchronize system clock (chronyc makestep)
+              ├─► 2. Restore bootstrap kubeconfig to /etc/kubernetes/
+              │
+              ▼
+    [ Seed Master (master-0) ]
+              │
+              ├─► 3. Restart kubelet service
+              ├─► 4. Kubelet generates new client/serving CSRs
+              │
+              ▼
+    [ Control Plane API Server ]
+              │
+              ├─► 5. Helper Node approves CSRs via localhost admin kubeconfig
+              │
+              ▼
+[ Full Fleet Convergence (Loop over master-1, master-2, and workers) ]
 ```
 
 #### Hands-On CLI Execution
