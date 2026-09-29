@@ -66,125 +66,130 @@ Use this deterministic ASCII decision tree to determine the optimal installation
  │ Direct Internet  │                    │ Corporate Egress │                    │ Disconnected Site│
  │ Red Hat CDN Sync │                    │ Proxy + CA MITM  │                    │ oc-mirror v2 Pull│
  └──────────────────┘                    └──────────────────┘                    └──────────────────┘
-
-┌──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
-│ SECTION 1: PUBLIC CLOUD ARCHITECTURES (AWS / AZURE / GCP / OCI)                                                      │
-├──────────────────────────────────────────────────────────┬───────────────────────────────────────────────────────────┤
-│ Cloud IPI (Installer-Provisioned Infrastructure)         │ Cloud UPI (User-Provisioned Infrastructure)               │
-├──────────────────────────────────────────────────────────┼───────────────────────────────────────────────────────────┤
-│ • Mechanism: Fully automated end-to-end installation.    │ • Mechanism: User / Terraform pre-provisioned infra.      │
-│ • Target Clouds: AWS, Azure, Google Cloud (GCP), OCI.    │ • Target Clouds: AWS, Azure, Google Cloud (GCP).          │
-│ • Cloud Infra: Dynamic VPC, subnets, NAT gateways,       │ • Cloud Infra: Cluster deployed into pre-existing         │
-│   route tables, and NLB/ALB load balancers.              │   enterprise VPC/VNet with strict SecOps firewalls.       │
-│ • Authentication: Manual STS (AWS), Azure Workload       │ • Authentication: Cloud Credential Operator Manual        │
-│   Identity, or GCP Workload Identity Federation.         │   mode with ccoctl pre-generating IAM roles.              │
-│ • Ingress/API: Public or Private (publish: Internal).    │ • Ingress/API: Pre-allocated internal load balancers.     │
-│ • Scaling: Automated MachineSets scale instances.        │ • Scaling: Semi-automated MachineSets or custom IaC.      │
-│ • Reference Guide:                                       │ • Reference Guide:                                        │
-│   docs/04-platforms/04-cloud-aws-azure-gcp-ipi.md        │   docs/04-platforms/04-cloud-aws-azure-gcp-upi.md         │
-└──────────────────────────────────────────────────────────┴───────────────────────────────────────────────────────────┘
-
-┌──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
-│ SECTION 2: EDGE & DISTRIBUTED DEPLOYMENT TOPOLOGIES                                                                  │
-├──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
-│ 1. Single Node OpenShift (SNO) [1 Physical or Virtual Host]:                                                         │
-│    • Collocated control plane and workloads on a single node (min 8 vCPU, 16-32GB RAM, 120GB SSD).                   │
-│    • Zero control plane overhead; autonomous agent ISO boot; survives prolonged WAN/upstream isolation.              │
-│    • Ideal For: Cell towers, retail branch kiosks, far-edge IoT gateways, remote defense/medical devices.            │
-│    • Architecture & Guide: docs/02-topologies/01-single-node-openshift.md                                            │
-│                                                                                                                      │
-│ 2. 3-Node Compact Converged [3 Schedulable Master Nodes]:                                                            │
-│    • Full 3-node etcd Raft quorum; masters run workloads without dedicated workers (mastersSchedulable: true).       │
-│    • Collocated OpenShift Data Foundation (ODF) 3-node Ceph storage providing HA persistent block & file storage.    │
-│    • Survives failure of any single physical node without application or persistent data interruption.               │
-│    • Ideal For: Medium branch offices, ROBO sites, space/power-constrained server rooms, edge micro-datacenters.     │
-│    • Architecture & Guide: docs/02-topologies/02-compact-3-node.md                                                   │
-│                                                                                                                      │
-│ 3. Remote Worker Nodes [Central Core Control Plane + Distributed WAN Edge Workers]:                                  │
-│    • Central 3-node HA control plane in core DC; worker nodes deployed at remote edge sites over WAN.                │
-│    • Tuned Kubelet heartbeats (node-status-update-frequency: 10s) and resilient pod eviction tolerances.             │
-│    • Eliminates dedicated control plane hardware and licensing costs at distributed edge facilities.                 │
-│    • Ideal For: Smart factories, distribution warehouses, connected hospital networks, retail outlets.               │
-│    • Architecture & Guide: docs/02-topologies/04-remote-worker-nodes.md                                              │
-│                                                                                                                      │
-│ 4. Zero Touch Provisioning (ZTP) at Scale [Fleet Automation via Red Hat ACM 2.12+ & TALM]:                           │
-│    • Red Hat ACM Fleet Hub orchestrates declarative GitOps SiteConfig & PolicyGenerator Custom Resources.            │
-│    • Automated Out-of-Band Redfish BMC bare-metal discovery, BIOS configuration, and ISO streaming.                  │
-│    • Mass parallel Day 0 boot and Day 1 policy governance across fleets of 10 to 10,000+ edge clusters.              │
-│    • Ideal For: 5G Telco Distributed Units (DU/CU), nationwide retail chains, smart energy substations.              │
-│    • Architecture & Guide: docs/02-topologies/05-zero-touch-provisioning.md                                          │
-│                                                                                                                      │
-│ 5. Hosted Control Planes / HyperShift (HCP) [Centralized Containerized Control Plane Pods]:                          │
-│    • Control plane components (etcd, apiserver, CVO) run as containerized pods inside hosting cluster.               │
-│    • Delivers up to 60% compute hardware savings, sub-15 min cluster provisioning, and isolated failure domains.     │
-│    • Ideal For: Internal Developer Platforms (IDP), multi-tenant dev/test sandboxes, cloud SaaS.                     │
-│    • Architecture & Guide: docs/02-topologies/06-hypershift-hosted-control-planes.md                                 │
-└──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
-
-┌──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
-│ SECTION 3: ON-PREMISES DATACENTER PLATFORMS                                                                          │
-├──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
-│ 1. Physical Bare Metal (Dell PowerEdge / HPE ProLiant / Cisco UCS / Supermicro / Lenovo ThinkSystem):                │
-│    • Provisioning: Agent-Based Installer (ABI) or Assisted Installer via Redfish BMC (Bootstrap-in-Place).           │
-│    • Networking: NMState declarative static IP bonding (LACP / 802.3ad) with VLAN tagging (MTU 9000).                │
-│    • Storage: OpenShift Data Foundation (ODF) backed by local NVMe SSDs; CSI local storage operator.                 │
-│    • Best For: Maximum compute throughput, deterministic low latency, Telco vRAN, and GPU/AI clusters.               │
-│    • Architecture & Guide: docs/04-platforms/01-bare-metal.md                                                        │
-│                                                                                                                      │
-│ 2. VMware vSphere (8.x / 9.x):                                                                                       │
-│    • Provisioning: vSphere IPI (fully automated vCenter VM lifecycle) or Agent-Based Installer (ABI).                │
-│    • Storage: VMware vSphere CSI Driver integrated with VMware vSAN, VMFS datastores, or enterprise SAN arrays.      │
-│    • Integration: Automated DRS anti-affinity rules, multi-vCenter failure zones, and NSX-T / VDS networking.        │
-│    • Best For: Enterprise private clouds with existing VMware vSphere investments and storage tiering.               │
-│    • Architecture & Guide: docs/04-platforms/02-vsphere.md                                                           │
-│                                                                                                                      │
-│ 3. Nutanix AHV HCI:                                                                                                  │
-│    • Provisioning: Nutanix IPI directly integrated with Prism Central (PC) and Prism Element (PE) REST APIs.         │
-│    • Storage: Nutanix CSI driver supporting Nutanix Volumes (Block) and Nutanix Files (NFS) storage classes.         │
-│    • Integration: Native Flow Microsegmentation network policies and Prism Disaster Recovery protection domains.     │
-│    • Best For: Organizations standardizing on Nutanix Hyperconverged Infrastructure for datacenter compute.          │
-│    • Architecture & Guide: docs/04-platforms/03-nutanix.md                                                           │
-│                                                                                                                      │
-│ 4. KVM & RHOSO (Red Hat OpenStack Services on OpenShift):                                                            │
-│    • Provisioning: OpenStack IPI (using openstack-installer) or Agent-Based ISO booted on Libvirt / KVM.             │
-│    • Storage: OpenStack Cinder CSI driver for persistent block storage backed by Ceph RBD or NetApp arrays.          │
-│    • Networking: OVN-Kubernetes with Octavia Load Balancing, SR-IOV Passthrough, and multi-network attachments.      │
-│    • Best For: Telco Network Function Virtualization (NFV) and enterprise open-source private cloud datacenters.     │
-│    • Architecture & Guide: docs/04-platforms/05-kvm-openstack.md                                                     │
-│                                                                                                                      │
-│ 5. Microsoft Hyper-V / Azure Stack HCI:                                                                              │
-│    • Provisioning: Agent-Based Installer (ABI) paired with automated PowerShell VM deployment scripts.               │
-│    • VM Architecture: Generation 2 (Gen 2) UEFI VMs with MicrosoftUEFICertificateAuthority template.                 │
-│    • Virtual Switch Networking: MAC Address Spoofing enabled on vNICs for Keepalived VIP failover.                   │
-│    • Storage: OpenShift Data Foundation (ODF) internal cluster or enterprise Windows SMB / CSI storage drivers.      │
-│    • Best For: Microsoft-centric enterprise datacenters and Azure Stack HCI on-prem hybrid cloud environments.       │
-│    • Architecture & Guide: docs/04-platforms/08-microsoft-hyper-v.md                                                 │
-└──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
-
-┌──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
-│ SECTION 4: NETWORK ISOLATION & CONNECTIVITY PARADIGMS                                                                │
-├──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
-│ 1. Fully Connected Network [Direct Red Hat CDN & Public Registries]:                                                 │
-│    • Egress Connectivity: Unrestricted outbound HTTPS access to registry.redhat.io, quay.io, and release repos.      │
-│    • Lifecycle Management: Automated Cincinnati / OpenShift Update Service (OSUS) channel tracking (fast, stable).   │
-│    • Helper Node: Optional; cloud-native DHCP, Route53 / Cloud DNS, and native cloud load balancers satisfy needs.   │
-│    • Architecture & Guide: docs/03-network-security/01-network-overview.md                                           │
-│                                                                                                                      │
-│ 2. Proxy-Restricted Enterprise Network [Corporate Forward Proxy with TLS Inspection]:                                │
-│    • Egress Connectivity: All outbound traffic forced through enterprise forward proxy (Squid, BlueCoat, Zscaler).   │
-│    • Cluster Configuration: Global cluster Proxy resource defines httpProxy, httpsProxy, and noProxy bypass CIDRs.   │
-│    • Enterprise PKI: Custom enterprise root/intermediate CA certificates injected into cluster trustedCA bundle.     │
-│    • Helper Node: Recommended on-prem for internal proxy bypass, DNS resolution, and keepalived VIP load balancing.  │
-│    • Architecture & Guide: docs/03-network-security/02-proxy-restricted.md                                           │
-│                                                                                                                      │
-│ 3. Air-Gapped / Disconnected Dark Site Network [Zero Internet Connectivity]:                                         │
-│    • Egress Connectivity: Zero external internet access; air-gapped datacenter, tactical edge, or dark site.         │
-│    • Enterprise Mirroring Standard: oc-mirror v2 CLI with declarative ImageSetConfiguration v2 and local OCI cache.  │
-│    • In-Cluster Mirroring: ImageDigestMirrorSet (IDMS) & ImageTagMirrorSet (ITMS) CRDs redirect image pulls.         │
-│    • Helper Node: MANDATORY on-prem for enterprise Quay registry, BIND9 DNS, Stratum NTP & HAProxy VIPs.             │
-│    • Architecture & Guide: docs/03-network-security/03-air-gapped-oc-mirror-v2.md                                    │
-└──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
 ```
+
+### Architecture Decision Criteria & Technical Specifications
+
+#### Section 1: Public Cloud Deployments (AWS, Azure, GCP, OCI)
+
+- **1. Cloud IPI (Installer-Provisioned Infrastructure)**
+  - **Mechanism**: Fully automated end-to-end installation and cloud infrastructure lifecycle.
+  - **Target Clouds**: AWS, Azure, Google Cloud (GCP), Oracle Cloud Infrastructure (OCI).
+  - **Cloud Infrastructure**: Dynamic VPC/VNet, private subnets, NAT gateways, route tables, and internal/external NLB/ALB load balancers.
+  - **Authentication & IAM**: Manual STS (AWS), Azure Workload Identity, or GCP Workload Identity Federation (keyless authentication).
+  - **Ingress & API**: Public internet-facing or private (`publish: Internal`) for zero-public-IP enterprise topologies.
+  - **Compute Scaling**: Automated MachineSets dynamically provision, scale, and heal worker node instances.
+  - **Architecture & Guide**: [`docs/02-provisioning-paradigms/02-installer-provisioned-ipi.md`](docs/02-provisioning-paradigms/02-installer-provisioned-ipi.md) • Cloud Guides: [AWS](docs/04-platforms/05-aws.md) | [Azure](docs/04-platforms/06-azure.md) | [GCP](docs/04-platforms/07-gcp.md)
+
+- **2. Cloud UPI (User-Provisioned Infrastructure)**
+  - **Mechanism**: User, Security, or Terraform pre-provisioned cloud infrastructure.
+  - **Target Clouds**: AWS, Azure, Google Cloud (GCP), Oracle Cloud Infrastructure (OCI).
+  - **Cloud Infrastructure**: Cluster deployed into pre-existing enterprise VPC/VNet with strict SecOps firewalls and shared subnets.
+  - **Authentication & IAM**: Cloud Credential Operator Manual mode with `ccoctl` pre-generating IAM roles and permissions.
+  - **Ingress & API**: Pre-allocated internal load balancers, enterprise transit gateways, and custom DNS zones.
+  - **Compute Scaling**: Semi-automated MachineSets or custom enterprise Infrastructure-as-Code (Terraform / Ansible).
+  - **Architecture & Guide**: [`docs/02-provisioning-paradigms/03-user-provisioned-upi.md`](docs/02-provisioning-paradigms/03-user-provisioned-upi.md) • Cloud Guides: [AWS](docs/04-platforms/05-aws.md) | [Azure](docs/04-platforms/06-azure.md) | [GCP](docs/04-platforms/07-gcp.md)
+
+| Provisioning Model | Key Characteristics & Architecture | Authentication & Governance | Primary Use Case & Documentation |
+| :--- | :--- | :--- | :--- |
+| **Cloud IPI** *(Installer-Provisioned)* | • **Fully automated** end-to-end cloud infrastructure creation<br/>• Dynamic VPC/VNet, private subnets, route tables, and internal/external LBs<br/>• Automated MachineSets dynamically manage worker compute lifecycle | • **Keyless IAM**: AWS STS with IRSA, Azure Workload Identity, GCP Workload Identity Federation<br/>• Supports `publish: Internal` for zero-public-IP private clusters | **Standard Enterprise Cloud**<br/>👉 [`docs/02-provisioning-paradigms/02-installer-provisioned-ipi.md`](docs/02-provisioning-paradigms/02-installer-provisioned-ipi.md)<br/>• Cloud Guides: [AWS](docs/04-platforms/05-aws.md) \| [Azure](docs/04-platforms/06-azure.md) \| [GCP](docs/04-platforms/07-gcp.md) |
+| **Cloud UPI** *(User-Provisioned)* | • Deployed into **existing enterprise VPC / VNet**<br/>• Pre-created subnets, corporate firewalls, custom route tables & NAT gateways<br/>• Semi-automated MachineSets or Terraform/IaC-managed instances | • **Manual IAM**: Cloud Credential Operator in Manual mode with `ccoctl` CLI<br/>• Dedicated enterprise transit gateways, ExpressRoute, and private DNS | **Strict SecOps & Shared VPC**<br/>👉 [`docs/02-provisioning-paradigms/03-user-provisioned-upi.md`](docs/02-provisioning-paradigms/03-user-provisioned-upi.md)<br/>• Cloud Guides: [AWS](docs/04-platforms/05-aws.md) \| [Azure](docs/04-platforms/06-azure.md) \| [GCP](docs/04-platforms/07-gcp.md) |
+
+#### Section 2: Edge & Distributed Deployment Topologies
+
+- **1. Single Node OpenShift (SNO)** `[1 Physical or Virtual Host]`
+  - **Footprint**: Collocated master control plane and application workloads on a single node (minimum 8 vCPU, 16–32 GB RAM, 120 GB SSD/NVMe).
+  - **Operational Profile**: Zero control plane overhead; autonomous agent ISO boot; continues operation during prolonged upstream WAN loss.
+  - **Target Scenarios**: Cell towers, retail branch kiosks, far-edge IoT gateways, remote defense/medical field equipment.
+  - **Documentation**: [`docs/01-architecture-topologies/01-sno-single-node.md`](docs/01-architecture-topologies/01-sno-single-node.md)
+
+- **2. 3-Node Compact Converged** `[3 Schedulable Master Nodes]`
+  - **Footprint**: Full 3-node etcd Raft quorum; masters run compute workloads without dedicated workers (`mastersSchedulable: true`).
+  - **Storage Architecture**: Collocated OpenShift Data Foundation (ODF) 3-node Ceph storage providing HA persistent block and file storage.
+  - **Resiliency**: Survives the loss of any single physical node without application or persistent data service interruption.
+  - **Target Scenarios**: Medium branch offices, ROBO sites, space/power-constrained server rooms, edge micro-datacenters.
+  - **Documentation**: [`docs/01-architecture-topologies/02-compact-3-node-converged.md`](docs/01-architecture-topologies/02-compact-3-node-converged.md)
+
+- **3. Remote Worker Nodes** `[Central Core Control Plane + Distributed WAN Edge Workers]`
+  - **Footprint**: Central 3-node HA control plane hosted in core datacenter; worker nodes deployed at remote edge sites over WAN.
+  - **Tuning**: Tuned Kubelet heartbeats (`node-status-update-frequency: 10s`) and resilient pod eviction tolerances for WAN blips.
+  - **Cost Profile**: Eliminates dedicated control plane hardware and licensing costs at distributed edge facilities.
+  - **Target Scenarios**: Smart factories, distribution warehouses, connected hospital networks, intelligent retail outlets.
+  - **Documentation**: [`docs/01-architecture-topologies/04-remote-workers-wan.md`](docs/01-architecture-topologies/04-remote-workers-wan.md)
+
+- **4. Zero Touch Provisioning (ZTP) at Scale** `[Fleet Automation via ACM 2.12+ & TALM]`
+  - **Footprint**: Central Red Hat ACM Fleet Hub orchestrates declarative GitOps `SiteConfig` and `PolicyGenerator` Custom Resources.
+  - **Automation**: Out-of-band Redfish BMC bare-metal hardware discovery, BIOS configuration, and automated ISO streaming.
+  - **Scale**: Mass parallel Day 0 boot and Day 1 policy governance across fleets ranging from 10 to 10,000+ edge clusters.
+  - **Target Scenarios**: 5G Telco Distributed Units (DU/CU), nationwide retail store chains, smart energy grid substations.
+  - **Documentation**: [`docs/02-provisioning-paradigms/04-ztp-acm-gitops.md`](docs/02-provisioning-paradigms/04-ztp-acm-gitops.md)
+
+- **5. Hosted Control Planes / HyperShift (HCP)** `[Centralized Containerized Control Plane Pods]`
+  - **Footprint**: Control plane components (`etcd`, `kube-apiserver`, CVO) run as containerized pods inside a central hosting cluster.
+  - **Efficiency**: Delivers up to 60% compute hardware savings, sub-15 minute cluster provisioning, and strict tenant isolation.
+  - **Target Scenarios**: Internal Developer Platforms (IDP), multi-tenant dev/test sandboxes, cloud-native SaaS environments.
+  - **Documentation**: [`docs/01-architecture-topologies/05-hypershift-hosted-cp.md`](docs/01-architecture-topologies/05-hypershift-hosted-cp.md)
+
+#### Section 3: On-Premises Datacenter Platforms
+
+- **1. Physical Bare Metal** `(Dell PowerEdge / HPE ProLiant / Cisco UCS / Supermicro / Lenovo)`
+  - **Provisioning**: Agent-Based Installer (ABI) or Assisted Installer via Redfish BMC Virtual Media (Bootstrap-in-Place).
+  - **Networking**: NMState declarative static IP bonding (LACP / 802.3ad) with VLAN tagging and jumbo frames (MTU 9000).
+  - **Storage**: OpenShift Data Foundation (ODF) backed by local NVMe SSDs; CSI local storage operator integration.
+  - **Best For**: Maximum compute throughput, deterministic low latency, Telco vRAN, and GPU/AI training clusters.
+  - **Documentation**: [`docs/04-platforms/01-bare-metal-physical.md`](docs/04-platforms/01-bare-metal-physical.md)
+
+- **2. VMware vSphere (8.x / 9.x)**
+  - **Provisioning**: vSphere IPI (fully automated vCenter VM lifecycle) or Agent-Based Installer (ABI).
+  - **Storage**: VMware vSphere CSI Driver integrated with VMware vSAN, VMFS datastores, or enterprise SAN arrays.
+  - **Integration**: Automated DRS anti-affinity rules, multi-vCenter failure zones, and NSX-T / VDS distributed networking.
+  - **Best For**: Enterprise private clouds with existing VMware vSphere investments and storage tiering.
+  - **Documentation**: [`docs/04-platforms/02-vmware-vsphere.md`](docs/04-platforms/02-vmware-vsphere.md)
+
+- **3. Nutanix AHV HCI**
+  - **Provisioning**: Nutanix IPI directly integrated with Prism Central (PC) and Prism Element (PE) REST APIs.
+  - **Storage**: Nutanix CSI driver supporting Nutanix Volumes (Block) and Nutanix Files (NFS) storage classes.
+  - **Integration**: Native Flow Microsegmentation network policies and Prism Disaster Recovery protection domains.
+  - **Best For**: Organizations standardizing on Nutanix Hyperconverged Infrastructure for datacenter compute.
+  - **Documentation**: [`docs/04-platforms/03-nutanix-ahv.md`](docs/04-platforms/03-nutanix-ahv.md)
+
+- **4. KVM & RHOSO (Red Hat OpenStack Services on OpenShift)**
+  - **Provisioning**: OpenStack IPI (using openstack-installer) or Agent-Based ISO booted on Libvirt / KVM hypervisors.
+  - **Storage**: OpenStack Cinder CSI driver for persistent block storage backed by Ceph RBD or NetApp arrays.
+  - **Networking**: OVN-Kubernetes with Octavia Load Balancing, SR-IOV Passthrough, and multi-network attachments.
+  - **Best For**: Telco Network Function Virtualization (NFV) and enterprise open-source private cloud datacenters.
+  - **Documentation**: [`docs/04-platforms/04-kvm-openstack.md`](docs/04-platforms/04-kvm-openstack.md)
+
+- **5. Microsoft Hyper-V / Azure Stack HCI**
+  - **Provisioning**: Agent-Based Installer (ABI) paired with automated PowerShell VM deployment and lifecycle scripts.
+  - **Architecture**: Generation 2 (Gen 2) UEFI VMs with `MicrosoftUEFICertificateAuthority` template.
+  - **Networking**: Virtual Switch with MAC Address Spoofing enabled for Keepalived VIP high availability failover.
+  - **Storage**: OpenShift Data Foundation (ODF) internal cluster or enterprise Windows SMB / CSI storage drivers.
+  - **Best For**: Microsoft-centric enterprise datacenters and Azure Stack HCI on-prem hybrid cloud environments.
+  - **Documentation**: [`docs/04-platforms/08-microsoft-hyper-v.md`](docs/04-platforms/08-microsoft-hyper-v.md)
+
+#### Section 4: Network Isolation & Connectivity Paradigms
+
+- **1. Fully Connected Network** `[Direct Internet / Red Hat CDN]`
+  - **Egress Connectivity**: Direct outbound HTTPS access to `registry.redhat.io`, `quay.io`, and OpenShift release repositories.
+  - **Lifecycle Management**: Automated Cincinnati / OpenShift Update Service (OSUS) channel tracking (`fast-4.20`, `stable-4.20`, `eus-4.20`).
+  - **Helper Node**: Optional; cloud-native DHCP, Route53 / Cloud DNS, and native cloud load balancers satisfy all requirements.
+  - **Documentation**: [`docs/03-network-and-connectivity/01-connected-with-proxies.md`](docs/03-network-and-connectivity/01-connected-with-proxies.md)
+
+- **2. Proxy-Restricted Enterprise Network** `[Corporate Forward Proxy + TLS Inspection]`
+  - **Egress Connectivity**: All outbound traffic routed strictly through enterprise forward proxy (Squid, BlueCoat, Zscaler).
+  - **Cluster Configuration**: Global cluster `Proxy` resource defines `httpProxy`, `httpsProxy`, and `noProxy` bypass CIDRs.
+  - **Enterprise PKI**: Custom enterprise root/intermediate CA certificates injected into cluster-wide `trustedCA` bundle ConfigMap.
+  - **Helper Node**: Recommended on-premises for internal proxy bypass, DNS resolution, and Keepalived VIP load balancing.
+  - **Documentation**: [`docs/03-network-and-connectivity/01-connected-with-proxies.md`](docs/03-network-and-connectivity/01-connected-with-proxies.md)
+
+- **3. Air-Gapped / Disconnected Dark Site Network** `[Zero Internet Connectivity]`
+  - **Egress Connectivity**: Strictly zero external internet access; air-gapped datacenter, tactical edge, or isolated enclave.
+  - **Enterprise Mirroring**: `oc-mirror` v2 CLI with declarative `ImageSetConfiguration` v2 and local OCI cache streaming.
+  - **In-Cluster Mirroring**: `ImageDigestMirrorSet` (IDMS) and `ImageTagMirrorSet` (ITMS) CRDs redirect image pulls to private registry.
+  - **Helper Node**: **MANDATORY** on-premises for enterprise Quay / Harbor registry, BIND9 DNS, Stratum NTP, and HAProxy VIP routing.
+  - **Documentation**: [`docs/03-network-and-connectivity/02-air-gapped-oc-mirror-v2.md`](docs/03-network-and-connectivity/02-air-gapped-oc-mirror-v2.md) & [`docs/05-day0-readiness/04-helper-node-architecture.md`](docs/05-day0-readiness/04-helper-node-architecture.md)
+
 
 <details>
 <summary><b>Click to view Graphical Mermaid Flowchart</b></summary>
