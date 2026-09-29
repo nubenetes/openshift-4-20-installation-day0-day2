@@ -35,6 +35,61 @@ In OpenShift 4.20, the Gateway API represents a major architectural leap beyond 
 └──────────────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
+### Graphical Architecture: Role-Oriented Resource Hierarchy
+
+```mermaid
+flowchart TD
+    subgraph PlatformLayer[" 1. Platform Operator Layer (Cluster-Wide) "]
+        GC["<b>GatewayClass</b><br/>openshift-default<br/><i>Controller: openshift.io/gateway-controller</i>"]
+    end
+
+    subgraph AdminLayer[" 2. Cluster Administrator Layer (infra-gateway namespace) "]
+        GW["<b>Gateway</b><br/>enterprise-gateway<br/>• Port 80 (HTTP Redirect)<br/>• Port 443 (HTTPS Wildcard)<br/>• Port 8443 (TLS Passthrough)"]
+        CertMgr["<b>cert-manager</b><br/>ClusterIssuer (Vault / ACME)<br/>Secret: enterprise-wildcard-tls"]
+        CertMgr -.->|"Injects Wildcard TLS"| GW
+    end
+
+    subgraph AppLayer[" 3. Application & Workload Developer Layer (Multi-Namespace) "]
+        direction TB
+        subgraph TeamWeb[" Namespace: payments-prod "]
+            HR["<b>HTTPRoute</b><br/>payments-service-canary<br/>• 90% Prod / 10% Canary<br/>• Header: X-Canary-Test"]
+            SvcV1["Service: payments-v1<br/>Port: 8080"]
+            SvcV2["Service: payments-v2<br/>Port: 8080"]
+            HR -->|"Weight: 90"| SvcV1
+            HR -->|"Weight: 10"| SvcV2
+        end
+
+        subgraph TeamAI[" Namespace: rhoai-inference "]
+            GR["<b>GRPCRoute</b><br/>vllm-llama3-inference-grpc<br/>• Method: StreamingGenerate<br/>• Zero Proxy Buffering"]
+            SvcLLM["Service: vllm-llama3-service<br/>Port: 8033"]
+            GR --> SvcLLM
+        end
+
+        subgraph TeamVirt[" Namespace: ocp-virt-vms "]
+            TR["<b>TLSRoute</b><br/>win-sql-vm-passthrough<br/>• SNI: win-sql-01.vms.corp.local<br/>• Passthrough (Port 1433)"]
+            SvcVM["Service: win-sql-01-vm-service<br/>VirtualMachineInstance"]
+            TR --> SvcVM
+        end
+    end
+
+    GC -->|"Defines Capabilities"| GW
+    GW -->|"Routes HTTP/HTTPS"| HR
+    GW -->|"Routes gRPC HTTP/2"| GR
+    GW -->|"Routes L4 SNI TLS"| TR
+
+    classDef platformStyle fill:#0d233a,stroke:#2f7ed8,stroke-width:2px,color:#ffffff;
+    classDef adminStyle fill:#e8f4fd,stroke:#0288d1,stroke-width:2px,color:#01579b;
+    classDef appStyle fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,color:#4a148c;
+    classDef aiStyle fill:#e8f5e9,stroke:#388e3c,stroke-width:2px,color:#1b5e20;
+    classDef virtStyle fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#e65100;
+
+    class GC platformStyle;
+    class GW,CertMgr adminStyle;
+    class HR,SvcV1,SvcV2 appStyle;
+    class GR,SvcLLM aiStyle;
+    class TR,SvcVM virtStyle;
+```
+
 ---
 
 ## Architectural Comparison: Route vs. Ingress vs. Gateway API
@@ -134,6 +189,32 @@ In multi-tenant clusters, infrastructure teams manage the `Gateway` entrypoint a
 ### Use Case 2: Zero-Downtime Weighted Canary Deployments
 Gateway API provides declarative, weighted traffic splitting with header-based overrides directly in the `HTTPRoute` resource, completely eliminating the need for complex Service Mesh VirtualServices or manual HAProxy configuration.
 
+```mermaid
+flowchart LR
+    Client(["<b>Incoming Client Request</b><br/>payments.apps.corp.local"]) --> GW["<b>Gateway</b><br/>enterprise-gateway:443<br/><i>TLS Terminated</i>"]
+    
+    GW --> Match{{"<b>HTTPRoute Rule Matcher</b>"}}
+    
+    Match -->|"Header: X-Canary-Test: enabled"| Override["<b>Canary Override Filter</b><br/>URL Rewrite: /api/v2<br/>Weight: 100%"]
+    Match -->|"Standard Request (No Header)"| Split{{"<b>Weighted Traffic Split</b>"}}
+    
+    Override --> PodV2["<b>Pod Replica v2</b><br/>(Canary Workload)"]
+    Split -->|"Weight: 90% (Default)"| PodV1["<b>Pod Replica v1</b><br/>(Production Stable)"]
+    Split -->|"Weight: 10% (Canary)"| PodV2
+
+    classDef client fill:#0d233a,stroke:#2f7ed8,stroke-width:2px,color:#ffffff;
+    classDef gateway fill:#e8f4fd,stroke:#0288d1,stroke-width:2px,color:#01579b;
+    classDef decision fill:#302744,stroke:#8d79b9,stroke-width:2px,color:#ffffff;
+    classDef prod fill:#e8f5e9,stroke:#388e3c,stroke-width:2px,color:#1b5e20;
+    classDef canary fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,color:#4a148c;
+
+    class Client client;
+    class GW gateway;
+    class Match,Split decision;
+    class PodV1 prod;
+    class Override,PodV2 canary;
+```
+
 * **Canary Specification**: 90% of traffic routes to production (`v1`), 10% to canary (`v2`), with an immediate 100% override if the HTTP header `X-Canary: beta-tester` is present:
   ```yaml
   apiVersion: gateway.networking.k8s.io/v1
@@ -172,6 +253,33 @@ Gateway API provides declarative, weighted traffic splitting with header-based o
 ### Use Case 3: Enterprise AI & High-Throughput Model Serving (vLLM & RHOAI)
 Large Language Model (LLM) inference utilizes **gRPC** and **Server-Sent Events (SSE)** for streaming token responses. Traditional Ingress controllers often buffer responses, corrupting streaming chunks and introducing latency.
 
+```mermaid
+flowchart LR
+    AIClient(["<b>LLM Application Client</b><br/>Chatbot / Agent / IDE"]) -->|"gRPC / HTTP/2 Stream<br/>(llama3-grpc.apps.corp.local)"| GW["<b>Gateway API Envoy</b><br/>HTTP/2 Multiplexed Listener<br/>Zero Buffering Enabled"]
+    
+    GW -->|"Method: StreamingGenerate"| GR["<b>GRPCRoute</b><br/>Direct Stream Forwarding"]
+    
+    GR --> KServe["<b>KServe v2 Data Plane</b><br/>InferenceService Controller"]
+    
+    KServe --> vLLM["<b>vLLM ServingRuntime</b><br/>• PagedAttention Engine<br/>• Continuous Batching"]
+    
+    vLLM --> GPU["<b>NVIDIA GPU Cluster</b><br/>• Tensor Parallelism (TP=2)<br/>• H100 / A100 SXM4"]
+    
+    GPU -.->|"Tokens Streamed Directly"| AIClient
+
+    classDef client fill:#0d233a,stroke:#2f7ed8,stroke-width:2px,color:#ffffff;
+    classDef gw fill:#e8f4fd,stroke:#0288d1,stroke-width:2px,color:#01579b;
+    classDef route fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,color:#4a148c;
+    classDef runtime fill:#e8f5e9,stroke:#388e3c,stroke-width:2px,color:#1b5e20;
+    classDef gpu fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#e65100;
+
+    class AIClient client;
+    class GW gw;
+    class GR,KServe route;
+    class vLLM runtime;
+    class GPU gpu;
+```
+
 * **GRPCRoute for Low-Latency Inference**: Using `GRPCRoute` ensures native HTTP/2 multiplexing, zero buffering, and direct streaming to **vLLM** and **KServe** model runtimes:
   ```yaml
   apiVersion: gateway.networking.k8s.io/v1
@@ -198,6 +306,27 @@ Large Language Model (LLM) inference utilizes **gRPC** and **Server-Sent Events 
 
 ### Use Case 4: OpenShift Virtualization Direct VM Routing (TLSRoute & TCPRoute)
 Enterprise virtual machines running under **OpenShift Virtualization (KubeVirt)** frequently require direct layer 4 TCP or TLS connections (e.g. database replication, RDP, SSH, proprietary encrypted enterprise protocols) rather than standard HTTP translation.
+
+```mermaid
+flowchart LR
+    Client(["<b>External Enterprise Client</b><br/>SQL Client / RDP / Database"]) -->|"TLS with SNI:<br/>win-sql-01.vms.corp.local:8443"| GW["<b>Gateway API Gateway</b><br/>Port 8443 (Mode: Passthrough)<br/><i>Zero TLS Decryption</i>"]
+    
+    GW -->|"Inspects SNI Header"| TLSR["<b>TLSRoute</b><br/>win-sql-vm-passthrough<br/>Namespace: ocp-virt-vms"]
+    
+    TLSR --> Svc["<b>VirtualMachine Service</b><br/>TargetPort: 1433"]
+    
+    Svc --> VMI["<b>VirtualMachineInstance</b><br/>Windows Server 2025 Guest<br/>Encrypted End-to-End"]
+
+    classDef client fill:#0d233a,stroke:#2f7ed8,stroke-width:2px,color:#ffffff;
+    classDef gw fill:#e8f4fd,stroke:#0288d1,stroke-width:2px,color:#01579b;
+    classDef route fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,color:#4a148c;
+    classDef vm fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#e65100;
+
+    class Client client;
+    class GW gw;
+    class TLSR,Svc route;
+    class VMI vm;
+```
 
 * **Zero-Overhead SNI Passthrough via `TLSRoute`**:
   Routes encrypted TLS traffic directly to the VM guest OS without terminating TLS at the ingress boundary, preserving end-to-end encryption and custom guest certificates:
