@@ -78,6 +78,12 @@ Architectural masterclasses, deep-dive podcasts, and focused technical video sho
 | **04** | [How Gateway API GRPCRoute Streams LLM Tokens Instantly on OpenShift](https://www.youtube.com/shorts/DwPHhPGrOt0) | **AI Inference & Ingress**<br/>HTTP/2 multiplexing, submillisecond token streaming & unbuffered AI inference | 🇺🇸 EN | `1:14` | [▶️ Watch](https://www.youtube.com/shorts/DwPHhPGrOt0) |
 | **05** | [How TLSRoute Enables Zero-Trust SNI Passthrough on OpenShift](https://www.youtube.com/shorts/DkJQ4q0cetM) | **Zero-Trust Encryption**<br/>Layer 4 SNI header inspection without edge TLS termination or exposing private keys | 🇺🇸 EN | `1:20` | [▶️ Watch](https://www.youtube.com/shorts/DkJQ4q0cetM) |
 | **06** | [How Gateway API HTTPRoute Replaces Fragile Ingress Annotations](https://www.youtube.com/shorts/g2z9-OSA_mU) | **Declarative Routing**<br/>Native percentage traffic splitting, path/header rewrites & granular status conditions | 🇺🇸 EN | `1:14` | [▶️ Watch](https://www.youtube.com/shorts/g2z9-OSA_mU) |
+| **07** | [How OpenShift Automated Preflight Scripts Bulletproof Cluster Installations](https://www.youtube.com/shorts/UucLub-i270) | **Preflight & Readiness Automation**<br/>DNS resolution, fio disk latency benchmarks under 10ms & health validation | 🇺🇸 EN | `1:02` | [▶️ Watch](https://www.youtube.com/shorts/UucLub-i270) |
+| **08** | [How to Automate OpenShift etcd Snapshots and Retention Policies with Bash](https://www.youtube.com/shorts/o0hq2INBw1E) | **Automated Backup & Retention**<br/>etcd snapshot db dumps, static pod manifest archiving & retention pruning | 🇺🇸 EN | `1:08` | [▶️ Watch](https://www.youtube.com/shorts/o0hq2INBw1E) |
+| **09** | [How Emergency Scripts Resurrect Dead OpenShift Clusters After Quorum Failure](https://www.youtube.com/shorts/r2OhAxZU5gs) | **Emergency Quorum Restoration**<br/>Out-of-band single-member recovery, dead peer stripping & API server revival | 🇺🇸 EN | `1:25` | [▶️ Watch](https://www.youtube.com/shorts/r2OhAxZU5gs) |
+| **10** | [How to Automate OpenShift Disaster Recovery Drills with OADP and Kopia](https://www.youtube.com/shorts/5Jkl6h7uOgA) | **Automated DR Verification Harness**<br/>Sandbox namespace restores, SCC validation, synthetic probes & RTO/RPO metrics | 🇺🇸 EN | `1:08` | [▶️ Watch](https://www.youtube.com/shorts/5Jkl6h7uOgA) |
+| **11** | [How to Automate OpenShift Master Node Replacement Without Downtime](https://www.youtube.com/shorts/XgkB-eDbl_U) | **Node Lifecycle & Assisted Replacement**<br/>etcd member eviction, node cordon/drain/delete & CSR automated approval | 🇺🇸 EN | `0:58` | [▶️ Watch](https://www.youtube.com/shorts/XgkB-eDbl_U) |
+| **12** | [How OpenShift Canary Upgrades Protect Workloads with Automated SLO Gates](https://www.youtube.com/shorts/gN_-IyABljE) | **Canary Upgrades & SLO Gating**<br/>Paused MCP rollout waves, pre-flight health checks & Thanos SLO gating | 🇺🇸 EN | `1:27` | [▶️ Watch](https://www.youtube.com/shorts/gN_-IyABljE) |
 
 *For complete technical breakdowns, copy-paste ready descriptions, and YouTube Studio links, see [Section: Video Walkthroughs & Architecture References](#video-walkthroughs--architecture-references-youtube).*
 
@@ -1390,10 +1396,10 @@ Below are the complete video overviews organized by original audio language and 
 
 <br/>
 
-### ⚡ Architecture Video Shorts (6 Shorts)
+### ⚡ Architecture & Automation Video Shorts (12 Shorts)
 
 <details open>
-<summary>📂 <strong>Technical Video Shorts Breakdown (6 Shorts)</strong></summary>
+<summary>📂 <strong>Technical Video Shorts Breakdown (12 Shorts)</strong></summary>
 
 <br/>
 
@@ -1530,6 +1536,150 @@ Below are the complete video overviews organized by original audio language and 
 > https://github.com/nubenetes/openshift-4-20-installation-day0-day2
 >
 > #Shorts #HTTPRoute #GatewayAPI #OpenShift #Kubernetes #Networking #DevOps #CloudNative
+
+#### 7. How OpenShift Automated Preflight Scripts Bulletproof Cluster Installations
+- 🔗 **Direct Link**: [https://www.youtube.com/shorts/UucLub-i270](https://www.youtube.com/shorts/UucLub-i270)
+- 🛠️ **YouTube Studio**: [https://studio.youtube.com/video/UucLub-i270/edit](https://studio.youtube.com/video/UucLub-i270/edit)
+- 🌐 **Language**: English (Original Audio)
+- ⏱️ **Duration**: 1:02
+- 🏷️ **Domain**: Preflight Validation & Readiness Automation
+- 📝 **Full Description**:
+> 🛡️ How OpenShift Automated Preflight Scripts Bulletproof Cluster Installations!
+>
+> Installing OpenShift 4 on bare metal or private clouds without rigorous preflight verification is asking for silent failures. A single DNS PTR mismatch, NTP drift, or slow disk will kill control plane quorum during bootstrap!
+>
+> How our automated preflight scripts guarantee Day 0 readiness:
+> • Authoritative DNS Checks: Validates api, api-int, and wildcard apps records across split-horizon resolvers.
+> • Disk IOPS Benchmarking: Runs automated fio tests ensuring fdatasync latency stays strictly under 10ms at p99.
+> • Network and MTU Validation: Verifies jumbo frames, Geneve overlay routing, and firewall port clearance.
+> • Automated Cluster Health Check: Inspects all ClusterOperators, node ready states, and pending CSR approvals.
+>
+> Never guess your cluster readiness again!
+>
+> 🔗 Explore the Preflight Scripts:
+> https://github.com/nubenetes/openshift-4-20-installation-day0-day2/tree/main/scripts
+>
+> #Shorts #OpenShift #Kubernetes #Sysadmin #DevOps #SRE #Bash #Preflight #Automation
+
+#### 8. How to Automate OpenShift etcd Snapshots and Retention Policies with Bash
+- 🔗 **Direct Link**: [https://www.youtube.com/shorts/o0hq2INBw1E](https://www.youtube.com/shorts/o0hq2INBw1E)
+- 🛠️ **YouTube Studio**: [https://studio.youtube.com/video/o0hq2INBw1E/edit](https://studio.youtube.com/video/o0hq2INBw1E/edit)
+- 🌐 **Language**: English (Original Audio)
+- ⏱️ **Duration**: 1:08
+- 🏷️ **Domain**: Automated Backup & Retention Policies
+- 📝 **Full Description**:
+> 💾 How to Automate OpenShift etcd Snapshots and Retention Policies with Bash!
+>
+> etcd is the single source of truth for your entire OpenShift cluster. If all master nodes lose power or suffer storage corruption, your only survival lifeline is an uncorrupted, recent etcd snapshot!
+>
+> How our automated etcd backup script safeguards your control plane:
+> • Official Backup Execution: Triggers Red Hat cluster-backup.sh directly or via oc debug on the leader control plane node.
+> • Static Pod Preservation: Archives static pod manifests, certificates, and TLS keys alongside the snapshot db.
+> • Integrity Verification: Confirms non-zero byte size and valid sqlite headers immediately post-dump.
+> • Automated Pruning: Enforces configurable retention policies (e.g. 14 days) to prevent disk space exhaustion.
+>
+> Automate your cluster backups before disaster strikes!
+>
+> 🔗 Download the etcd Backup Script:
+> https://github.com/nubenetes/openshift-4-20-installation-day0-day2/tree/main/scripts
+>
+> #Shorts #OpenShift #etcd #Kubernetes #Backup #DisasterRecovery #SRE #DevOps #Bash
+
+#### 9. How Emergency Scripts Resurrect Dead OpenShift Clusters After Quorum Failure
+- 🔗 **Direct Link**: [https://www.youtube.com/shorts/r2OhAxZU5gs](https://www.youtube.com/shorts/r2OhAxZU5gs)
+- 🛠️ **YouTube Studio**: [https://studio.youtube.com/video/r2OhAxZU5gs/edit](https://studio.youtube.com/video/r2OhAxZU5gs/edit)
+- 🌐 **Language**: English (Original Audio)
+- ⏱️ **Duration**: 1:25
+- 🏷️ **Domain**: Emergency Quorum Recovery & PKI Rebirth
+- 📝 **Full Description**:
+> 🚨 How Emergency Scripts Resurrect Dead OpenShift Clusters After Quorum Failure!
+>
+> When two out of three master nodes go offline or control plane PKI certificates expire, the Kubernetes API server dies completely. Standard oc commands will not respond!
+>
+> Here is how our emergency out-of-band recovery script resurrects the cluster:
+> • Helper Jump Host Execution: Initiates remediation out-of-band via SSH without relying on cluster networking.
+> • Static Pod Quenching: Safely pauses corrupted etcd and kube-apiserver static pods on the healthiest survivor node.
+> • Force Single-Member Quorum: Rewrites the Raft peer table to force single-node consensus on the surviving master.
+> • API Server Revival: Kubelet restarts static pods, bringing the cluster back to life so you can add fresh masters.
+>
+> Master out-of-band disaster recovery protocols!
+>
+> 🔗 Get the Emergency Recovery Scripts:
+> https://github.com/nubenetes/openshift-4-20-installation-day0-day2/tree/main/scripts
+>
+> #Shorts #OpenShift #DisasterRecovery #etcd #Kubernetes #SRE #Sysadmin #DevOps #OutofBand
+
+#### 10. How to Automate OpenShift Disaster Recovery Drills with OADP and Kopia
+- 🔗 **Direct Link**: [https://www.youtube.com/shorts/5Jkl6h7uOgA](https://www.youtube.com/shorts/5Jkl6h7uOgA)
+- 🛠️ **YouTube Studio**: [https://studio.youtube.com/video/5Jkl6h7uOgA/edit](https://studio.youtube.com/video/5Jkl6h7uOgA/edit)
+- 🌐 **Language**: English (Original Audio)
+- ⏱️ **Duration**: 1:08
+- 🏷️ **Domain**: Automated DR Drills & OADP Harness
+- 📝 **Full Description**:
+> 🛡️ How to Automate OpenShift Disaster Recovery Drills with OADP and Kopia!
+>
+> Untested backups are just wishful thinking! An enterprise disaster recovery strategy requires continuous, automated validation of Recovery Time (RTO) and Recovery Point (RPO) SLAs.
+>
+> How our automated OADP drill harness script works:
+> • Zero-Risk Drill: Restores the latest production OADP backup into an ephemeral, isolated sandbox namespace.
+> • Security Context Verification: Validates that OpenShift SCC admission controllers accept restored pods without UID conflicts.
+> • Synthetic Health Probing: Executes live HTTP synthetic health checks against restored routes and services.
+> • Automated Cleanup: Calculates exact RTO seconds and cleanly deletes the test namespace post-verification.
+>
+> Turn your DR policy into automated proof!
+>
+> 🔗 Check Out the DR Test Harness:
+> https://github.com/nubenetes/openshift-4-20-installation-day0-day2/tree/main/scripts
+>
+> #Shorts #OpenShift #OADP #Velero #DisasterRecovery #Kubernetes #SRE #DevOps #Kopia
+
+#### 11. How to Automate OpenShift Master Node Replacement Without Downtime
+- 🔗 **Direct Link**: [https://www.youtube.com/shorts/XgkB-eDbl_U](https://www.youtube.com/shorts/XgkB-eDbl_U)
+- 🛠️ **YouTube Studio**: [https://studio.youtube.com/video/XgkB-eDbl_U/edit](https://studio.youtube.com/video/XgkB-eDbl_U/edit)
+- 🌐 **Language**: English (Original Audio)
+- ⏱️ **Duration**: 0:58
+- 🏷️ **Domain**: Master Node Replacement & Lifecycle Automation
+- 📝 **Full Description**:
+> 🔄 How to Automate OpenShift Master Node Replacement Without Downtime!
+>
+> When a physical bare-metal server or hypervisor VM hosting a master node suffers permanent hardware death, replacing it manually involves over a dozen error-prone etcdctl and oc steps.
+>
+> How our automated replacement assistant handles the lifecycle safely:
+> • Quorum Safeguard: Verifies that at least two healthy masters are online before touching anything.
+> • etcd Member Eviction: Purges the dead master member ID from the active Raft cluster membership.
+> • Node Object Deletion: Cordons, drains, and unlinks the failed node resource from the Kubernetes API.
+> • Assisted Reintegration: Auto-approves pending kubelet CSRs and triggers etcd cluster re-balancing.
+>
+> Replace failed nodes with zero operational panic!
+>
+> 🔗 Download the Node Replacement Script:
+> https://github.com/nubenetes/openshift-4-20-installation-day0-day2/tree/main/scripts
+>
+> #Shorts #OpenShift #BareMetal #Kubernetes #etcd #DevOps #SRE #Sysadmin #Automation
+
+#### 12. How OpenShift Canary Upgrades Protect Workloads with Automated SLO Gates
+- 🔗 **Direct Link**: [https://www.youtube.com/shorts/gN_-IyABljE](https://www.youtube.com/shorts/gN_-IyABljE)
+- 🛠️ **YouTube Studio**: [https://studio.youtube.com/video/gN_-IyABljE/edit](https://studio.youtube.com/video/gN_-IyABljE/edit)
+- 🌐 **Language**: English (Original Audio)
+- ⏱️ **Duration**: 1:27
+- 🏷️ **Domain**: Canary Upgrades & Telemetry SLO Gating
+- 📝 **Full Description**:
+> 🚀 How OpenShift Canary Upgrades Work: Paused MCPs and Automated SLO Gates!
+>
+> Upgrading a mission-critical OpenShift cluster across hundreds of worker nodes should never be done as an all-or-nothing gamble. One bad kernel parameter can take down production!
+>
+> How our automated upgrade orchestrator script protects your cluster:
+> • Mandatory Pre-Flight Health: Audits operator states, MCP sync, and takes a pre-upgrade etcd snapshot.
+> • Paused MachineConfigPools: Halts global worker upgrades while upgrading only a designated canary node.
+> • Prometheus and Thanos SLO Gating: Evaluates cluster error rates and latency SLOs during a configurable soak period.
+> • Automated Progressive Rollout: Resumes pool unpausing and sequential worker draining only when telemetry stays green.
+>
+> Deploy upgrades with bulletproof automated guardrails!
+>
+> 🔗 Explore the Upgrade Automation Scripts:
+> https://github.com/nubenetes/openshift-4-20-installation-day0-day2/tree/main/scripts
+>
+> #Shorts #OpenShift #CanaryUpgrade #Kubernetes #DevOps #SRE #PlatformEngineering #GitOps #Bash
 
 </details>
 
