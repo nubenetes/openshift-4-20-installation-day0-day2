@@ -84,6 +84,7 @@ An exhaustive, state-of-the-art reference architecture, installation handbook, a
     - [Microsoft Azure](docs/04-platforms/06-azure.md)
     - [Google Cloud Platform (GCP)](docs/04-platforms/07-gcp.md)
     - [Microsoft Hyper-V & Azure Stack HCI](docs/04-platforms/08-microsoft-hyper-v.md)
+    - [OpenShift Virtualization (KubeVirt & MTV)](docs/04-platforms/09-openshift-virtualization.md)
   - [05. Day 0 Infrastructure Readiness](#05-day-0-infrastructure-readiness)
     - [Hardware & Capacity Sizing](docs/05-day0-readiness/01-hardware-and-sizing.md)
     - [DNS & Load Balancing Matrix](docs/05-day0-readiness/02-dns-loadbalancer-matrix.md)
@@ -94,12 +95,15 @@ An exhaustive, state-of-the-art reference architecture, installation handbook, a
     - [Ingress & Custom Certificates](docs/06-day1-baselining/02-ingress-and-custom-certs.md)
     - [Identity Providers & RBAC Hardening](docs/06-day1-baselining/03-identity-providers-rbac.md)
     - [MachineConfigPools & Node Tuning](docs/06-day1-baselining/04-machineconfigpools-tuning.md)
+    - [Secrets & Automated Certificate Rotation](docs/06-day1-baselining/05-secrets-and-cert-rotation.md)
   - [07. Day 2 Operations & Lifecycle](#07-day-2-operations--lifecycle)
     - [Enterprise Observability Stack](docs/07-day2-operations/01-observability-stack.md)
     - [Security & Compliance](docs/07-day2-operations/02-security-and-compliance.md)
     - [GitOps Foundation](docs/07-day2-operations/03-gitops-foundation.md)
     - [Cluster Lifecycle & Upgrades](docs/07-day2-operations/04-lifecycle-and-upgrades.md)
     - [Automated Upgrades & Pre-Upgrade Mandates](docs/07-day2-operations/05-automated-upgrades.md)
+    - [GitOps App-of-Apps & Configuration Drift Management](docs/07-day2-operations/06-gitops-app-of-apps.md)
+    - [Enterprise AI & GPU Acceleration (RHOAI & vLLM)](docs/07-day2-operations/07-openshift-ai-gpu.md)
   - [08. Disaster Recovery, Backup & GitOps Rebuild](#08-disaster-recovery-backup--gitops-rebuild)
     - [etcd Backup, Recovery & Quorum Loss](docs/08-backup-dr-and-rebuild/01-etcd-backup-restore.md)
     - [OADP vs Vanilla Velero Deep-Dive](docs/08-backup-dr-and-rebuild/02-oadp-vs-velero-deepdive.md)
@@ -116,6 +120,7 @@ An exhaustive, state-of-the-art reference architecture, installation handbook, a
     - [`pre-upgrade-health-check.sh`](scripts/pre-upgrade-health-check.sh) - Pre-Upgrade Health & etcd Freshness Gating
     - [`automated-cluster-upgrade.sh`](scripts/automated-cluster-upgrade.sh) - Canary MCP-Gated Upgrade Orchestrator
     - [`airgap-upgrade.sh`](scripts/airgap-upgrade.sh) - Disconnected oc-mirror v2 Release Upgrade Orchestrator
+    - [`test-oadp-restore.sh`](scripts/test-oadp-restore.sh) - Automated DR Verification & Restore Drill Engine
   - [Production Manifests (`configs/`)](#production-manifests-configs)
     - [Agent-Based Installer (`configs/agent-based/`)](configs/agent-based/)
     - [Public Cloud IPI (`configs/ipi-cloud/`)](configs/ipi-cloud/)
@@ -123,6 +128,10 @@ An exhaustive, state-of-the-art reference architecture, installation handbook, a
     - [Air-Gapped & Registry (`configs/airgap/`)](configs/airgap/)
     - [Day 1 Baselining & Hardening (`configs/day1/`)](configs/day1/)
     - [Day 2 Operations & DR (`configs/day2/`)](configs/day2/)
+    - [GitOps App-of-Apps (`configs/gitops/`)](configs/gitops/)
+    - [Security & Certificate Management (`configs/security/`)](configs/security/)
+    - [OpenShift Virtualization (`configs/virt/`)](configs/virt/)
+    - [Enterprise AI & GPU Acceleration (`configs/ai/`)](configs/ai/)
     - [Helper Node Configurations (`configs/helper-node/`)](configs/helper-node/)
 - [Technical Deep-Dive: The Velero Question](#technical-deep-dive-the-velero-question)
   - [Why Vanilla Velero Fails on OpenShift:](#why-vanilla-velero-fails-on-openshift)
@@ -144,6 +153,9 @@ By **September 2026**, OpenShift 4.20 establishes the enterprise foundation for 
 3. **Storage & Data Fabric**: First-class **OpenShift Data Foundation (ODF)** integration for multi-cloud Ceph block (RBD), file (CephFS), and object (RGW) storage.
 4. **Data Protection Verdict**: Strict enforcement of **OADP (OpenShift API for Data Protection)** with **Kopia** data-movers, definitively superseding vanilla upstream Velero which fails to handle OpenShift security contexts and proprietary CRDs.
 5. **Declarative Rebuilds**: Treating clusters as disposable infrastructure reproducible in <45 minutes via **Red Hat OpenShift GitOps (ArgoCD v3+)** and **Advanced Cluster Management (ACM 2.12+)**.
+6. **GitOps App-of-Apps & Autonomous Day 2**: End-to-end self-healing cluster configuration via **Red Hat OpenShift GitOps** orchestrated by a root Application, combined with **External Secrets Operator (ESO)** and **cert-manager** for automated key/secret hydration and TLS certificate lifecycle management.
+7. **Unified Modern Virtualization**: Running and migrating legacy enterprise virtual machines side-by-side with cloud-native containers via **OpenShift Virtualization 4.18/4.20** and the **Migration Toolkit for Virtualization (MTV 2.8+)**, eliminating hypervisor licensing lock-in.
+8. **Enterprise AI & Model Serving**: First-class support for GPU-accelerated computing through the **NVIDIA GPU Operator 24.x**, **Red Hat OpenShift AI (RHOAI 2.16+)**, and **vLLM ServingRuntime** for low-latency, private Large Language Model inference.
 
 ---
 
@@ -451,6 +463,7 @@ To navigate and utilize this enterprise repository effectively, the directory st
     - `├──` 📄 [`06-azure.md`](docs/04-platforms/06-azure.md) — *Microsoft Azure Private VNet IPI with Workload Identity*
     - `├──` 📄 [`07-gcp.md`](docs/04-platforms/07-gcp.md) — *Google Cloud Platform Shared VPC with Workload Identity*
     - `├──` 📄 [`08-microsoft-hyper-v.md`](docs/04-platforms/08-microsoft-hyper-v.md) — *Microsoft Hyper-V / Azure Stack HCI Gen 2 VM deployment*
+    - `├──` 📄 [`09-openshift-virtualization.md`](docs/04-platforms/09-openshift-virtualization.md) — *OpenShift Virtualization (KubeVirt) & MTV 2.8 migration*
     - `└──` 📄 [`README.md`](docs/04-platforms/README.md) — *Platform compatibility & deployment matrix*
   - `├──` 📁 **[`docs/05-day0-readiness/`](docs/05-day0-readiness/)** — *Preflight capacity planning & core services deployment*
     - `├──` 📄 [`01-hardware-and-sizing.md`](docs/05-day0-readiness/01-hardware-and-sizing.md) — *Hardware capacity, CPU/RAM quotas, and disk IOPS latency*
@@ -463,6 +476,7 @@ To navigate and utilize this enterprise repository effectively, the directory st
     - `├──` 📄 [`02-ingress-and-custom-certs.md`](docs/06-day1-baselining/02-ingress-and-custom-certs.md) — *Replacing ingress router certificates with enterprise PKI*
     - `├──` 📄 [`03-identity-providers-rbac.md`](docs/06-day1-baselining/03-identity-providers-rbac.md) — *Enterprise SSO (Keycloak, Entra ID) and RBAC lockdown*
     - `├──` 📄 [`04-machineconfigpools-tuning.md`](docs/06-day1-baselining/04-machineconfigpools-tuning.md) — *Dedicated infra MCPs, real-time kernel, and node tuning*
+    - `├──` 📄 [`05-secrets-and-cert-rotation.md`](docs/06-day1-baselining/05-secrets-and-cert-rotation.md) — *Automated cert rotation (cert-manager) & External Secrets (ESO)*
     - `└──` 📄 [`README.md`](docs/06-day1-baselining/README.md) — *Day 1 baselining overview*
   - `├──` 📁 **[`docs/07-day2-operations/`](docs/07-day2-operations/)** — *Day 2 enterprise operations, observability & lifecycle*
     - `├──` 📄 [`01-observability-stack.md`](docs/07-day2-operations/01-observability-stack.md) — *User Workload Monitoring, LokiStack logging & Tempo tracing*
@@ -470,6 +484,8 @@ To navigate and utilize this enterprise repository effectively, the directory st
     - `├──` 📄 [`03-gitops-foundation.md`](docs/07-day2-operations/03-gitops-foundation.md) — *Red Hat OpenShift GitOps (ArgoCD v3+) & External Secrets*
     - `├──` 📄 [`04-lifecycle-and-upgrades.md`](docs/07-day2-operations/04-lifecycle-and-upgrades.md) — *Cluster lifecycle, EUS-to-EUS upgrades & MCP canary rollout*
     - `├──` 📄 [`05-automated-upgrades.md`](docs/07-day2-operations/05-automated-upgrades.md) — *Automated upgrade workflows, etcd snapshot preflight gating*
+    - `├──` 📄 [`06-gitops-app-of-apps.md`](docs/07-day2-operations/06-gitops-app-of-apps.md) — *GitOps App-of-Apps, drift self-healing & multi-environment promotion*
+    - `├──` 📄 [`07-openshift-ai-gpu.md`](docs/07-day2-operations/07-openshift-ai-gpu.md) — *Enterprise AI workloads, GPU Operator & vLLM model serving*
     - `└──` 📄 [`README.md`](docs/07-day2-operations/README.md) — *Day 2 operational runbooks overview*
   - `└──` 📁 **[`docs/08-backup-dr-and-rebuild/`](docs/08-backup-dr-and-rebuild/)** — *Business continuity, disaster recovery & rapid rebuild*
     - `├──` 📄 [`01-etcd-backup-restore.md`](docs/08-backup-dr-and-rebuild/01-etcd-backup-restore.md) — *Control plane etcd snapshot automation & disaster recovery*
@@ -503,6 +519,20 @@ To navigate and utilize this enterprise repository effectively, the directory st
     - `├──` 📄 [`etcd-backup-cronjob.yaml`](configs/day2/etcd-backup-cronjob.yaml) — *Scheduled etcd snapshot Kubernetes CronJob*
     - `├──` 📄 [`compliance-suite-cis.yaml`](configs/day2/compliance-suite-cis.yaml) — *Compliance Operator CIS benchmark scanning suite*
     - `└──` 📄 [`cluster-autoscaler.yaml`](configs/day2/cluster-autoscaler.yaml) — *Automated compute scaling threshold specification*
+  - `├──` 📁 **[`configs/gitops/`](configs/gitops/)** — *Red Hat OpenShift GitOps & App-of-Apps root manifests*
+    - `├──` 📄 [`gitops-operator-sub.yaml`](configs/gitops/gitops-operator-sub.yaml) — *OpenShift GitOps Operator Subscription*
+    - `└──` 📄 [`root-app-of-apps.yaml`](configs/gitops/root-app-of-apps.yaml) — *ArgoCD root App-of-Apps orchestrator*
+  - `├──` 📁 **[`configs/security/`](configs/security/)** — *Certificate management & External Secrets Operator*
+    - `├──` 📄 [`cert-manager-clusterissuer.yaml`](configs/security/cert-manager-clusterissuer.yaml) — *cert-manager ClusterIssuer (Vault / ACME / Private CA)*
+    - `└──` 📄 [`external-secrets-store.yaml`](configs/security/external-secrets-store.yaml) — *External Secrets Operator ClusterSecretStore for HashiCorp Vault*
+  - `├──` 📁 **[`configs/virt/`](configs/virt/)** — *OpenShift Virtualization & Migration Toolkit (MTV)*
+    - `├──` 📄 [`hyperconverged-cr.yaml`](configs/virt/hyperconverged-cr.yaml) — *HyperConverged Operator Custom Resource (KubeVirt)*
+    - `├──` 📄 [`mtv-forklift-controller.yaml`](configs/virt/mtv-forklift-controller.yaml) — *Migration Toolkit for Virtualization (ForkliftController)*
+    - `└──` 📄 [`vm-rhel9-template.yaml`](configs/virt/vm-rhel9-template.yaml) — *Production Enterprise RHEL 9 VirtualMachine manifest*
+  - `├──` 📁 **[`configs/ai/`](configs/ai/)** — *Enterprise AI & GPU Acceleration manifests*
+    - `├──` 📄 [`gpu-operator-clusterpolicy.yaml`](configs/ai/gpu-operator-clusterpolicy.yaml) — *NVIDIA GPU Operator ClusterPolicy*
+    - `├──` 📄 [`rhoai-datasciencecluster.yaml`](configs/ai/rhoai-datasciencecluster.yaml) — *Red Hat OpenShift AI DataScienceCluster CR*
+    - `└──` 📄 [`vllm-serving-runtime.yaml`](configs/ai/vllm-serving-runtime.yaml) — *vLLM high-throughput ServingRuntime for local LLM inference*
   - `└──` 📁 **[`configs/helper-node/`](configs/helper-node/)** — *On-premises / Air-Gapped Helper Node daemon configurations*
     - `├──` 📄 [`haproxy.cfg`](configs/helper-node/haproxy.cfg) — *HAProxy Layer 4 load balancing for API (6443) & Apps (80/443)*
     - `└──` 📄 [`named.conf`](configs/helper-node/named.conf) — *Authoritative BIND9 DNS split-horizon zone configuration*
@@ -515,7 +545,8 @@ To navigate and utilize this enterprise repository effectively, the directory st
   - `├──` 📄 [`pre-upgrade-health-check.sh`](scripts/pre-upgrade-health-check.sh) — *Pre-upgrade gatekeeper: verifies etcd backup, MCPs & operators*
   - `├──` 📄 [`automated-cluster-upgrade.sh`](scripts/automated-cluster-upgrade.sh) — *End-to-end upgrade orchestrator with paused worker MCP canary*
   - `├──` 📄 [`airgap-upgrade.sh`](scripts/airgap-upgrade.sh) — *Disconnected upgrade orchestrator: mirrors release & applies IDMS*
-  - `└──` 📄 [`deploy-hyperv-vms.ps1`](scripts/deploy-hyperv-vms.ps1) — *Automated PowerShell Gen 2 VM provisioner for Hyper-V / HCI*
+  - `├──` 📄 [`deploy-hyperv-vms.ps1`](scripts/deploy-hyperv-vms.ps1) — *Automated PowerShell Gen 2 VM provisioner for Hyper-V / HCI*
+  - `└──` 📄 [`test-oadp-restore.sh`](scripts/test-oadp-restore.sh) — *Automated disaster recovery drill & backup restoration auditor*
 
 <details>
 <summary><b>Click to view Raw Plain-Text Monospace Directory Tree</b></summary>
@@ -555,6 +586,7 @@ openshift-4-20-installation-day0-day2/
 │   │   ├── 06-azure.md
 │   │   ├── 07-gcp.md
 │   │   ├── 08-microsoft-hyper-v.md
+│   │   ├── 09-openshift-virtualization.md
 │   │   └── README.md
 │   ├── 05-day0-readiness/
 │   │   ├── 01-hardware-and-sizing.md
@@ -567,6 +599,7 @@ openshift-4-20-installation-day0-day2/
 │   │   ├── 02-ingress-and-custom-certs.md
 │   │   ├── 03-identity-providers-rbac.md
 │   │   ├── 04-machineconfigpools-tuning.md
+│   │   ├── 05-secrets-and-cert-rotation.md
 │   │   └── README.md
 │   ├── 07-day2-operations/
 │   │   ├── 01-observability-stack.md
@@ -574,6 +607,8 @@ openshift-4-20-installation-day0-day2/
 │   │   ├── 03-gitops-foundation.md
 │   │   ├── 04-lifecycle-and-upgrades.md
 │   │   ├── 05-automated-upgrades.md
+│   │   ├── 06-gitops-app-of-apps.md
+│   │   ├── 07-openshift-ai-gpu.md
 │   │   └── README.md
 │   └── 08-backup-dr-and-rebuild/
 │       ├── 01-etcd-backup-restore.md
@@ -607,6 +642,20 @@ openshift-4-20-installation-day0-day2/
 │   │   ├── etcd-backup-cronjob.yaml
 │   │   ├── compliance-suite-cis.yaml
 │   │   └── cluster-autoscaler.yaml
+│   ├── gitops/
+│   │   ├── gitops-operator-sub.yaml
+│   │   └── root-app-of-apps.yaml
+│   ├── security/
+│   │   ├── cert-manager-clusterissuer.yaml
+│   │   └── external-secrets-store.yaml
+│   ├── virt/
+│   │   ├── hyperconverged-cr.yaml
+│   │   ├── mtv-forklift-controller.yaml
+│   │   └── vm-rhel9-template.yaml
+│   ├── ai/
+│   │   ├── gpu-operator-clusterpolicy.yaml
+│   │   ├── rhoai-datasciencecluster.yaml
+│   │   └── vllm-serving-runtime.yaml
 │   └── helper-node/
 │       ├── haproxy.cfg
 │       └── named.conf
@@ -619,21 +668,22 @@ openshift-4-20-installation-day0-day2/
     ├── pre-upgrade-health-check.sh
     ├── automated-cluster-upgrade.sh
     ├── airgap-upgrade.sh
-    └── deploy-hyperv-vms.ps1
+    ├── deploy-hyperv-vms.ps1
+    └── test-oadp-restore.sh
 ```
 </details>
 
 ### Architectural Component Breakdown
 
 #### 1. Documentation Modules (`docs/`)
-The `docs/` tree contains **40 exhaustive, production-grade architectural blueprints** organized into 8 functional phases, cross-referenced from [`docs/00-navigation.md`](docs/00-navigation.md):
+The `docs/` tree contains **44 exhaustive, production-grade architectural blueprints** organized into 8 functional phases, cross-referenced from [`docs/00-navigation.md`](docs/00-navigation.md):
 - **Topologies ([`docs/01-architecture-topologies/`](docs/01-architecture-topologies/README.md))**: Footprint requirements, fault domain behavior, and resource overhead from Single Node OpenShift (SNO) up to massive Hosted Control Planes (HyperShift).
 - **Provisioning ([`docs/02-provisioning-paradigms/`](docs/02-provisioning-paradigms/README.md))**: Detailed mechanics of modern Agent-Based Installer (Bootstrap-in-Place) vs Cloud IPI vs legacy UPI vs fleet ZTP with ACM.
 - **Networking ([`docs/03-network-and-connectivity/`](docs/03-network-and-connectivity/README.md))**: Forward proxy configuration, `oc-mirror` v2 disconnected mirroring, core air-gap services (BIND9/Chrony), and OVN-Kubernetes CNI tuning.
-- **Platforms ([`docs/04-platforms/`](docs/04-platforms/README.md))**: Production recipes for Bare Metal, VMware vSphere 8/9, Nutanix AHV, KVM/RHOSO, AWS, Azure, GCP, and Microsoft Hyper-V.
+- **Platforms ([`docs/04-platforms/`](docs/04-platforms/README.md))**: Production recipes for Bare Metal, VMware vSphere 8/9, Nutanix AHV, KVM/RHOSO, AWS, Azure, GCP, Microsoft Hyper-V, and OpenShift Virtualization (KubeVirt & MTV).
 - **Day 0 Readiness ([`docs/05-day0-readiness/`](docs/05-day0-readiness/README.md))**: Capacity planning, DNS/load balancing matrices, OpenShift Data Foundation (ODF) architecture, and Helper Node engineering.
-- **Day 1 Baselining ([`docs/06-day1-baselining/`](docs/06-day1-baselining/README.md))**: ClusterOperator verification, custom Ingress TLS certs, OIDC identity federation, and MachineConfigPool node tuning.
-- **Day 2 Operations ([`docs/07-day2-operations/`](docs/07-day2-operations/README.md))**: Full observability stack (User Workload Monitoring, Loki, Tempo), CIS compliance, ArgoCD GitOps foundation, and automated canary upgrade workflows.
+- **Day 1 Baselining ([`docs/06-day1-baselining/`](docs/06-day1-baselining/README.md))**: ClusterOperator verification, custom Ingress TLS certs, OIDC identity federation, MachineConfigPool node tuning, automated certificate rotation (cert-manager), and External Secrets (ESO).
+- **Day 2 Operations ([`docs/07-day2-operations/`](docs/07-day2-operations/README.md))**: Full observability stack (User Workload Monitoring, Loki, Tempo), CIS compliance, ArgoCD GitOps foundation, automated canary upgrade workflows, GitOps App-of-Apps drift self-healing, and Enterprise AI GPU acceleration (RHOAI & vLLM).
 - **Disaster Recovery ([`docs/08-backup-dr-and-rebuild/`](docs/08-backup-dr-and-rebuild/README.md))**: etcd snapshot & restoration, OADP vs vanilla Velero analysis, Metro-DR/Regional-DR, and declarative GitOps disaster recovery.
 
 #### 2. Declarative Configurations (`configs/`)
@@ -643,21 +693,25 @@ The `configs/` tree provides validated, production-grade YAML and daemon templat
 - **`configs/airgap/`**: Modern `oc-mirror` v2 `ImageSetConfiguration` definitions and local Quay/Harbor registry manifests.
 - **`configs/day1/`**: Ready-to-apply Custom Resources for Ingress wildcard TLS, enterprise OIDC identity providers, NTP MachineConfigs, and dedicated infrastructure worker pools.
 - **`configs/day2/`**: Declarative definitions for OADP 1.4+ Kopia backup storage locations, automated etcd backup CronJobs, CIS Compliance suites, and cluster autoscaling.
+- **`configs/gitops/`**: GitOps Operator subscription and root App-of-Apps custom resources orchestrating cluster configuration.
+- **`configs/security/`**: cert-manager ClusterIssuers and External Secrets Operator ClusterSecretStore configurations.
+- **`configs/virt/`**: OpenShift Virtualization HyperConverged CR, MTV ForkliftController, and enterprise RHEL 9 VM templates.
+- **`configs/ai/`**: NVIDIA GPU Operator ClusterPolicy, RHOAI DataScienceCluster, and vLLM ServingRuntime inference manifests.
 - **`configs/helper-node/`**: Authoritative BIND9 DNS zones and HAProxy Layer 4 load balancer configurations ready to deploy on bastion infrastructure.
 
 #### 3. Automation Tooling & Operational Scripts (`scripts/`)
 The `scripts/` directory houses ready-to-run automation tools covering the complete lifecycle:
 - **Preflight & Day 0**: [`scripts/preflight-check.sh`](scripts/preflight-check.sh) audits network prerequisites; [`scripts/generate-agent-iso.sh`](scripts/generate-agent-iso.sh) builds bootable media; [`scripts/mirror-ocp420-airgap.sh`](scripts/mirror-ocp420-airgap.sh) mirrors air-gapped images; [`scripts/deploy-hyperv-vms.ps1`](scripts/deploy-hyperv-vms.ps1) provisions Gen 2 Hyper-V VMs.
 - **Post-Install & Day 1**: [`scripts/validate-cluster-health.sh`](scripts/validate-cluster-health.sh) performs health auditing across all cluster operators, storage classes, and worker nodes.
-- **Day 2 & Upgrades**: [`scripts/etcd-backup.sh`](scripts/etcd-backup.sh) automates control plane snapshots; [`scripts/pre-upgrade-health-check.sh`](scripts/pre-upgrade-health-check.sh) enforces safety gating; [`scripts/automated-cluster-upgrade.sh`](scripts/automated-cluster-upgrade.sh) executes canary-controlled upgrades; [`scripts/airgap-upgrade.sh`](scripts/airgap-upgrade.sh) manages disconnected release upgrades.
+- **Day 2, Upgrades & DR**: [`scripts/etcd-backup.sh`](scripts/etcd-backup.sh) automates control plane snapshots; [`scripts/pre-upgrade-health-check.sh`](scripts/pre-upgrade-health-check.sh) enforces safety gating; [`scripts/automated-cluster-upgrade.sh`](scripts/automated-cluster-upgrade.sh) executes canary-controlled upgrades with Prometheus SLO gating; [`scripts/airgap-upgrade.sh`](scripts/airgap-upgrade.sh) manages disconnected release upgrades; [`scripts/test-oadp-restore.sh`](scripts/test-oadp-restore.sh) automates end-to-end disaster recovery drill verification.
 
 ### Lifecycle Alignment Matrix (Day 0, Day 1, Day 2)
 
 | Operational Phase | Focus Areas & Objectives | Primary Documentation Modules | Production Manifests (`configs/`) | Operational Scripts (`scripts/`) |
 | :--- | :--- | :--- | :--- | :--- |
 | **Day 0: Planning & Provisioning** | Sizing, network design, air-gap mirroring, media generation, bootstrap-in-place | `docs/01-architecture-topologies/`<br/>`docs/02-provisioning-paradigms/`<br/>`docs/03-network-and-connectivity/`<br/>`docs/04-platforms/`<br/>`docs/05-day0-readiness/` | `configs/agent-based/`<br/>`configs/ipi-cloud/`<br/>`configs/upi-vsphere/`<br/>`configs/airgap/`<br/>`configs/helper-node/` | `scripts/preflight-check.sh`<br/>`scripts/generate-agent-iso.sh`<br/>`scripts/mirror-ocp420-airgap.sh`<br/>`scripts/deploy-hyperv-vms.ps1` |
-| **Day 1: Hardening & Baselining** | Operator validation, custom PKI Ingress TLS, OIDC SSO, dedicated infra MCPs, ODF storage | `docs/06-day1-baselining/` | `configs/day1/` | `scripts/validate-cluster-health.sh` |
-| **Day 2: Operations, Upgrades & DR** | Observability, CIS compliance, GitOps foundation, etcd backups, OADP, automated upgrades | `docs/07-day2-operations/`<br/>`docs/08-backup-dr-and-rebuild/` | `configs/day2/` | `scripts/etcd-backup.sh`<br/>`scripts/pre-upgrade-health-check.sh`<br/>`scripts/automated-cluster-upgrade.sh`<br/>`scripts/airgap-upgrade.sh` |
+| **Day 1: Hardening & Baselining** | Operator validation, custom PKI Ingress TLS, OIDC SSO, dedicated infra MCPs, ODF storage, cert-manager & ESO | `docs/06-day1-baselining/` | `configs/day1/`<br/>`configs/security/` | `scripts/validate-cluster-health.sh` |
+| **Day 2: Operations, Upgrades & DR** | Observability, CIS compliance, GitOps App-of-Apps, OpenShift Virt, RHOAI & GPU, etcd backups, OADP DR drills, canary upgrades | `docs/07-day2-operations/`<br/>`docs/08-backup-dr-and-rebuild/` | `configs/day2/`<br/>`configs/gitops/`<br/>`configs/virt/`<br/>`configs/ai/` | `scripts/etcd-backup.sh`<br/>`scripts/pre-upgrade-health-check.sh`<br/>`scripts/automated-cluster-upgrade.sh`<br/>`scripts/airgap-upgrade.sh`<br/>`scripts/test-oadp-restore.sh` |
 
 ---
 
@@ -769,6 +823,7 @@ Exhaustive configuration blueprints across all physical and cloud infrastructure
 - [Microsoft Azure](docs/04-platforms/06-azure.md): Private VNet, Azure Workload Identity Federation, Accelerated Networking, and Azure Disk CSI.
 - [Google Cloud Platform (GCP)](docs/04-platforms/07-gcp.md): Shared VPC Host/Service projects, GCP Workload Identity, and PSC endpoints.
 - [Microsoft Hyper-V & Azure Stack HCI](docs/04-platforms/08-microsoft-hyper-v.md): Gen 2 UEFI VM specifications, Secure Boot templates, MAC spoofing for Keepalived VIPs, and PowerShell automation.
+- [OpenShift Virtualization (KubeVirt & MTV)](docs/04-platforms/09-openshift-virtualization.md): Collocated VM and container orchestration, live migration, and automated VMware migration via MTV 2.8+.
 
 ### [05. Day 0 Infrastructure Readiness](docs/05-day0-readiness/README.md)
 Preflight validation and capacity planning:
@@ -783,6 +838,7 @@ Baselining, security lockdowns, and enterprise integration:
 - [Ingress & Custom Certificates](docs/06-day1-baselining/02-ingress-and-custom-certs.md): Replacing default wildcard certificates with corporate PKI TLS certs.
 - [Identity Providers & RBAC Hardening](docs/06-day1-baselining/03-identity-providers-rbac.md): Keycloak/Entra ID OIDC SSO, revoking self-provisioners, deleting `kubeadmin`.
 - [MachineConfigPools & Node Tuning](docs/06-day1-baselining/04-machineconfigpools-tuning.md): Dedicated infra node pools, real-time kernels, CPU pinning, and sysctl tuning.
+- [Secrets & Automated Certificate Rotation](docs/06-day1-baselining/05-secrets-and-cert-rotation.md): cert-manager automated TLS lifecycle, ACME/Vault ClusterIssuers, and External Secrets Operator (ESO) integration.
 
 ### [07. Day 2 Operations & Lifecycle](docs/07-day2-operations/README.md)
 Observability, compliance, GitOps, and upgrade management:
@@ -791,6 +847,8 @@ Observability, compliance, GitOps, and upgrade management:
 - [GitOps Foundation](docs/07-day2-operations/03-gitops-foundation.md): Red Hat OpenShift GitOps (ArgoCD v3+), App-of-Apps, and External Secrets Operator (ESO).
 - [Cluster Lifecycle & Upgrades](docs/07-day2-operations/04-lifecycle-and-upgrades.md): EUS-to-EUS upgrade paths, paused MCP canary rollouts, node drain safety.
 - [Automated Upgrades & Pre-Upgrade Mandates](docs/07-day2-operations/05-automated-upgrades.md): Deep architectural rationale for why upgrades must be strictly orchestrated, why fresh etcd snapshots are non-negotiable before upgrading, paused worker MCP rollouts, and automated scripts.
+- [GitOps App-of-Apps & Configuration Drift Management](docs/07-day2-operations/06-gitops-app-of-apps.md): ArgoCD App-of-Apps pattern, automated drift self-healing, sync waves, and multi-tenant repository segregation.
+- [Enterprise AI & GPU Acceleration (RHOAI & vLLM)](docs/07-day2-operations/07-openshift-ai-gpu.md): NVIDIA GPU Operator, time-slicing/MIG, Red Hat OpenShift AI (RHOAI 2.16+), and vLLM ServingRuntime for local LLM inference.
 
 ### [08. Disaster Recovery, Backup & GitOps Rebuild](docs/08-backup-dr-and-rebuild/README.md)
 RTO/RPO evaluation, etcd restoration, and declarative rebuilding:
@@ -817,6 +875,7 @@ All scripts and manifests are ready to execute from this repository:
 | [`scripts/pre-upgrade-health-check.sh`](scripts/pre-upgrade-health-check.sh) | Pre-upgrade audit: validates ClusterOperators, MCPs, etcd backup freshness, deprecated APIs, and firing alerts. | `./scripts/pre-upgrade-health-check.sh` |
 | [`scripts/automated-cluster-upgrade.sh`](scripts/automated-cluster-upgrade.sh) | End-to-end upgrade orchestrator: pre-audit -> automated etcd backup -> worker MCP pause -> CVO upgrade -> canary rollout. | `./scripts/automated-cluster-upgrade.sh 4.20.1` |
 | [`scripts/airgap-upgrade.sh`](scripts/airgap-upgrade.sh) | Air-gapped upgrade orchestrator: mirrors target release via oc-mirror v2, applies IDMS, and triggers upgrade. | `./scripts/airgap-upgrade.sh 4.20.1` |
+| [`scripts/test-oadp-restore.sh`](scripts/test-oadp-restore.sh) | Automated DR verification: provisions drill namespace, creates test workload, executes backup & restore, audits data integrity. | `./scripts/test-oadp-restore.sh` |
 
 ### Production Manifests (`configs/`)
 - **Agent-Based**: [`configs/agent-based/agent-config.yaml`](configs/agent-based/agent-config.yaml), [`install-config-sno.yaml`](configs/agent-based/install-config-sno.yaml), [`install-config-compact.yaml`](configs/agent-based/install-config-compact.yaml), [`install-config-standard.yaml`](configs/agent-based/install-config-standard.yaml).
@@ -825,6 +884,10 @@ All scripts and manifests are ready to execute from this repository:
 - **Air-Gapped**: [`configs/airgap/imageset-config-v2.yaml`](configs/airgap/imageset-config-v2.yaml), [`local-registry-quay.yaml`](configs/airgap/local-registry-quay.yaml).
 - **Day 1**: [`configs/day1/machineconfig-chrony.yaml`](configs/day1/machineconfig-chrony.yaml), [`cluster-proxy-trustedca.yaml`](configs/day1/cluster-proxy-trustedca.yaml), [`ingresscontroller-custom-tls.yaml`](configs/day1/ingresscontroller-custom-tls.yaml), [`idp-keycloak-oidc.yaml`](configs/day1/idp-keycloak-oidc.yaml), [`mcp-infra-nodes.yaml`](configs/day1/mcp-infra-nodes.yaml).
 - **Day 2**: [`configs/day2/oadp-dpa-cr.yaml`](configs/day2/oadp-dpa-cr.yaml), [`etcd-backup-cronjob.yaml`](configs/day2/etcd-backup-cronjob.yaml), [`compliance-suite-cis.yaml`](configs/day2/compliance-suite-cis.yaml), [`cluster-autoscaler.yaml`](configs/day2/cluster-autoscaler.yaml).
+- **GitOps & App-of-Apps**: [`configs/gitops/gitops-operator-sub.yaml`](configs/gitops/gitops-operator-sub.yaml), [`configs/gitops/root-app-of-apps.yaml`](configs/gitops/root-app-of-apps.yaml).
+- **Security & Secrets**: [`configs/security/cert-manager-clusterissuer.yaml`](configs/security/cert-manager-clusterissuer.yaml), [`configs/security/external-secrets-store.yaml`](configs/security/external-secrets-store.yaml).
+- **OpenShift Virtualization**: [`configs/virt/hyperconverged-cr.yaml`](configs/virt/hyperconverged-cr.yaml), [`configs/virt/mtv-forklift-controller.yaml`](configs/virt/mtv-forklift-controller.yaml), [`configs/virt/vm-rhel9-template.yaml`](configs/virt/vm-rhel9-template.yaml).
+- **Enterprise AI & GPU**: [`configs/ai/gpu-operator-clusterpolicy.yaml`](configs/ai/gpu-operator-clusterpolicy.yaml), [`configs/ai/rhoai-datasciencecluster.yaml`](configs/ai/rhoai-datasciencecluster.yaml), [`configs/ai/vllm-serving-runtime.yaml`](configs/ai/vllm-serving-runtime.yaml).
 
 ---
 

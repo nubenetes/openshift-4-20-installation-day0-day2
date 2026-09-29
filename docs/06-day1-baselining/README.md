@@ -17,8 +17,17 @@ sequenceDiagram
     Admin->>Cluster: 3. Configure Enterprise Identity Provider (Keycloak / Entra ID / LDAP)
     Admin->>Cluster: 4. Lock down RBAC (Disable kubeadmin, revoke self-provisioner)
     Admin->>Cluster: 5. Create MachineConfigPools for Infra & Storage nodes
-    Admin->>Cluster: 6. Enforce Node Tuning, NTP/Chrony, and OVN-Kubernetes egress policies
+    Admin->>Cluster: 6. Enforce Secret Management (ESO) & Automated PKI Rotation (cert-manager)
 ```
+
+---
+
+## Section Documents
+- [01. Cluster Operator Hardening & Verification](01-cluster-operator-hardening.md)
+- [02. Ingress & Custom TLS Certificates](02-ingress-and-custom-certs.md)
+- [03. Enterprise Identity Providers & RBAC Hardening](03-identity-providers-rbac.md)
+- [04. MachineConfigPools & Node Tuning](04-machineconfigpools-tuning.md)
+- [05. Enterprise Secret Management & Automated PKI Rotation](05-secrets-and-cert-rotation.md)
 
 ---
 [Back to Global Navigation](../00-navigation.md)

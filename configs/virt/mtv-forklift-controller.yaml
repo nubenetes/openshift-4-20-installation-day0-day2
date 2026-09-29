@@ -1,0 +1,44 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: mtv-operator
+  namespace: openshift-mtv
+spec:
+  channel: release-v2.8
+  installPlanApproval: Automatic
+  name: mtv-operator
+  source: redhat-operators
+  sourceNamespace: openshift-marketplace
+---
+apiVersion: forklift.konveyor.io/v1beta1
+kind: ForkliftController
+metadata:
+  name: forklift-controller
+  namespace: openshift-mtv
+spec:
+  feature_ui: true
+  feature_must_gather_api: true
+  feature_volume_populator: true
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: vcenter-credentials
+  namespace: openshift-mtv
+type: Opaque
+stringData:
+  user: "administrator@vsphere.local"
+  password: "VaultManagedPasswordOrSecretRef"
+  insecureSkipVerify: "true"
+---
+apiVersion: forklift.konveyor.io/v1beta1
+kind: Provider
+metadata:
+  name: source-vmware-vcenter
+  namespace: openshift-mtv
+spec:
+  type: vsphere
+  url: "https://vcenter.corp.local/sdk"
+  secret:
+    name: vcenter-credentials
+    namespace: openshift-mtv

@@ -1,0 +1,48 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: cert-manager-operator
+  namespace: openshift-operators
+spec:
+  channel: stable-v1
+  installPlanApproval: Automatic
+  name: openshift-cert-manager-operator
+  source: redhat-operators
+  sourceNamespace: openshift-marketplace
+---
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: enterprise-vault-issuer
+spec:
+  vault:
+    path: pki/sign/openshift-dot-apps
+    server: "https://vault.internal.corp:8200"
+    auth:
+      kubernetes:
+        mountPath: /v1/auth/kubernetes
+        role: cert-manager-issuer
+        secretRef:
+          name: cert-manager-vault-token
+          key: token
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: custom-ingress-wildcard-cert
+  namespace: openshift-ingress
+spec:
+  secretName: custom-ingress-cert-tls
+  duration: 2160h # 90 days
+  renewBefore: 720h # Auto-renew 30 days before expiration
+  subject:
+    organizations:
+      - "Global Enterprise Infrastructure SRE"
+  commonName: "*.apps.ocp-prod.corp.local"
+  dnsNames:
+    - "*.apps.ocp-prod.corp.local"
+    - "api.ocp-prod.corp.local"
+  issuerRef:
+    name: enterprise-vault-issuer
+    kind: ClusterIssuer
+    group: cert-manager.io

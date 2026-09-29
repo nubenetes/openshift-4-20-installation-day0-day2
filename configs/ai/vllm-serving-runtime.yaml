@@ -1,0 +1,42 @@
+apiVersion: serving.kserve.io/v1alpha1
+kind: ServingRuntime
+metadata:
+  name: vllm-runtime
+  namespace: production-ai
+  annotations:
+    opendatahub.io/accelerator-name: "nvidia-gpu"
+spec:
+  annotations:
+    prometheus.kserve.io/port: "8000"
+    prometheus.kserve.io/path: "/metrics"
+  supportedModelFormats:
+    - name: pytorch
+      version: "2.0"
+      autoSelect: true
+  containers:
+    - name: kserve-container
+      image: vllm/vllm-openai:v0.6.3
+      command: ["python3", "-m", "vllm.entrypoints.openai.api_server"]
+      args:
+        - "--model"
+        - "/mnt/models"
+        - "--port"
+        - "8000"
+        - "--tensor-parallel-size"
+        - "2"
+        - "--max-model-len"
+        - "8192"
+        - "--gpu-memory-utilization"
+        - "0.90"
+      resources:
+        limits:
+          cpu: "16"
+          memory: 64Gi
+          nvidia.com/gpu: "2"
+        requests:
+          cpu: "8"
+          memory: 32Gi
+          nvidia.com/gpu: "2"
+      ports:
+        - containerPort: 8000
+          name: http1
