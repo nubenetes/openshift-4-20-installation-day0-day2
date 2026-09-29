@@ -51,8 +51,40 @@ Designed for Enterprise Platform Architects, Principal Site Reliability Engineer
 
 ---
 
+## AI-Generated Multimedia Series (YouTube)
+
+Architectural masterclasses, deep-dive podcasts, and focused technical video shorts for **Red Hat OpenShift 4.20** are hosted on the **[Nubenetes YouTube Channel (@nubenetes)](https://www.youtube.com/@nubenetes)**.
+
+### 🎙️ Masterclasses & Architecture Deep Dives
+
+| # | Masterclass Title | Architectural Scope & Core Modules | Lang | Duration | Action |
+|:---:|:---|:---|:---:|:---:|:---:|
+| **01** | [OpenShift 4.20 On-Premises Architecture: Bare Metal, VMware, Nutanix and Hyper-V](https://www.youtube.com/watch?v=RQ2AXSzGRzE) | **Platforms & Hypervisors**<br/>Bare metal, vSphere 8/9, Nutanix AHV, Hyper-V & multi-platform decision matrix | 🇺🇸 EN | `8:48` | [▶️ Watch](https://www.youtube.com/watch?v=RQ2AXSzGRzE) |
+| **02** | [OpenShift 4.20 Topologies and Provisioning: SNO, Compact, HyperShift and ABI](https://www.youtube.com/watch?v=rSIj_iOT56o) | **Topologies & Provisioning**<br/>Single Node OpenShift (SNO), 3-node compact, HyperShift HCP & Agent-Based Installer | 🇺🇸 EN | `9:31` | [▶️ Watch](https://www.youtube.com/watch?v=rSIj_iOT56o) |
+| **03** | [OpenShift 4.20 Disaster Recovery Guide: etcd Quorum Loss, OADP and Emergency Runbooks](https://www.youtube.com/watch?v=IdGKv4tPVH0) | **Disaster Recovery & Runbooks**<br/>etcd quorum loss recovery, OADP/Kopia backup drills & out-of-band cluster resurrection | 🇺🇸 EN | `7:45` | [▶️ Watch](https://www.youtube.com/watch?v=IdGKv4tPVH0) |
+| **04** | [OpenShift 4.20 Day 0 Readiness: Air-Gapped Mirroring, DNS, NTP and Preflight Architecture](https://www.youtube.com/watch?v=h13w4e_Qx1U) | **Day 0 Preflight & Network**<br/>oc-mirror v2 OCI streaming, BIND9 DNS split-horizon, Chrony NTP & fio disk benchmarking | 🇺🇸 EN | `7:25` | [▶️ Watch](https://www.youtube.com/watch?v=h13w4e_Qx1U) |
+| **05** | [OpenShift 4.20 Gateway API: Modernización de Ingress, HTTPRoute y Tráfico L4-L7](https://www.youtube.com/watch?v=hUSGPVtyidc) | **Modernización Ingress & Gateway API**<br/>Transición desde Ingress/Routes hacia Gateway API, roles desacoplados y Canary rollouts | 🇪🇸 ES | `6:06` | [▶️ Watch](https://www.youtube.com/watch?v=hUSGPVtyidc) |
+| **06** | [Kubernetes Gateway API on OpenShift 4.20: Day 0 to Day 2 Ingress and Traffic Engineering](https://www.youtube.com/watch?v=GrCoDGJ8YiQ) | **Traffic Engineering & Routing**<br/>Gateway controller, HTTPRoute, GRPCRoute, TLSRoute, Kuadrant & ReferenceGrant security | 🇺🇸 EN | `9:47` | [▶️ Watch](https://www.youtube.com/watch?v=GrCoDGJ8YiQ) |
+
+### 🎬 Video Shorts Matrix
+
+| # | Short Title | Architectural Domain & Focus | Audio | Duration | Action |
+|:---:|:---|:---|:---:|:---:|:---:|
+| **01** | [How Single-Member etcd Recovery Resurrects Dead OpenShift Clusters](https://www.youtube.com/shorts/_tAdfH_sNio) | **Emergency Recovery**<br/>Forced single-member quorum recovery, dead peer removal & API server restoration | 🇺🇸 EN | `1:15` | [▶️ Watch](https://www.youtube.com/shorts/_tAdfH_sNio) |
+| **02** | [How OpenShift Agent-Based Installer Eliminates External Bootstrap VMs](https://www.youtube.com/shorts/qmU1J5WlNis) | **Bootstrap-in-Place ABI**<br/>In-memory temporary bootstrap controller on Node 0 via Discovery ISO | 🇺🇸 EN | `1:12` | [▶️ Watch](https://www.youtube.com/shorts/qmU1J5WlNis) |
+| **03** | [Why Vanilla Velero Fails on OpenShift: The OADP Data Protection Architecture](https://www.youtube.com/shorts/Cmhxtb8cmKU) | **Data Protection & OADP**<br/>Security Context Constraints (SCC) awareness, CRD ordering & Kopia engine | 🇺🇸 EN | `1:23` | [▶️ Watch](https://www.youtube.com/shorts/Cmhxtb8cmKU) |
+| **04** | [How Gateway API GRPCRoute Streams LLM Tokens Instantly on OpenShift](https://www.youtube.com/shorts/DwPHhPGrOt0) | **AI Inference & Ingress**<br/>HTTP/2 multiplexing, submillisecond token streaming & unbuffered AI inference | 🇺🇸 EN | `1:14` | [▶️ Watch](https://www.youtube.com/shorts/DwPHhPGrOt0) |
+| **05** | [How TLSRoute Enables Zero-Trust SNI Passthrough on OpenShift](https://www.youtube.com/shorts/DkJQ4q0cetM) | **Zero-Trust Encryption**<br/>Layer 4 SNI header inspection without edge TLS termination or exposing private keys | 🇺🇸 EN | `1:20` | [▶️ Watch](https://www.youtube.com/shorts/DkJQ4q0cetM) |
+| **06** | [How Gateway API HTTPRoute Replaces Fragile Ingress Annotations](https://www.youtube.com/shorts/g2z9-OSA_mU) | **Declarative Routing**<br/>Native percentage traffic splitting, path/header rewrites & granular status conditions | 🇺🇸 EN | `1:14` | [▶️ Watch](https://www.youtube.com/shorts/g2z9-OSA_mU) |
+
+*For complete technical breakdowns, copy-paste ready descriptions, and YouTube Studio links, see [Section: Video Walkthroughs & Architecture References](#video-walkthroughs--architecture-references-youtube).*
+
+---
+
 ## Table of Contents
 
+- [AI-Generated Multimedia Series (YouTube)](#ai-generated-multimedia-series-youtube)
+- [Video Walkthroughs & Architecture References (YouTube)](#video-walkthroughs--architecture-references-youtube)
 - [Executive Architecture Summary](#executive-architecture-summary)
 - [Master Architecture Decision Tree](#master-architecture-decision-tree)
   - [Visual ASCII Decision Routing Tree](#visual-ascii-routing-tree)
@@ -1128,6 +1160,323 @@ All scripts and manifests are ready to execute from this repository:
 - [Microsoft Azure Workload Identity Federation for Kubernetes](https://learn.microsoft.com/en-us/azure/aks/workload-identity-overview) — Keyless OIDC federation eliminating Azure client secrets and service principal credentials.
 - [Google Cloud Workload Identity Federation for Kubernetes & OpenShift](https://cloud.google.com/iam/docs/workload-identity-federation) — Short-lived Google IAM credentials for OpenShift Cloud Controller Manager and CSI storage drivers.
 - [NVIDIA GPU Operator & Container Toolkit Architecture](https://docs.nvidia.com/datacenter/cloud-native/gpu-operator/latest/index.html) — GPU provisioning, MIG slicing, DCGM metrics, and CUDA runtime driver lifecycle on OpenShift.
+
+---
+
+## Video Walkthroughs & Architecture References (YouTube)
+
+End-to-end architectural walkthroughs, deep-dive podcasts, and technical shorts for `openshift-4-20-installation-day0-day2` are hosted on the **[Nubenetes YouTube Channel (@nubenetes)](https://www.youtube.com/@nubenetes)**.
+
+Below are the complete video overviews organized by original audio language and format.
+
+### 🇪🇸 Vídeos en Español (Audio Original)
+
+<details open>
+<summary>📂 <strong>Recorridos Técnicos y Podcasts en Español (1 Vídeo)</strong></summary>
+
+<br/>
+
+#### 1. OpenShift 4.20 Gateway API: Modernización de Ingress, HTTPRoute y Tráfico L4-L7
+- 🔗 **Enlace Directo**: [https://www.youtube.com/watch?v=hUSGPVtyidc](https://www.youtube.com/watch?v=hUSGPVtyidc)
+- 🛠️ **YouTube Studio**: [https://studio.youtube.com/video/hUSGPVtyidc/edit](https://studio.youtube.com/video/hUSGPVtyidc/edit)
+- ⏱️ **Duración**: 6:06
+- 🏷️ **Dominio**: Ingress, Conectividad y Gateway API
+- 📝 **Descripción completa**:
+> 🌐 Modernización de Tráfico en Red Hat OpenShift 4.20: Kubernetes Gateway API, HTTPRoute y Tráfico L4-L7
+>
+> Recorrido arquitectónico técnico en español dedicado a la evolución del enrutamiento de red en Red Hat OpenShift 4.20. Analizamos la transición definitiva desde las tradicionales Ingress y Routes monolíticas hacia el estándar Kubernetes Gateway API.
+>
+> 📌 Puntos Clave de la Sesión:
+> • Evolución del Modelo de Ingress: Por qué las anotaciones complejas de Ingress son reemplazadas por objetos nativos declarativos y seguros.
+> • Arquitectura de Roles Desacoplados: Separación de responsabilidades entre el Administrador de Infraestructura (GatewayClass), el Operador de Plataforma (Gateway) y el Desarrollador (HTTPRoute, GRPCRoute).
+> • Soporte Multitenancy y Cross-Namespace: ReferenceGrant para autorizar de forma segura conexiones entre rutas y pasarelas en diferentes espacios de nombres.
+> • Control de Tráfico Avanzado: Enrutamiento ponderado para despliegues Canary, reescritura de cabeceras, redirecciones y división de tráfico sin recargas de configuración.
+> • Enrutamiento L4 y Cifrado Zero-Trust: TLSRoute con passthrough SNI sin necesidad de exponer certificados privados en el borde.
+>
+> 🔗 Repositorio y Manifiestos de Red:
+> • Módulo de Red y Gateway API: https://github.com/nubenetes/openshift-4-20-installation-day0-day2/tree/main/docs/03-network-and-connectivity
+> • Repositorio Completo: https://github.com/nubenetes/openshift-4-20-installation-day0-day2
+>
+> ⏱️ Duración: 6:06
+> #OpenShift #GatewayAPI #Kubernetes #HTTPRoute #Networking #RedHat #DevOps #SRE #TraficoCloud #CloudNative
+
+</details>
+
+<br/>
+
+### 🇬🇧 Videos in English (Original Audio)
+
+<details open>
+<summary>📂 <strong>Full-Length Technical Deep Dives & Architecture Masterclasses (5 Videos)</strong></summary>
+
+<br/>
+
+#### 1. OpenShift 4.20 On-Premises Architecture: Bare Metal, VMware, Nutanix and Hyper-V
+- 🔗 **Direct Link**: [https://www.youtube.com/watch?v=RQ2AXSzGRzE](https://www.youtube.com/watch?v=RQ2AXSzGRzE)
+- 🛠️ **YouTube Studio**: [https://studio.youtube.com/video/RQ2AXSzGRzE/edit](https://studio.youtube.com/video/RQ2AXSzGRzE/edit)
+- ⏱️ **Duration**: 8:48
+- 🏷️ **Domain**: Datacenter Platforms, Bare Metal & Hypervisors
+- 📝 **Full Description**:
+> 🏛️ Enterprise Architecture Deep Dive: Red Hat OpenShift 4.20 on Bare Metal, VMware, Nutanix and Hyper-V
+>
+> An exhaustive architectural reference and on-premises engineering masterclass for Red Hat OpenShift Container Platform (OCP) 4.20. Learn how enterprise platform architects design, size, and deploy resilient OpenShift clusters across diverse physical and virtualized enterprise infrastructure.
+>
+> 📌 Key Architectural Domains Explored:
+> • Bare Metal Performance Deployments: Direct hardware installation, NUMA tuning, SR-IOV high-speed networking, and BIOS baselining for low-latency workloads.
+> • VMware vSphere 8 and 9 Enterprise Integration: Automated Installer-Provisioned Infrastructure (IPI) vs User-Provisioned Infrastructure (UPI), vSAN storage policies, and DRS anti-affinity.
+> • Nutanix AHV Hyper-Converged Architecture: Prism Element and Central integration, Nutanix CSI volume drivers, and unified storage fabric configuration.
+> • Microsoft Hyper-V and Azure Stack HCI: Enterprise edge deployments, virtual switch bridging, and hybrid cloud connectivity.
+> • Multi-Platform Decision Framework: Choosing the optimal deployment paradigm based on enterprise SLAs, operational complexity, and infrastructure cost.
+>
+> 🔗 Source Code and Architecture Manifests:
+> • Documentation and Configs: https://github.com/nubenetes/openshift-4-20-installation-day0-day2
+> • Platform Modules: https://github.com/nubenetes/openshift-4-20-installation-day0-day2/tree/main/docs/04-platforms
+>
+> ⏱️ Duration: 8:48
+> #OpenShift #RedHat #Kubernetes #BareMetal #VMware #vSphere #Nutanix #HyperV #CloudNative #DevOps #PlatformEngineering
+
+#### 2. OpenShift 4.20 Topologies and Provisioning: SNO, Compact, HyperShift and ABI
+- 🔗 **Direct Link**: [https://www.youtube.com/watch?v=rSIj_iOT56o](https://www.youtube.com/watch?v=rSIj_iOT56o)
+- 🛠️ **YouTube Studio**: [https://studio.youtube.com/video/rSIj_iOT56o/edit](https://studio.youtube.com/video/rSIj_iOT56o/edit)
+- ⏱️ **Duration**: 9:31
+- 🏷️ **Domain**: Deployment Topologies & Provisioning Paradigms
+- 📝 **Full Description**:
+> 📐 OpenShift 4.20 Topology and Provisioning Matrix: SNO, Compact, HyperShift and Agent-Based Installer
+>
+> A comprehensive architectural walkthrough analyzing the deployment topology options and automated provisioning paradigms in Red Hat OpenShift 4.20. Discover how to architect everything from single-node edge instances to massive enterprise clusters with decoupled control planes.
+>
+> 📌 Core Architectural Topics:
+> • OpenShift Deployment Topologies: Single Node OpenShift (SNO), 3-Node Compact Clusters, Standard HA (3 Control Plane plus N Worker Nodes), and Remote Worker Nodes over WAN.
+> • HyperShift and Hosted Control Planes: Decoupling master control planes from worker data planes, reducing infrastructure overhead and provisioning clusters in minutes.
+> • Provisioning Paradigms Comparison: Full IPI automation, custom UPI integration, Assisted Installer workflows, and Agent-Based Installer (ABI).
+> • Automated Hardware Discovery: Using ABI with Discovery ISOs to install air-gapped clusters without requiring external bootstrap virtual machines.
+> • Production Topology Sizing: Calculating CPU, memory, etcd IOPS baselines, and control plane quorum requirements for mission-critical enterprise workloads.
+>
+> 🔗 Architecture Modules and Guides:
+> • Topology Reference: https://github.com/nubenetes/openshift-4-20-installation-day0-day2/tree/main/docs/01-architecture-topologies
+> • Provisioning Handbook: https://github.com/nubenetes/openshift-4-20-installation-day0-day2/tree/main/docs/02-provisioning-paradigms
+>
+> ⏱️ Duration: 9:31
+> #OpenShift #Kubernetes #HyperShift #HostedControlPlanes #SNO #DevOps #SRE #PlatformEngineering #RedHat #GitOps
+
+#### 3. OpenShift 4.20 Disaster Recovery Guide: etcd Quorum Loss, OADP and Emergency Runbooks
+- 🔗 **Direct Link**: [https://www.youtube.com/watch?v=IdGKv4tPVH0](https://www.youtube.com/watch?v=IdGKv4tPVH0)
+- 🛠️ **YouTube Studio**: [https://studio.youtube.com/video/IdGKv4tPVH0/edit](https://studio.youtube.com/video/IdGKv4tPVH0/edit)
+- ⏱️ **Duration**: 7:45
+- 🏷️ **Domain**: Backup, Disaster Recovery & Emergency Operations
+- 📝 **Full Description**:
+> 🚨 Red Hat OpenShift 4.20 Disaster Recovery Field Manual: etcd Quorum Loss, OADP and Emergency Runbooks
+>
+> The definitive operational survival guide for OpenShift 4.20 platform architects and SREs. Learn the step-by-step protocols required to maintain high availability, execute automated backup drills, and resurrect dead clusters when the Kubernetes API server is completely unreachable.
+>
+> 📌 Disaster Recovery Protocols Covered:
+> • etcd Quorum Loss and Cluster Resurrection: Performing single-member recovery on control plane nodes to restore consensus without data corruption.
+> • OADP and Kopia Architecture: OpenShift API for Data Protection, Velero integration, Security Context Constraints (SCC) preservation, and volume snapshotting.
+> • Automated etcd Backup Schedules: Systemd timers, CronJobs, and local encrypted state preservation.
+> • Expired PKI Certificate Recovery: Using the authoritative Helper Node SSH jump host to renew expired control plane and kubelet CSRs.
+> • Failover Topologies: Metro-DR synchronous replication with OpenShift Data Foundation (ODF) vs Regional-DR asynchronous cross-site migration.
+>
+> 🔗 Emergency Scripts and Recovery Docs:
+> • Disaster Recovery Guide: https://github.com/nubenetes/openshift-4-20-installation-day0-day2/tree/main/docs/08-backup-dr-and-rebuild
+> • Emergency Runbooks: https://github.com/nubenetes/openshift-4-20-installation-day0-day2/tree/main/docs/09-emergency-runbooks
+>
+> ⏱️ Duration: 7:45
+> #OpenShift #DisasterRecovery #etcd #OADP #Velero #Kubernetes #SRE #DevOps #RedHat #EmergencyRunbook
+
+#### 4. OpenShift 4.20 Day 0 Readiness: Air-Gapped Mirroring, DNS, NTP and Preflight Architecture
+- 🔗 **Direct Link**: [https://www.youtube.com/watch?v=h13w4e_Qx1U](https://www.youtube.com/watch?v=h13w4e_Qx1U)
+- 🛠️ **YouTube Studio**: [https://studio.youtube.com/video/h13w4e_Qx1U/edit](https://studio.youtube.com/video/h13w4e_Qx1U/edit)
+- ⏱️ **Duration**: 7:25
+- 🏷️ **Domain**: Day 0 Readiness, Networking Services & Preflight
+- 📝 **Full Description**:
+> 🛡️ Day 0 Readiness Foundation for OpenShift 4.20: Air-Gapped Mirroring, DNS, NTP and Preflight Architecture
+>
+> Master the essential pre-flight architectural decisions that make or break an enterprise OpenShift deployment before a single node boots. Learn how to architect authoritative network services, validate hardware latencies, and prepare air-gapped container image registries.
+>
+> 📌 Day 0 Architectural Pillars:
+> • Disconnected Air-Gapped Tooling: oc-mirror v2 OCI streaming workflows, ImageContentSourcePolicy, and local container mirror management.
+> • Authoritative Network Services: Enterprise BIND9 DNS split-horizon architecture, HAProxy L4 load balancing, and Stratum Chrony NTP synchronization.
+> • Preflight Validation Tooling: Benchmarking disk write latency with fio (fdatasync under 10ms at p99) to prevent etcd Raft leader election drops.
+> • IPAM and Subnet Planning: MachineNetwork, ServiceNetwork, and ClusterNetwork CIDR non-overlapping routing and Geneve overlay encapsulation.
+> • Production Readiness Checklists: Automated shell validation scripts for ports, firewall policies, and MTU parity.
+>
+> 🔗 Day 0 Architecture Modules:
+> • Readiness Guide: https://github.com/nubenetes/openshift-4-20-installation-day0-day2/tree/main/docs/05-day0-readiness
+> • Preflight Scripts: https://github.com/nubenetes/openshift-4-20-installation-day0-day2/tree/main/scripts
+>
+> ⏱️ Duration: 7:25
+> #OpenShift #Day0 #AirGapped #ocmirror #Kubernetes #Networking #DNS #Sysadmin #DevOps #RedHat
+
+#### 5. Kubernetes Gateway API on OpenShift 4.20: Day 0 to Day 2 Ingress and Traffic Engineering
+- 🔗 **Direct Link**: [https://www.youtube.com/watch?v=GrCoDGJ8YiQ](https://www.youtube.com/watch?v=GrCoDGJ8YiQ)
+- 🛠️ **YouTube Studio**: [https://studio.youtube.com/video/GrCoDGJ8YiQ/edit](https://studio.youtube.com/video/GrCoDGJ8YiQ/edit)
+- ⏱️ **Duration**: 9:47
+- 🏷️ **Domain**: Ingress Architecture, Traffic Engineering & Security
+- 📝 **Full Description**:
+> ⚡ End-to-End Kubernetes Gateway API on OpenShift 4.20: Day 0 to Day 2 Ingress Architecture
+>
+> An exhaustive architectural masterclass deconstructing how Red Hat OpenShift 4.20 implements the official Kubernetes Gateway API standard. Learn how to architect, provision, and operate role-oriented ingress traffic controllers from Day 0 setup to Day 2 production rollouts.
+>
+> 📌 Comprehensive Technical Exploration:
+> • Core Custom Resource Hierarchy: GatewayClass parameters, Gateway lifecycle controller, and application route bindings (HTTPRoute, GRPCRoute, TLSRoute, TCPRoute).
+> • Zero-Downtime Traffic Engineering: Native percentage-based traffic splitting for canary deployments, header matching, path rewrites, and request mirroring.
+> • Edge vs Backend Security: Kuadrant integration, Authorino OIDC/RBAC enforcement, Limitador rate-limiting, and end-to-end mTLS.
+> • Cross-Namespace Security with ReferenceGrant: Enforcing explicit zero-trust boundaries across multi-tenant enterprise business units.
+> • Day 2 Telemetry and Observability: Ingress controller latency metrics, Prometheus SLO alerting, and Envoy access log aggregation.
+>
+> 🔗 Architectural Guides and Manifests:
+> • Gateway API Architecture: https://github.com/nubenetes/openshift-4-20-installation-day0-day2/blob/main/docs/03-network-and-connectivity/05-gateway-api-architecture.md
+> • Ingress Configurations: https://github.com/nubenetes/openshift-4-20-installation-day0-day2/tree/main/configs
+>
+> ⏱️ Duration: 9:47
+> #GatewayAPI #OpenShift #Kubernetes #Ingress #HTTPRoute #GRPCRoute #TLSRoute #CloudNative #DevOps #SRE
+
+</details>
+
+<br/>
+
+### ⚡ Architecture Video Shorts (6 Shorts)
+
+<details open>
+<summary>📂 <strong>Technical Video Shorts Breakdown (6 Shorts)</strong></summary>
+
+<br/>
+
+#### 1. How Single-Member etcd Recovery Resurrects Dead OpenShift Clusters
+- 🔗 **Direct Link**: [https://www.youtube.com/shorts/_tAdfH_sNio](https://www.youtube.com/shorts/_tAdfH_sNio)
+- 🛠️ **YouTube Studio**: [https://studio.youtube.com/video/_tAdfH_sNio/edit](https://studio.youtube.com/video/_tAdfH_sNio/edit)
+- 🌐 **Language**: English (Original Audio)
+- ⏱️ **Duration**: 1:15
+- 🏷️ **Domain**: Disaster Recovery & Emergency Operations
+- 📝 **Full Description**:
+> 🚨 How Single-Member etcd Recovery Resurrects Dead OpenShift Clusters!
+>
+> What happens when two out of three control plane nodes lose power or suffer disk corruption? The Raft quorum breaks, and the OpenShift API server goes completely dark!
+>
+> Here is how single-member recovery restores the cluster:
+> • Isolate the Survivor: Identify the healthiest master node with intact etcd WAL logs.
+> • Force Single-Member Mode: Execute the etcd recovery script to strip dead peers and initialize an independent single-node Raft consensus.
+> • API Server Rebirth: The local kubelet restarts static pods, bringing the Kubernetes API server back online.
+> • Reprovision Masters: Re-add the remaining control plane nodes one by one to rebuild high-availability quorum.
+>
+> 🔗 Master the Emergency Runbook:
+> https://github.com/nubenetes/openshift-4-20-installation-day0-day2
+>
+> #Shorts #OpenShift #etcd #DisasterRecovery #Kubernetes #SRE #Sysadmin #DevOps
+
+#### 2. How OpenShift Agent-Based Installer Eliminates External Bootstrap VMs
+- 🔗 **Direct Link**: [https://www.youtube.com/shorts/qmU1J5WlNis](https://www.youtube.com/shorts/qmU1J5WlNis)
+- 🛠️ **YouTube Studio**: [https://studio.youtube.com/video/qmU1J5WlNis/edit](https://studio.youtube.com/video/qmU1J5WlNis/edit)
+- 🌐 **Language**: English (Original Audio)
+- ⏱️ **Duration**: 1:12
+- 🏷️ **Domain**: Bare Metal & Agent-Based Installer
+- 📝 **Full Description**:
+> ⚡ How OpenShift Agent-Based Installer Eliminates External Bootstrap VMs!
+>
+> Traditional on-premises Kubernetes installations required spinning up a temporary bootstrap VM just to initialize the control plane. OpenShift 4 Agent-Based Installer (ABI) eliminates that complexity with Bootstrap-in-Place!
+>
+> How Bootstrap-in-Place Works:
+> • Single Discovery ISO: Pre-embeds ignition configs, network teaming, and container images into a bootable ISO.
+> • Temporary In-Memory Master: Node 0 boots into RAM, acts as the temporary bootstrap controller, and coordinates cluster installation.
+> • Seamless Role Promotion: Once control plane services are healthy, Node 0 strips the bootstrap services and pivots to a permanent master.
+> • Zero Leftover Footprint: No external helper VMs to maintain, patch, or destroy post-install.
+>
+> 🔗 Check Out the ABI Blueprints:
+> https://github.com/nubenetes/openshift-4-20-installation-day0-day2
+>
+> #Shorts #OpenShift #BareMetal #Installation #Kubernetes #DevOps #PlatformEngineering #Sysadmin
+
+#### 3. Why Vanilla Velero Fails on OpenShift: The OADP Data Protection Architecture
+- 🔗 **Direct Link**: [https://www.youtube.com/shorts/Cmhxtb8cmKU](https://www.youtube.com/shorts/Cmhxtb8cmKU)
+- 🛠️ **YouTube Studio**: [https://studio.youtube.com/video/Cmhxtb8cmKU/edit](https://studio.youtube.com/video/Cmhxtb8cmKU/edit)
+- 🌐 **Language**: English (Original Audio)
+- ⏱️ **Duration**: 1:23
+- 🏷️ **Domain**: Backup, DR & OpenShift OADP
+- 📝 **Full Description**:
+> 🛡️ Why Vanilla Velero Fails on OpenShift: The OADP Data Protection Architecture!
+>
+> Velero is the de-facto standard for generic Kubernetes backups. So why does it catastrophically fail on OpenShift?
+>
+> Why Generic Backups Break:
+> • Security Context Constraints: Vanilla Velero does not understand OpenShift SCC UID ranges, causing restored pods to be rejected by the admission controller.
+> • Custom Resource Definitions: OpenShift relies on specialized CRDs like Routes, MachineConfigs, and ImageStreams that require strict restoration ordering.
+> • The OADP Solution: Red Hat built OADP (OpenShift API for Data Protection) to wrap Velero with custom OpenShift plugins, native CSI snapshotting, and Kopia file-system backup engines.
+>
+> Back up your clusters the cloud-native enterprise way!
+>
+> 🔗 Explore the Backup and DR Guides:
+> https://github.com/nubenetes/openshift-4-20-installation-day0-day2
+>
+> #Shorts #OpenShift #OADP #Velero #Kubernetes #Backup #DisasterRecovery #SRE #DevOps
+
+#### 4. How Gateway API GRPCRoute Streams LLM Tokens Instantly on OpenShift
+- 🔗 **Direct Link**: [https://www.youtube.com/shorts/DwPHhPGrOt0](https://www.youtube.com/shorts/DwPHhPGrOt0)
+- 🛠️ **YouTube Studio**: [https://studio.youtube.com/video/DwPHhPGrOt0/edit](https://studio.youtube.com/video/DwPHhPGrOt0/edit)
+- 🌐 **Language**: English (Original Audio)
+- ⏱️ **Duration**: 1:14
+- 🏷️ **Domain**: Ingress & Generative AI Inference
+- 📝 **Full Description**:
+> 🤖 How Gateway API GRPCRoute Streams LLM Tokens Instantly on OpenShift!
+>
+> Standard web Ingress buffers HTTP requests, waiting to collect the full response payload before sending anything back. But when serving AI models with vLLM or Ollama, token buffering causes unacceptable user latency!
+>
+> How GRPCRoute Solves AI Streaming:
+> • HTTP/2 Multiplexing: Eliminates head-of-line blocking across bidirectional streaming connections.
+> • Submillisecond Token Delivery: Streams text tokens directly from the GPU inference server to the client as they are generated.
+> • Role-Oriented Traffic Rules: Match on gRPC services and methods (like kserve.InferenceService) directly in declarative YAML.
+>
+> Supercharge your AI application serving on OpenShift!
+>
+> 🔗 Check Out the Gateway API Specs:
+> https://github.com/nubenetes/openshift-4-20-installation-day0-day2
+>
+> #Shorts #GatewayAPI #GRPCRoute #OpenShift #vLLM #ArtificialIntelligence #Kubernetes #GenerativeAI
+
+#### 5. How TLSRoute Enables Zero-Trust SNI Passthrough on OpenShift
+- 🔗 **Direct Link**: [https://www.youtube.com/shorts/DkJQ4q0cetM](https://www.youtube.com/shorts/DkJQ4q0cetM)
+- 🛠️ **YouTube Studio**: [https://studio.youtube.com/video/DkJQ4q0cetM/edit](https://studio.youtube.com/video/DkJQ4q0cetM/edit)
+- 🌐 **Language**: English (Original Audio)
+- ⏱️ **Duration**: 1:20
+- 🏷️ **Domain**: Zero-Trust Security & Layer 4 Ingress
+- 📝 **Full Description**:
+> 🔒 How TLSRoute Enables Zero-Trust SNI Passthrough on OpenShift!
+>
+> In banking, healthcare, and high-security sectors, edge proxies must never decrypt sensitive client payloads. But how do you route encrypted traffic to the right microservice or KubeVirt VM?
+>
+> The Power of Gateway API TLSRoute:
+> • SNI Inspection: The Gateway controller inspects the Server Name Indication header inside the initial TLS ClientHello packet.
+> • Zero Decryption at Edge: Packets are routed at Layer 4 directly to the target pod without terminating TLS or possessing private keys.
+> • End-to-End Compliance: Guarantees strict zero-trust cryptographic isolation all the way from the user browser to the backend container.
+>
+> 🔗 Learn How to Configure TLSRoute:
+> https://github.com/nubenetes/openshift-4-20-installation-day0-day2
+>
+> #Shorts #TLSRoute #GatewayAPI #OpenShift #ZeroTrust #CyberSecurity #Kubernetes #DevSecOps
+
+#### 6. How Gateway API HTTPRoute Replaces Fragile Ingress Annotations
+- 🔗 **Direct Link**: [https://www.youtube.com/shorts/g2z9-OSA_mU](https://www.youtube.com/shorts/g2z9-OSA_mU)
+- 🛠️ **YouTube Studio**: [https://studio.youtube.com/video/g2z9-OSA_mU/edit](https://studio.youtube.com/video/g2z9-OSA_mU/edit)
+- 🌐 **Language**: English (Original Audio)
+- ⏱️ **Duration**: 1:14
+- 🏷️ **Domain**: Ingress Architecture & Traffic Splitting
+- 📝 **Full Description**:
+> 🚀 How Gateway API HTTPRoute Replaces Fragile Ingress Annotations!
+>
+> Remember when configuring a simple canary deployment or URL rewrite in Kubernetes meant stacking 15 conflicting Ingress annotations?
+>
+> Why HTTPRoute Changes Everything:
+> • Native Canary Splitting: Split traffic by percentage (e.g. 90 percent v1, 10 percent v2) directly in standard spec fields.
+> • Header and Path Rewrites: Transform request headers, methods, and URL paths natively without controller-specific regex hacks.
+> • Clear Status Signals: Gateway API reports granular status conditions directly back to your YAML, pinpointing routing conflicts immediately.
+>
+> Retire messy Ingress annotations and upgrade to modern declarative routing!
+>
+> 🔗 Explore the Gateway API Reference:
+> https://github.com/nubenetes/openshift-4-20-installation-day0-day2
+>
+> #Shorts #HTTPRoute #GatewayAPI #OpenShift #Kubernetes #Networking #DevOps #CloudNative
+
+</details>
 
 ---
 
