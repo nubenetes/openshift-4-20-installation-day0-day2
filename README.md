@@ -69,6 +69,8 @@ Architectural masterclasses, deep-dive podcasts, and focused technical video sho
 | **08** | [OpenShift 4.20 Day 2 Operations: Observability, GitOps, EUS Upgrades and OpenShift AI](https://www.youtube.com/watch?v=9MHiGiQcqH0) | **Day 2 Ops & Fleet Management**<br/>Thanos/LokiStack observability, GitOps App-of-Apps, EUS upgrades (4.18 to 4.20) & RHOAI GPU | 🇺🇸 EN | `6:44` | [▶️ Watch](https://www.youtube.com/watch?v=9MHiGiQcqH0) |
 | **09** | [OpenShift 4.20 Agent-Based Installer: Bootstrap-in-Place, NMState and Rendezvous Node](https://www.youtube.com/watch?v=P1fjbXD2xbQ) | **Agent-Based Installer (ABI)**<br/>Bootstrap-in-Place on Node 0, static NMState networking, LACP bonding & Rendezvous host | 🇺🇸 EN | `6:32` | [▶️ Watch](https://www.youtube.com/watch?v=P1fjbXD2xbQ) |
 | **10** | [OpenShift 4.20 Installer Guide: All Provisioning Scenarios, Topologies and Platforms](https://www.youtube.com/watch?v=btCpgLINTZM) | **Installer Scenarios & Platforms**<br/>Comparison of ABI, IPI, UPI & Assisted Installer across SNO, Compact, HA & HyperShift HCP | 🇺🇸 EN | `9:10` | [▶️ Watch](https://www.youtube.com/watch?v=btCpgLINTZM) |
+| **11** | [Podcast Arquitectura OpenShift 4.20: Guía Completa Day 0 a Day 2 y Resiliencia](https://www.youtube.com/watch?v=zFRMP6N0-Aw) | **Podcast Arquitectónico (Audio)**<br/>Visión holística Day 0 a Day 2, topologías SNO/HA, ABI, etcd quorum y automatización | 🇪🇸 ES | `16:03` | [▶️ Watch](https://www.youtube.com/watch?v=zFRMP6N0-Aw) |
+| **12** | [The OpenShift 4.20 Architecture Podcast: Complete Day 0 to Day 2 Enterprise Masterclass](https://www.youtube.com/watch?v=avJB3NqaEFg) | **Architecture Podcast (Audio)**<br/>Full 55-minute deep dive: platforms, ABI, Gateway API, hardening, DR & fleet ops | 🇺🇸 EN | `55:38` | [▶️ Watch](https://www.youtube.com/watch?v=avJB3NqaEFg) |
 
 ### 🎬 Video Shorts Matrix
 
@@ -1197,7 +1199,7 @@ Below are the complete video overviews organized by original audio language and 
 ### 🇪🇸 Vídeos en Español (Audio Original)
 
 <details open>
-<summary>📂 <strong>Recorridos Técnicos y Podcasts en Español (1 Vídeo)</strong></summary>
+<summary>📂 <strong>Recorridos Técnicos y Podcasts en Español (2 Vídeos)</strong></summary>
 
 <br/>
 
@@ -1225,6 +1227,31 @@ Below are the complete video overviews organized by original audio language and 
 > ⏱️ Duración: 6:06
 > #OpenShift #GatewayAPI #Kubernetes #HTTPRoute #Networking #RedHat #DevOps #SRE #TraficoCloud #CloudNative
 
+#### 2. Podcast Arquitectura OpenShift 4.20: Guía Completa Day 0 a Day 2 y Resiliencia
+- 🔗 **Enlace Directo**: [https://www.youtube.com/watch?v=zFRMP6N0-Aw](https://www.youtube.com/watch?v=zFRMP6N0-Aw)
+- 🛠️ **YouTube Studio**: [https://studio.youtube.com/video/zFRMP6N0-Aw/edit](https://studio.youtube.com/video/zFRMP6N0-Aw/edit)
+- ⏱️ **Duración**: 16:03
+- 🏷️ **Dominio**: Podcast de Arquitectura (Audio) - Day 0 a Day 2 y Resiliencia
+- 📝 **Descripción completa**:
+> 🎙️ Podcast de Arquitectura Técnica: Red Hat OpenShift 4.20 de Day 0 a Day 2 y Resiliencia Empresarial
+>
+> Episodio completo en formato podcast técnico en español (sin diapositivas, diseñado para escuchar en movilidad) analizando la arquitectura integral de Red Hat OpenShift 4.20. Una conversación profunda y analítica para arquitectos de plataforma, líderes técnicos y equipos SRE sobre cómo diseñar, desplegar y operar clusters de misión crítica en centros de datos modernos y nubes privadas.
+>
+> 📌 Temas Clave Tratados en este Episodio:
+> • Evolución Arquitectónica de OpenShift 4.20: Novedades del núcleo, CoreOS inmutable, operadores declarativos y gestión desacoplada.
+> • Decisiones Críticas en Day 0: Dimensionamiento de infraestructura física y virtual (Bare Metal, VMware vSphere, Nutanix, Hyper-V), diseño de redes sin solapamiento CIDR y validación pre-flight de latencia de almacenamiento.
+> • Paradigmas de Instalación: Del instalador asistido y UPI al nuevo Agent-Based Installer (ABI) con Bootstrap-in-Place y sin máquinas virtuales temporales.
+> • Modernización de Red e Ingress: La transición hacia Kubernetes Gateway API, HTTPRoute ponderado para despliegues Canary y TLSRoute para cifrado de extremo a extremo sin exponer certificados privados.
+> • Endurecimiento Day 1 y Operaciones Day 2: Integración de proveedores de identidad corporativos (Keycloak, Microsoft Entra ID), revocación de permisos por defecto, GitOps con Argo CD y observabilidad centralizada con Thanos y Loki.
+> • Protocolos de Supervivencia y Disaster Recovery: Estrategias ante pérdida de quórum en etcd, copias de seguridad consistentes con OADP y Kopia, y restauración fuera de banda ante caídas del servidor API.
+>
+> 🔗 Repositorio Completo de Arquitectura y Scripts:
+> • Repositorio Oficial: https://github.com/nubenetes/openshift-4-20-installation-day0-day2
+> • Manual de Automatización: https://github.com/nubenetes/openshift-4-20-installation-day0-day2/tree/main/scripts
+>
+> ⏱️ Duración: 16:03
+> #OpenShift #Podcast #Kubernetes #RedHat #ArquitecturaCloud #DevOps #SRE #PlatformEngineering #Sysadmin #CloudNative #GitOps
+
 </details>
 
 <br/>
@@ -1232,7 +1259,7 @@ Below are the complete video overviews organized by original audio language and 
 ### 🇬🇧 Videos in English (Original Audio)
 
 <details open>
-<summary>📂 <strong>Full-Length Technical Deep Dives & Architecture Masterclasses (9 Videos)</strong></summary>
+<summary>📂 <strong>Full-Length Technical Deep Dives & Architecture Masterclasses (10 Videos)</strong></summary>
 
 <br/>
 
@@ -1453,6 +1480,35 @@ Below are the complete video overviews organized by original audio language and 
 >
 > ⏱️ Duration: 9:10
 > #OpenShift #Kubernetes #HyperShift #BareMetal #VMware #IPI #UPI #AgentBasedInstaller #DevOps #SRE #PlatformEngineering #RedHat
+
+#### 10. The OpenShift 4.20 Architecture Podcast: Complete Day 0 to Day 2 Enterprise Masterclass
+- 🔗 **Direct Link**: [https://www.youtube.com/watch?v=avJB3NqaEFg](https://www.youtube.com/watch?v=avJB3NqaEFg)
+- 🛠️ **YouTube Studio**: [https://studio.youtube.com/video/avJB3NqaEFg/edit](https://studio.youtube.com/video/avJB3NqaEFg/edit)
+- ⏱️ **Duration**: 55:38
+- 🏷️ **Domain**: Architecture Podcast (Audio) - Complete Day 0 to Day 2 Masterclass
+- 📝 **Full Description**:
+> 🎙️ The Definitive OpenShift 4.20 Architecture Podcast: Complete Day 0 to Day 2 Enterprise Masterclass
+>
+> An exhaustive, 55-minute technical audio podcast masterclass (audio-first format without slides, optimized for listening during your commute or engineering sessions) deconstructing the entire enterprise architecture of Red Hat OpenShift Container Platform 4.20.
+>
+> Designed for Principal Architects, Lead Platform Engineers, and Senior SREs, this deep dive explores the hard-earned lessons, trade-offs, and operational realities of running mission-critical OpenShift clusters across on-premises datacenters, hybrid clouds, and disconnected air-gapped environments.
+>
+> 📌 Architectural Modules and Discussion Roadmap:
+> • Core Architectural Philosophy: Immutable Red Hat Enterprise Linux CoreOS (RHCOS), Machine Config Operator mechanics, and self-healing cluster operator control loops.
+> • Infrastructure Targets and Topology Matrix: Sizing and deploying Single Node OpenShift (SNO), 3-Node Compact Converged, Standard HA clusters, and HyperShift Hosted Control Planes (HCP) across Bare Metal, VMware vSphere 8/9, Nutanix AHV, and Microsoft Hyper-V.
+> • Provisioning Evolution: Deep dive into the Agent-Based Installer (ABI), Rendezvous Node consensus, and why Bootstrap-in-Place eliminates external bootstrap virtual machines forever.
+> • Air-Gapped and Disconnected Operations: High-speed OCI streaming with oc-mirror v2, split-horizon BIND9 DNS, Stratum NTP baselines, and fio disk latency requirements (fdatasync under 10ms at p99).
+> • Ingress Modernization with Kubernetes Gateway API: Moving away from legacy monolithic Ingress and Routes toward declarative GatewayClasses, HTTPRoute canary percentage splits, GRPCRoute submillisecond token streaming for generative AI (vLLM), and TLSRoute SNI passthrough.
+> • Day 1 Post-Install Hardening: Replacing default wildcard certs with trusted Enterprise CAs via cert-manager, OIDC/Keycloak identity providers, disabling kubeadmin, and creating specialized MachineConfigPools.
+> • Day 2 Fleet Operations and GitOps: Fleet orchestration using Argo CD and the App-of-Apps pattern, full-stack observability with Thanos, LokiStack, and OpenTelemetry, and executing automated EUS-to-EUS upgrades (4.18 to 4.20) with paused worker canary waves.
+> • Disaster Recovery and Out-of-Band Incident Triage: etcd Raft quorum recovery, OADP with Kopia filesystem backup engines, expired certificate rescue, and IPMI Serial-over-LAN hardware access.
+>
+> 🔗 Complete Source Code and Architecture Manifests:
+> • GitHub Blueprint Repository: https://github.com/nubenetes/openshift-4-20-installation-day0-day2
+> • Scripts and Runbooks: https://github.com/nubenetes/openshift-4-20-installation-day0-day2/tree/main/scripts
+>
+> ⏱️ Duration: 55:38
+> #OpenShift #Podcast #Kubernetes #RedHat #DevOps #SRE #PlatformEngineering #CloudNative #BareMetal #HyperShift #GatewayAPI #GitOps #Sysadmin
 
 </details>
 
