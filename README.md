@@ -127,6 +127,7 @@ Architectural masterclasses, deep-dive podcasts, and focused technical video sho
 | **10** | [OpenShift 4.20 Installer Guide: All Provisioning Scenarios, Topologies and Platforms](https://www.youtube.com/watch?v=btCpgLINTZM) | **Installer Scenarios & Platforms**<br/>Comparison of ABI, IPI, UPI & Assisted Installer across SNO, Compact, HA & HyperShift HCP | 🇺🇸 EN | `9:10` | [▶️ Watch](https://www.youtube.com/watch?v=btCpgLINTZM) |
 | **11** | [Podcast Arquitectura OpenShift 4.20: Guía Completa Day 0 a Day 2 y Resiliencia](https://www.youtube.com/watch?v=zFRMP6N0-Aw) | **Podcast Arquitectónico (Audio)**<br/>Visión holística Day 0 a Day 2, topologías SNO/HA, ABI, etcd quorum y automatización | 🇪🇸 ES | `16:03` | [▶️ Watch](https://www.youtube.com/watch?v=zFRMP6N0-Aw) |
 | **12** | [The OpenShift 4.20 Architecture Podcast: Complete Day 0 to Day 2 Enterprise Masterclass](https://www.youtube.com/watch?v=avJB3NqaEFg) | **Architecture Podcast (Audio)**<br/>Full 55-minute deep dive: platforms, ABI, Gateway API, hardening, DR & fleet ops | 🇺🇸 EN | `55:38` | [▶️ Watch](https://www.youtube.com/watch?v=avJB3NqaEFg) |
+| **13** | [OpenShift 4.20 Native Observability: Prometheus, LokiStack, Tempo and Korrel8r](https://www.youtube.com/watch?v=wAcbEyMQ76M) | **Native Observability Stack**<br/>Prometheus/UWM, Vector + LokiStack 3.x, OpenTelemetry, TempoStack & Korrel8r COO | 🇺🇸 EN | `6:46` | [▶️ Watch](https://www.youtube.com/watch?v=wAcbEyMQ76M) |
 
 ### 🎬 Video Shorts Matrix
 
@@ -148,6 +149,10 @@ Architectural masterclasses, deep-dive podcasts, and focused technical video sho
 | **14** | [How OpenShift Automates 10,000 Edge Deployments with Zero-Touch Provisioning](https://www.youtube.com/shorts/duGGOLqLB-A) | **Zero-Touch Edge Automation**<br/>Declarative SiteConfigs, RHACM fleet orchestration & remote SNO bare metal deployment | 🇺🇸 EN | `1:30` | [▶️ Watch](https://www.youtube.com/shorts/duGGOLqLB-A) |
 | **15** | [How OpenShift Agent-Based Installer Automates Bare Metal Installations](https://www.youtube.com/shorts/nhxRJz2dR8o) | **Bare Metal ABI Automation**<br/>Self-contained Discovery ISO, static NMState networking & PXE-free hardware discovery | 🇺🇸 EN | `1:17` | [▶️ Watch](https://www.youtube.com/shorts/nhxRJz2dR8o) |
 | **16** | [How OpenShift Eliminates Bootstrap VMs with the Rendezvous Node Pattern](https://www.youtube.com/shorts/1_tlji_6oxk) | **Rendezvous Node Pattern**<br/>Node 0 in-memory live boot, temporary assisted-service & zero-leftover bootstrap pivot | 🇺🇸 EN | `1:14` | [▶️ Watch](https://www.youtube.com/shorts/1_tlji_6oxk) |
+| **17** | [How OpenShift Replaced Fluentd with Vector and LokiStack for High-Speed Logging](https://www.youtube.com/shorts/EE_EMARHnb8) | **High-Speed Vector Logging**<br/>Rust-based Vector collector, ClusterLogForwarder pipelines & LokiStack 3.x S3 storage | 🇺🇸 EN | `1:22` | [▶️ Watch](https://www.youtube.com/shorts/EE_EMARHnb8) |
+| **18** | [How OpenShift Prevents Metric Explosions in Prometheus and Thanos](https://www.youtube.com/shorts/8832jzvfc_Q) | **Metric Explosion Defense**<br/>User Workload Monitoring (UWM), sample limits & metricRelabelings cardinality control | 🇺🇸 EN | `1:16` | [▶️ Watch](https://www.youtube.com/shorts/8832jzvfc_Q) |
+| **19** | [How Korrel8r Correlates Prometheus Metrics to Loki Logs and Tempo Traces](https://www.youtube.com/shorts/bffmO5yGGBA) | **Full-Stack COO Correlation**<br/>Cluster Observability Operator, Korrel8r graph rules & one-click drilldown in Web Console | 🇺🇸 EN | `1:24` | [▶️ Watch](https://www.youtube.com/shorts/bffmO5yGGBA) |
+| **20** | [How Tail Based Sampling Filters Trace Data in OpenTelemetry and Tempo](https://www.youtube.com/shorts/28vd1iD0sDI) | **Tail-Based Trace Sampling**<br/>OpenTelemetry Collector in-memory buffering, 100% error capture & TempoStack ingestion | 🇺🇸 EN | `1:25` | [▶️ Watch](https://www.youtube.com/shorts/28vd1iD0sDI) |
 
 *For complete technical breakdowns, copy-paste ready descriptions, and YouTube Studio links, see [Section: Video Walkthroughs & Architecture References](#video-walkthroughs--architecture-references-youtube).*
 
@@ -1347,7 +1352,7 @@ Below are the complete video overviews organized by original audio language and 
 ### 🇬🇧 Videos in English (Original Audio)
 
 <details open>
-<summary>📂 <strong>Full-Length Technical Deep Dives & Architecture Masterclasses (10 Videos)</strong></summary>
+<summary>📂 <strong>Full-Length Technical Deep Dives & Architecture Masterclasses (11 Videos)</strong></summary>
 
 <br/>
 
@@ -1598,14 +1603,39 @@ Below are the complete video overviews organized by original audio language and 
 > ⏱️ Duration: 55:38
 > #OpenShift #Podcast #Kubernetes #RedHat #DevOps #SRE #PlatformEngineering #CloudNative #BareMetal #HyperShift #GatewayAPI #GitOps #Sysadmin
 
+#### 11. OpenShift 4.20 Native Observability: Prometheus, LokiStack, Tempo and Korrel8r
+- 🔗 **Direct Link**: [https://www.youtube.com/watch?v=wAcbEyMQ76M](https://www.youtube.com/watch?v=wAcbEyMQ76M)
+- 🛠️ **YouTube Studio**: [https://studio.youtube.com/video/wAcbEyMQ76M/edit](https://studio.youtube.com/video/wAcbEyMQ76M/edit)
+- ⏱️ **Duration**: 6:46
+- 🏷️ **Domain**: Day 2 Native Observability, Metrics, Logs, Traces & Correlation
+- 📝 **Full Description**:
+> 📊 Complete OpenShift 4.20 Native Observability Stack: Prometheus, LokiStack, Tempo and Korrel8r
+>
+> An exhaustive architectural masterclass exploring the next-generation native telemetry fabric in Red Hat OpenShift Container Platform 4.20. Learn how platform engineers deploy, configure, and correlate metrics, structured logs, and distributed traces into a unified single-pane-of-glass observability pipeline.
+>
+> 📌 Key Observability Pillars Deconstructed:
+> • Cluster Monitoring & User Workload Monitoring: Scraping platform and tenant metrics with Prometheus, tuning scrape intervals, and enforcing label relabelings to eliminate cardinality explosions.
+> • OpenShift Logging 6.x Architecture: High-performance log collection with Vector in Rust, stream routing via ClusterLogForwarder, and multi-tenant indexing in LokiStack 3.x with S3 object storage.
+> • Distributed Tracing with OpenTelemetry: Deploying the Red Hat OpenTelemetry Collector with tail-based sampling rules to capture 100 percent of latency spikes and errors while dropping noisy spans.
+> • Trace Storage with TempoStack: Massively scalable, cost-efficient trace persistence on unified Ceph/S3 object storage fabrics.
+> • Unified Correlation with Korrel8r: Leveraging the Cluster Observability Operator (COO) to jump instantly from a Prometheus alert to matching Loki logs and root-cause Tempo distributed traces in OpenShift Web Console.
+>
+> 🔗 Architecture Docs and Production Manifests:
+> • Observability Architecture Guide: https://github.com/nubenetes/openshift-4-20-installation-day0-day2/blob/main/docs/07-day2-operations/01-observability-stack.md
+> • Production YAML Manifests: https://github.com/nubenetes/openshift-4-20-installation-day0-day2/tree/main/configs/observability
+> • Automated Health Verification Script: https://github.com/nubenetes/openshift-4-20-installation-day0-day2/blob/main/scripts/verify-observability-stack.sh
+>
+> ⏱️ Duration: 6:46
+> #OpenShift #Observability #Prometheus #Loki #Grafana #OpenTelemetry #Tempo #SRE #DevOps #Kubernetes #RedHat #Vector #Thanos
+
 </details>
 
 <br/>
 
-### ⚡ Architecture & Automation Video Shorts (16 Shorts)
+### ⚡ Architecture & Automation Video Shorts (20 Shorts)
 
 <details open>
-<summary>📂 <strong>Technical Video Shorts Breakdown (16 Shorts)</strong></summary>
+<summary>📂 <strong>Technical Video Shorts Breakdown (20 Shorts)</strong></summary>
 
 <br/>
 
@@ -1981,6 +2011,103 @@ Below are the complete video overviews organized by original audio language and 
 > https://github.com/nubenetes/openshift-4-20-installation-day0-day2/blob/main/docs/02-provisioning-paradigms/01-agent-based-installer.md
 >
 > #Shorts #OpenShift #Kubernetes #RendezvousNode #BareMetal #DevOps #SRE #PlatformEngineering #Sysadmin
+
+#### 17. How OpenShift Replaced Fluentd with Vector and LokiStack for High-Speed Logging
+- 🔗 **Direct Link**: [https://www.youtube.com/shorts/EE_EMARHnb8](https://www.youtube.com/shorts/EE_EMARHnb8)
+- 🛠️ **YouTube Studio**: [https://studio.youtube.com/video/EE_EMARHnb8/edit](https://studio.youtube.com/video/EE_EMARHnb8/edit)
+- 🌐 **Language**: English (Original Audio)
+- ⏱️ **Duration**: 1:22
+- 🏷️ **Domain**: Enterprise Logging & Vector / LokiStack 3.x
+- 📝 **Full Description**:
+> 🪵 How OpenShift Replaced Fluentd with Vector and LokiStack for High-Speed Logging!
+>
+> Legacy Kubernetes logging with Fluentd and Elasticsearch choked on high-volume clusters, consuming massive CPU and running out of disk. OpenShift Logging 6.x completely redesigns the stack!
+>
+> Why Vector and LokiStack change enterprise logging:
+> • Vector Rust Engine: Replaces Fluentd with an ultra-lightweight daemon that consumes up to 70 percent less CPU and RAM.
+> • Declarative Routing: ClusterLogForwarder routes application, infrastructure, and audit logs to dedicated sinks and S3 buckets.
+> • LokiStack 3.x TSDB: Indexes only log labels, storing compressed chunk payloads directly in cheap object storage (ODF Ceph or AWS S3).
+> • Multi-Tenant Isolation: Enforces strict RBAC boundaries so development teams can only query their own application logs.
+>
+> Upgrade your logging from a resource hog to a high-speed telemetry engine!
+>
+> 🔗 Explore Logging Manifests:
+> https://github.com/nubenetes/openshift-4-20-installation-day0-day2/tree/main/configs/observability
+>
+> #Shorts #OpenShift #Loki #Vector #Logging #Kubernetes #DevOps #SRE #CloudNative #Sysadmin
+
+#### 18. How OpenShift Prevents Metric Explosions in Prometheus and Thanos
+- 🔗 **Direct Link**: [https://www.youtube.com/shorts/8832jzvfc_Q](https://www.youtube.com/shorts/8832jzvfc_Q)
+- 🛠️ **YouTube Studio**: [https://studio.youtube.com/video/8832jzvfc_Q/edit](https://studio.youtube.com/video/8832jzvfc_Q/edit)
+- 🌐 **Language**: English (Original Audio)
+- ⏱️ **Duration**: 1:16
+- 🏷️ **Domain**: Cluster Monitoring & Metric High-Cardinality Control
+- 📝 **Full Description**:
+> 📈 How OpenShift Prevents Metric Explosions in Prometheus and Thanos!
+>
+> What happens when a developer deploys a microservice that exposes user IDs or random UUIDs as Prometheus metric labels? High-cardinality explosion! The Prometheus scraper runs out of memory and crashes the monitoring stack!
+>
+> How OpenShift User Workload Monitoring (UWM) defends the cluster:
+> • Mandatory Scrape Limits: Enforces sampleLimit thresholds (e.g. 5,000 samples per scrape) directly in the ServiceMonitor.
+> • Label Relabeling Rules: Uses metricRelabelings in cluster-monitoring-config to drop ephemeral labels like timestamp or client_ip before ingestion.
+> • Tenant Resource Quotas: Isolates user workload monitoring pods from core platform Prometheus to protect cluster alerting.
+> • Thanos Compaction Guardrails: Prevents memory spikes during long-term metric downsampling and deduplication.
+>
+> Keep your metrics fast, lean, and crash-free!
+>
+> 🔗 Check Out Monitoring Configs:
+> https://github.com/nubenetes/openshift-4-20-installation-day0-day2/tree/main/configs/observability
+>
+> #Shorts #OpenShift #Prometheus #Thanos #Monitoring #Kubernetes #SRE #DevOps #PlatformEngineering
+
+#### 19. How Korrel8r Correlates Prometheus Metrics to Loki Logs and Tempo Traces
+- 🔗 **Direct Link**: [https://www.youtube.com/shorts/bffmO5yGGBA](https://www.youtube.com/shorts/bffmO5yGGBA)
+- 🛠️ **YouTube Studio**: [https://studio.youtube.com/video/bffmO5yGGBA/edit](https://studio.youtube.com/video/bffmO5yGGBA/edit)
+- 🌐 **Language**: English (Original Audio)
+- ⏱️ **Duration**: 1:24
+- 🏷️ **Domain**: Full-Stack Correlation & Cluster Observability Operator
+- 📝 **Full Description**:
+> 🔗 How Korrel8r Correlates Prometheus Metrics to Loki Logs and Tempo Traces!
+>
+> During a high-severity incident, SREs waste critical minutes jumping between alert dashboards, log queries, and tracing consoles trying to piece together what broke.
+>
+> How Korrel8r and Cluster Observability Operator (COO) solve correlation:
+> • Unified Graph Engine: Korrel8r models Kubernetes resources, Prometheus alerts, Loki log streams, and Tempo traces as interconnected graph nodes.
+> • One-Click Console Navigation: When an alert fires in the OpenShift Web Console, Korrel8r automatically generates contextual links to matching logs and traces.
+> • Exemplar Integration: Click directly from a latency spike in a Prometheus chart straight into the exact OpenTelemetry trace span that caused it.
+> • Subsecond Root-Cause Analysis: Cuts Mean Time to Resolution (MTTR) from hours down to seconds.
+>
+> Experience true full-stack correlation in OpenShift 4.20!
+>
+> 🔗 Explore COO Correlation Manifests:
+> https://github.com/nubenetes/openshift-4-20-installation-day0-day2/tree/main/configs/observability
+>
+> #Shorts #OpenShift #Korrel8r #Observability #Kubernetes #Grafana #Loki #Tempo #Prometheus #SRE #DevOps
+
+#### 20. How Tail Based Sampling Filters Trace Data in OpenTelemetry and Tempo
+- 🔗 **Direct Link**: [https://www.youtube.com/shorts/28vd1iD0sDI](https://www.youtube.com/shorts/28vd1iD0sDI)
+- 🛠️ **YouTube Studio**: [https://studio.youtube.com/video/28vd1iD0sDI/edit](https://studio.youtube.com/video/28vd1iD0sDI/edit)
+- 🌐 **Language**: English (Original Audio)
+- ⏱️ **Duration**: 1:25
+- 🏷️ **Domain**: Distributed Tracing & Tail-Based Sampling
+- 📝 **Full Description**:
+> 🎯 How Tail Based Sampling Filters Trace Data in OpenTelemetry and Tempo!
+>
+> Collecting 100 percent of distributed traces across a massive microservices architecture generates petabytes of data, 99 percent of which are boring, successful 200 OK requests. But head-based random sampling risks missing rare critical errors!
+>
+> How OpenTelemetry Collector tail-based sampling works:
+> • In-Memory Span Buffering: Collects all spans belonging to a trace and waits until the entire trace completes.
+> • Intelligent Evaluation Rules: Inspects the entire trace before deciding whether to keep it or drop it.
+> • 100 Percent Error Retention: Captures every single trace containing HTTP 5xx codes or unhandled exceptions.
+> • Latency Threshold Gating: Automatically saves traces whose duration exceeds acceptable SLA thresholds (e.g. over 500ms).
+> • Cost-Efficient Tempo Ingestion: Drops boring repetitive traffic, slashing storage costs while keeping all actionable debugging data.
+>
+> Master intelligent distributed tracing on OpenShift 4.20!
+>
+> 🔗 Download OpenTelemetry Collector Configs:
+> https://github.com/nubenetes/openshift-4-20-installation-day0-day2/tree/main/configs/observability
+>
+> #Shorts #OpenTelemetry #Tempo #DistributedTracing #OpenShift #Kubernetes #Microservices #SRE #DevOps
 
 </details>
 
