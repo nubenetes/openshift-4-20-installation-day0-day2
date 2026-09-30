@@ -34,4 +34,31 @@ flowchart TD
 ```
 
 ---
+
+## Provisioning Guides & Declarative Manifests
+
+1. 🚀 **[`01-agent-based-installer.md`](01-agent-based-installer.md) — The Modern OpenShift Installer (Agent-Based / ABI)**:
+   - **Bootstrap-in-Place (BiP)** mechanics eliminating external bootstrap VMs.
+   - Comprehensive CLI reference: `create image`, `create pxe-files`, `create cluster-manifests`, `wait-for install-complete`.
+   - Complete schema dictionary for `agent-config.yaml` and `install-config.yaml`.
+   - **8 Enterprise Deployment Scenarios**: SNO, 3-Node Compact, Standard HA, Air-Gapped / Disconnected, LACP 802.3ad + 802.1Q VLANs, PXE/iPXE network boot, Multi-disk SAN hints, and Day 0 manifest injection.
+   - Assisted Service in-memory container architecture (`http://localhost:8090/api/assisted-install/v2/clusters`) & live REST API diagnostics.
+   - Declarative manifests: [`configs/agent-based/`](../../configs/agent-based/).
+
+2. ☁️ **[`02-installer-provisioned-ipi.md`](02-installer-provisioned-ipi.md) — Installer-Provisioned Infrastructure (IPI)**:
+   - Full automated cloud provisioning (AWS, Azure, GCP, VMware, Nutanix).
+   - Keyless STS / Workload Identity configuration and IAM policies.
+   - Declarative manifests: [`configs/ipi-cloud/`](../../configs/ipi-cloud/).
+
+3. 🛠️ **[`03-user-provisioned-upi.md`](03-user-provisioned-upi.md) — User-Provisioned Infrastructure (UPI)**:
+   - Regulated bare metal and custom virtualization environments with pre-existing network/storage topology.
+   - Declarative manifests: [`configs/upi-vsphere/`](../../configs/upi-vsphere/).
+
+4. 📡 **[`04-ztp-acm-gitops.md`](04-ztp-acm-gitops.md) — Zero-Touch Provisioning (ZTP) & GitOps**:
+   - Fleet-scale edge rollouts via Red Hat Advanced Cluster Management (RHACM) and Topology Aware Lifecycle Manager (TALM).
+   - Declarative `SiteConfig` and `PolicyGenTemplate` pipeline architecture.
+
+---
+
 [Back to Global Navigation](../00-navigation.md)
+

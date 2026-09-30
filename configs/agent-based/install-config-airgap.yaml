@@ -1,0 +1,56 @@
+apiVersion: v1
+kind: InstallConfig
+metadata:
+  name: ocp-airgap
+baseDomain: corp.local
+controlPlane:
+  architecture: amd64
+  hyperthreading: Enabled
+  name: master
+  replicas: 3
+compute:
+  - architecture: amd64
+    hyperthreading: Enabled
+    name: worker
+    replicas: 2
+networking:
+  networkType: OVN-Kubernetes
+  clusterNetwork:
+    - cidr: 10.128.0.0/14
+      hostPrefix: 23
+  serviceNetwork:
+    - 172.30.0.0/16
+  machineNetwork:
+    - cidr: 10.50.10.0/24
+platform:
+  baremetal:
+    apiVIPs:
+      - 10.50.10.100
+    ingressVIPs:
+      - 10.50.10.101
+pullSecret: '{"auths":{"quay.internal.corp:8443":{"auth":"dXNlcjpwYXNzd29yZA==","email":"admin@corp.local"}}}'
+sshKey: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGEXAMPLEKEYFORAGENTINSTALLATION0000000000000 admin@helper"
+additionalTrustBundle: |
+  -----BEGIN CERTIFICATE-----
+  MIIEkjCCA3qgAwIBAgIUeN7hQZg4F3jN7xO4B8o4Yv5kL5QwDQYJKoZIhvcNAQEL
+  BQAwVzELMAkGA1UEBhMCVVMxEzARBgNVBAgMCkNhbGlmb3JuaWExEDAOBgNVBAcM
+  B1Nhbkpvc2UxFDASBgNVBAoMC0VudGVycHJpc2UxEDAOBgNVBAMMB0NvcnAgQ0Ew
+  HhcNMjYwMTAxMDAwMDAwWhcNMzYwMTAxMDAwMDAwWjBXMQswCQYDVQQGEwJVUzET
+  MBEGA1UECAwKQ2FsaWZvcm5pYTEQMA4GA1UEBwwHU2FuSm9zZTEUMBIGA1UECgwL
+  RW50ZXJwcmlzZTEQMA4GA1UEAwwHQ29ycCBDQTCCASIwDQYJKoZIhvcNAQEBBQAD
+  ggEPADCCAQoCggEBAL0r8l3v7Z9fX...ENTERPRISE_INTERNAL_CA_CERTIFICATE
+  -----END CERTIFICATE-----
+imageDigestSources:
+  - source: quay.io/openshift-release-dev/ocp-release
+    mirrors:
+      - quay.internal.corp:8443/openshift4/openshift/release-images
+  - source: quay.io/openshift-release-dev/ocp-v4.0-art-dev
+    mirrors:
+      - quay.internal.corp:8443/openshift4/openshift/release
+  - source: registry.redhat.io/multicluster-engine
+    mirrors:
+      - quay.internal.corp:8443/openshift4/multicluster-engine
+  - source: registry.redhat.io/openshift4
+    mirrors:
+      - quay.internal.corp:8443/openshift4/openshift
+fips: false

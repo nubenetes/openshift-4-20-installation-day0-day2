@@ -29,7 +29,7 @@ Designed for Enterprise Platform Architects, Principal Site Reliability Engineer
 
 ### Key Repository Assets at a Glance:
 - 📚 **51 Exhaustive Engineering Modules (`docs/`)**: Organized across 9 operational domains covering every topology, hypervisor, public cloud, Gateway API, and incident scenario.
-- ⚙️ **34 Production Declarative Manifests (`configs/`)**: Validated Custom Resources for Agent-Based Installer, Keyless Cloud IPI, oc-mirror v2, Gateway API, Ingress PKI, GitOps root App-of-Apps, External Secrets Operator, cert-manager, OpenShift Virtualization, RHOAI, and vLLM ServingRuntime.
+- ⚙️ **37 Production Declarative Manifests (`configs/`)**: Validated Custom Resources for Agent-Based Installer, Keyless Cloud IPI, oc-mirror v2, Gateway API, Ingress PKI, GitOps root App-of-Apps, External Secrets Operator, cert-manager, OpenShift Virtualization, RHOAI, and vLLM ServingRuntime.
 - 🛠️ **15 Production Automation Scripts ([`scripts/`](scripts/README.md))**: Complete shell and PowerShell operational tools covering preflight validation, air-gap mirroring, automated etcd backups, canary cluster upgrades with Prometheus SLO gating, automated OADP restore drills, expired certificate recovery from the Helper Node, and single-member quorum restoration (documented in the [Scripts Manual](scripts/README.md)).
 - 🎯 **10-Step Deterministic Implementation Workflow**: A unified sequence linking Day 0 readiness through to autonomous lifecycle operations across all infrastructure targets.
 
@@ -648,9 +648,12 @@ To navigate and utilize this enterprise repository effectively, the directory st
 - `├──` 📁 **[`configs/`](configs/)** — *Production Declarative Manifests & Configurations*
   - `├──` 📁 **[`configs/agent-based/`](configs/agent-based/)** — *Declarative Agent-Based Installer (ABI) manifests*
     - `├──` 📄 [`agent-config.yaml`](configs/agent-based/agent-config.yaml) — *Static NMState host IP bonding and Rendezvous node config*
+    - `├──` 📄 [`agent-config-lacp-vlan.yaml`](configs/agent-based/agent-config-lacp-vlan.yaml) — *Enterprise LACP 802.3ad bonding, 802.1Q VLANs & WWN root device hints*
     - `├──` 📄 [`install-config-sno.yaml`](configs/agent-based/install-config-sno.yaml) — *SNO single-node cluster install configuration*
     - `├──` 📄 [`install-config-compact.yaml`](configs/agent-based/install-config-compact.yaml) — *3-Node Compact Converged install configuration*
-    - `└──` 📄 [`install-config-standard.yaml`](configs/agent-based/install-config-standard.yaml) — *Standard 3-Master + 3-Worker HA install configuration*
+    - `├──` 📄 [`install-config-standard.yaml`](configs/agent-based/install-config-standard.yaml) — *Standard 3-Master + 3-Worker HA install configuration*
+    - `├──` 📄 [`install-config-airgap.yaml`](configs/agent-based/install-config-airgap.yaml) — *Air-gapped / disconnected install-config with imageDigestSources & trust bundle*
+    - `└──` 📄 [`ipxe-boot.cfg`](configs/agent-based/ipxe-boot.cfg) — *Network PXE / iPXE chainloader booting live ABI kernel and rootfs*
   - `├──` 📁 **[`configs/ipi-cloud/`](configs/ipi-cloud/)** — *Public Cloud Installer-Provisioned (IPI) manifests*
     - `├──` 📄 [`aws-install-config.yaml`](configs/ipi-cloud/aws-install-config.yaml) — *AWS Private VPC install-config with STS keyless IAM*
     - `├──` 📄 [`azure-install-config.yaml`](configs/ipi-cloud/azure-install-config.yaml) — *Azure Private VNet install-config with Workload Identity*
@@ -791,9 +794,12 @@ openshift-4-20-installation-day0-day2/
 ├── configs/
 │   ├── agent-based/
 │   │   ├── agent-config.yaml
+│   │   ├── agent-config-lacp-vlan.yaml
 │   │   ├── install-config-sno.yaml
 │   │   ├── install-config-compact.yaml
-│   │   └── install-config-standard.yaml
+│   │   ├── install-config-standard.yaml
+│   │   ├── install-config-airgap.yaml
+│   │   └── ipxe-boot.cfg
 │   ├── ipi-cloud/
 │   │   ├── aws-install-config.yaml
 │   │   ├── azure-install-config.yaml
@@ -872,7 +878,7 @@ The `docs/` tree contains **51 exhaustive, production-grade architectural bluepr
 
 #### 2. Declarative Configurations (`configs/`)
 The `configs/` tree provides validated, production-grade YAML and daemon templates:
-- **`configs/agent-based/`**: Declarative configurations (`agent-config.yaml`, `install-config-*.yaml`) defining static networking, bonded interfaces, and Rendezvous nodes.
+- **`configs/agent-based/`**: Declarative configurations (`agent-config.yaml`, `agent-config-lacp-vlan.yaml`, `install-config-*.yaml`, `ipxe-boot.cfg`) defining static networking, LACP/VLAN NMState, Rendezvous nodes, air-gapped mirrors, and iPXE boot.
 - **`configs/ipi-cloud/`**: Enterprise-grade cloud installation manifests utilizing keyless authentication (AWS STS, Azure Workload Identity, GCP Workload Identity Federation).
 - **`configs/airgap/`**: Modern `oc-mirror` v2 `ImageSetConfiguration` definitions and local Quay/Harbor registry manifests.
 - **`configs/gateway-api/`**: Production Kubernetes Gateway API manifests (`GatewayClass`, `Gateway`, `HTTPRoute` canary split, `GRPCRoute` AI streaming, and `TLSRoute` VM passthrough).
@@ -1083,7 +1089,7 @@ All scripts and manifests are ready to execute from this repository:
 | [`scripts/emergency-etcd-single-member.sh`](scripts/emergency-etcd-single-member.sh) | Catastrophic quorum recovery: forces a surviving master into a functional 1-node etcd cluster to restore API server. | `./scripts/emergency-etcd-single-member.sh master-0.corp.local` |
 
 ### Production Manifests (`configs/`)
-- **Agent-Based**: [`configs/agent-based/agent-config.yaml`](configs/agent-based/agent-config.yaml), [`install-config-sno.yaml`](configs/agent-based/install-config-sno.yaml), [`install-config-compact.yaml`](configs/agent-based/install-config-compact.yaml), [`install-config-standard.yaml`](configs/agent-based/install-config-standard.yaml).
+- **Agent-Based**: [`configs/agent-based/agent-config.yaml`](configs/agent-based/agent-config.yaml), [`agent-config-lacp-vlan.yaml`](configs/agent-based/agent-config-lacp-vlan.yaml), [`install-config-sno.yaml`](configs/agent-based/install-config-sno.yaml), [`install-config-compact.yaml`](configs/agent-based/install-config-compact.yaml), [`install-config-standard.yaml`](configs/agent-based/install-config-standard.yaml), [`install-config-airgap.yaml`](configs/agent-based/install-config-airgap.yaml), [`ipxe-boot.cfg`](configs/agent-based/ipxe-boot.cfg).
 - **Public Cloud IPI**: [`configs/ipi-cloud/aws-install-config.yaml`](configs/ipi-cloud/aws-install-config.yaml), [`azure-install-config.yaml`](configs/ipi-cloud/azure-install-config.yaml), [`gcp-install-config.yaml`](configs/ipi-cloud/gcp-install-config.yaml).
 - **Virtualization UPI**: [`configs/upi-vsphere/vsphere-install-config.yaml`](configs/upi-vsphere/vsphere-install-config.yaml).
 - **Air-Gapped**: [`configs/airgap/imageset-config-v2.yaml`](configs/airgap/imageset-config-v2.yaml), [`local-registry-quay.yaml`](configs/airgap/local-registry-quay.yaml).

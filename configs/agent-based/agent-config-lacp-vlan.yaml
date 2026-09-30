@@ -1,0 +1,197 @@
+apiVersion: v1alpha1
+kind: AgentConfig
+metadata:
+  name: ocp-prod-lacp-vlan
+rendezvousIP: 10.50.10.11
+additionalNTPSources:
+  - 10.50.10.1
+  - time.corp.local
+hosts:
+  - hostname: master-0.ocp-prod.corp.local
+    role: master
+    rootDeviceHints:
+      wwn: "0x600508b400105e21"
+      rotational: false
+      minSizeGigabytes: 120
+    interfaces:
+      - name: ens1f0
+        macAddress: "00:50:56:a1:b2:01"
+      - name: ens1f1
+        macAddress: "00:50:56:a1:b2:02"
+    networkConfig:
+      interfaces:
+        - name: bond0
+          type: bond
+          state: up
+          link-aggregation:
+            mode: 802.3ad
+            options:
+              miimon: 100
+              lacp_rate: fast
+            port:
+              - ens1f0
+              - ens1f1
+        - name: bond0.100
+          type: vlan
+          state: up
+          vlan:
+            base-iface: bond0
+            id: 100
+          ipv4:
+            enabled: true
+            address:
+              - ip: 10.50.10.11
+                prefix-length: 24
+            dhcp: false
+        - name: bond0.200
+          type: vlan
+          state: up
+          vlan:
+            base-iface: bond0
+            id: 200
+          ipv4:
+            enabled: true
+            address:
+              - ip: 10.50.20.11
+                prefix-length: 24
+            dhcp: false
+      dns-resolver:
+        config:
+          server:
+            - 10.50.10.1
+            - 10.50.10.2
+      routes:
+        config:
+          - destination: 0.0.0.0/0
+            next-hop-address: 10.50.10.1
+            next-hop-interface: bond0.100
+    installerArgs:
+      - "console=tty0"
+      - "console=ttyS0,115200n8"
+      - "rd.neednet=1"
+
+  - hostname: master-1.ocp-prod.corp.local
+    role: master
+    rootDeviceHints:
+      wwn: "0x600508b400105e22"
+      rotational: false
+      minSizeGigabytes: 120
+    interfaces:
+      - name: ens1f0
+        macAddress: "00:50:56:a1:b2:03"
+      - name: ens1f1
+        macAddress: "00:50:56:a1:b2:04"
+    networkConfig:
+      interfaces:
+        - name: bond0
+          type: bond
+          state: up
+          link-aggregation:
+            mode: 802.3ad
+            options:
+              miimon: 100
+              lacp_rate: fast
+            port:
+              - ens1f0
+              - ens1f1
+        - name: bond0.100
+          type: vlan
+          state: up
+          vlan:
+            base-iface: bond0
+            id: 100
+          ipv4:
+            enabled: true
+            address:
+              - ip: 10.50.10.12
+                prefix-length: 24
+            dhcp: false
+        - name: bond0.200
+          type: vlan
+          state: up
+          vlan:
+            base-iface: bond0
+            id: 200
+          ipv4:
+            enabled: true
+            address:
+              - ip: 10.50.20.12
+                prefix-length: 24
+            dhcp: false
+      dns-resolver:
+        config:
+          server:
+            - 10.50.10.1
+            - 10.50.10.2
+      routes:
+        config:
+          - destination: 0.0.0.0/0
+            next-hop-address: 10.50.10.1
+            next-hop-interface: bond0.100
+    installerArgs:
+      - "console=tty0"
+      - "console=ttyS0,115200n8"
+      - "rd.neednet=1"
+
+  - hostname: master-2.ocp-prod.corp.local
+    role: master
+    rootDeviceHints:
+      wwn: "0x600508b400105e23"
+      rotational: false
+      minSizeGigabytes: 120
+    interfaces:
+      - name: ens1f0
+        macAddress: "00:50:56:a1:b2:05"
+      - name: ens1f1
+        macAddress: "00:50:56:a1:b2:06"
+    networkConfig:
+      interfaces:
+        - name: bond0
+          type: bond
+          state: up
+          link-aggregation:
+            mode: 802.3ad
+            options:
+              miimon: 100
+              lacp_rate: fast
+            port:
+              - ens1f0
+              - ens1f1
+        - name: bond0.100
+          type: vlan
+          state: up
+          vlan:
+            base-iface: bond0
+            id: 100
+          ipv4:
+            enabled: true
+            address:
+              - ip: 10.50.10.13
+                prefix-length: 24
+            dhcp: false
+        - name: bond0.200
+          type: vlan
+          state: up
+          vlan:
+            base-iface: bond0
+            id: 200
+          ipv4:
+            enabled: true
+            address:
+              - ip: 10.50.20.13
+                prefix-length: 24
+            dhcp: false
+      dns-resolver:
+        config:
+          server:
+            - 10.50.10.1
+            - 10.50.10.2
+      routes:
+        config:
+          - destination: 0.0.0.0/0
+            next-hop-address: 10.50.10.1
+            next-hop-interface: bond0.100
+    installerArgs:
+      - "console=tty0"
+      - "console=ttyS0,115200n8"
+      - "rd.neednet=1"
