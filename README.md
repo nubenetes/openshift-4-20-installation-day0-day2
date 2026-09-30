@@ -67,6 +67,8 @@ Architectural masterclasses, deep-dive podcasts, and focused technical video sho
 | **06** | [Kubernetes Gateway API on OpenShift 4.20: Day 0 to Day 2 Ingress and Traffic Engineering](https://www.youtube.com/watch?v=GrCoDGJ8YiQ) | **Traffic Engineering & Routing**<br/>Gateway controller, HTTPRoute, GRPCRoute, TLSRoute, Kuadrant & ReferenceGrant security | 🇺🇸 EN | `9:47` | [▶️ Watch](https://www.youtube.com/watch?v=GrCoDGJ8YiQ) |
 | **07** | [OpenShift 4.20 Day 1 Hardening: Custom Ingress PKI, Enterprise IdP, RBAC and MCPs](https://www.youtube.com/watch?v=E9eV9CHYYPE) | **Day 1 Post-Install & Hardening**<br/>ClusterOperators health, custom Ingress certs, OIDC/Keycloak IdP, RBAC lockdown & MCP tuning | 🇺🇸 EN | `6:30` | [▶️ Watch](https://www.youtube.com/watch?v=E9eV9CHYYPE) |
 | **08** | [OpenShift 4.20 Day 2 Operations: Observability, GitOps, EUS Upgrades and OpenShift AI](https://www.youtube.com/watch?v=9MHiGiQcqH0) | **Day 2 Ops & Fleet Management**<br/>Thanos/LokiStack observability, GitOps App-of-Apps, EUS upgrades (4.18 to 4.20) & RHOAI GPU | 🇺🇸 EN | `6:44` | [▶️ Watch](https://www.youtube.com/watch?v=9MHiGiQcqH0) |
+| **09** | [OpenShift 4.20 Agent-Based Installer: Bootstrap-in-Place, NMState and Rendezvous Node](https://www.youtube.com/watch?v=P1fjbXD2xbQ) | **Agent-Based Installer (ABI)**<br/>Bootstrap-in-Place on Node 0, static NMState networking, LACP bonding & Rendezvous host | 🇺🇸 EN | `6:32` | [▶️ Watch](https://www.youtube.com/watch?v=P1fjbXD2xbQ) |
+| **10** | [OpenShift 4.20 Installer Guide: All Provisioning Scenarios, Topologies and Platforms](https://www.youtube.com/watch?v=btCpgLINTZM) | **Installer Scenarios & Platforms**<br/>Comparison of ABI, IPI, UPI & Assisted Installer across SNO, Compact, HA & HyperShift HCP | 🇺🇸 EN | `9:10` | [▶️ Watch](https://www.youtube.com/watch?v=btCpgLINTZM) |
 
 ### 🎬 Video Shorts Matrix
 
@@ -85,6 +87,9 @@ Architectural masterclasses, deep-dive podcasts, and focused technical video sho
 | **11** | [How to Automate OpenShift Master Node Replacement Without Downtime](https://www.youtube.com/shorts/XgkB-eDbl_U) | **Node Lifecycle & Assisted Replacement**<br/>etcd member eviction, node cordon/drain/delete & CSR automated approval | 🇺🇸 EN | `0:58` | [▶️ Watch](https://www.youtube.com/shorts/XgkB-eDbl_U) |
 | **12** | [How OpenShift Canary Upgrades Protect Workloads with Automated SLO Gates](https://www.youtube.com/shorts/gN_-IyABljE) | **Canary Upgrades & SLO Gating**<br/>Paused MCP rollout waves, pre-flight health checks & Thanos SLO gating | 🇺🇸 EN | `1:27` | [▶️ Watch](https://www.youtube.com/shorts/gN_-IyABljE) |
 | **13** | [How to Survive OpenShift Air-Gapped Upgrades and Out-of-Band IPMI Recovery](https://www.youtube.com/shorts/CYX30kt1B_M) | **Air-Gapped & IPMI Hardware Lifeline**<br/>oc-mirror v2 local caching, offline staging & IPMI Serial-over-LAN console | 🇺🇸 EN | `1:04` | [▶️ Watch](https://www.youtube.com/shorts/CYX30kt1B_M) |
+| **14** | [How OpenShift Automates 10,000 Edge Deployments with Zero-Touch Provisioning](https://www.youtube.com/shorts/duGGOLqLB-A) | **Zero-Touch Edge Automation**<br/>Declarative SiteConfigs, RHACM fleet orchestration & remote SNO bare metal deployment | 🇺🇸 EN | `1:30` | [▶️ Watch](https://www.youtube.com/shorts/duGGOLqLB-A) |
+| **15** | [How OpenShift Agent-Based Installer Automates Bare Metal Installations](https://www.youtube.com/shorts/nhxRJz2dR8o) | **Bare Metal ABI Automation**<br/>Self-contained Discovery ISO, static NMState networking & PXE-free hardware discovery | 🇺🇸 EN | `1:17` | [▶️ Watch](https://www.youtube.com/shorts/nhxRJz2dR8o) |
+| **16** | [How OpenShift Eliminates Bootstrap VMs with the Rendezvous Node Pattern](https://www.youtube.com/shorts/1_tlji_6oxk) | **Rendezvous Node Pattern**<br/>Node 0 in-memory live boot, temporary assisted-service & zero-leftover bootstrap pivot | 🇺🇸 EN | `1:14` | [▶️ Watch](https://www.youtube.com/shorts/1_tlji_6oxk) |
 
 *For complete technical breakdowns, copy-paste ready descriptions, and YouTube Studio links, see [Section: Video Walkthroughs & Architecture References](#video-walkthroughs--architecture-references-youtube).*
 
@@ -1227,7 +1232,7 @@ Below are the complete video overviews organized by original audio language and 
 ### 🇬🇧 Videos in English (Original Audio)
 
 <details open>
-<summary>📂 <strong>Full-Length Technical Deep Dives & Architecture Masterclasses (7 Videos)</strong></summary>
+<summary>📂 <strong>Full-Length Technical Deep Dives & Architecture Masterclasses (9 Videos)</strong></summary>
 
 <br/>
 
@@ -1399,14 +1404,64 @@ Below are the complete video overviews organized by original audio language and 
 > ⏱️ Duration: 6:44
 > #OpenShift #Day2 #Kubernetes #GitOps #ArgoCD #Observability #OpenShiftAI #RHOAI #DevOps #SRE #PlatformEngineering #RedHat
 
+#### 8. OpenShift 4.20 Agent-Based Installer: Bootstrap-in-Place, NMState and Rendezvous Node
+- 🔗 **Direct Link**: [https://www.youtube.com/watch?v=P1fjbXD2xbQ](https://www.youtube.com/watch?v=P1fjbXD2xbQ)
+- 🛠️ **YouTube Studio**: [https://studio.youtube.com/video/P1fjbXD2xbQ/edit](https://studio.youtube.com/video/P1fjbXD2xbQ/edit)
+- ⏱️ **Duration**: 6:32
+- 🏷️ **Domain**: Provisioning Paradigms & Agent-Based Installer (ABI)
+- 📝 **Full Description**:
+> ⚡ Red Hat OpenShift 4.20 Agent-Based Installer: Bootstrap-in-Place, NMState and Rendezvous Architecture
+>
+> An exhaustive architectural deep dive into the modern Agent-Based Installer (ABI) for Red Hat OpenShift Container Platform 4.20. Discover how ABI revolutionizes bare-metal, edge, and air-gapped datacenter provisioning by completely eliminating the need for an external bootstrap virtual machine.
+>
+> 📌 Key Architectural Topics Explored:
+> • Bootstrap-in-Place Mechanism: How Node 0 boots into RAM via the Discovery ISO, executes temporary control plane bootstrap services, and seamlessly pivots into a permanent master.
+> • Rendezvous Node Coordination: Distributed consensus and hardware discovery without external orchestration servers or cloud dependencies.
+> • Declarative agent-config.yaml: Configuring static NMState IP baselines, LACP bonding (802.3ad), VLAN tagging, and MTU 9000 jumbo frames before OS installation.
+> • Air-Gapped and Disconnected Readiness: Embedding ignition configs and container images into a self-contained bootable ISO.
+> • SNO, Compact and Distributed Targets: Deploying Single Node OpenShift, 3-node compact clusters, or multi-node enterprise environments with a single boot image.
+>
+> 🔗 Architecture Docs and Manifests:
+> • Agent-Based Installer Guide: https://github.com/nubenetes/openshift-4-20-installation-day0-day2/blob/main/docs/02-provisioning-paradigms/01-agent-based-installer.md
+> • Production agent-config YAML: https://github.com/nubenetes/openshift-4-20-installation-day0-day2/tree/main/configs/agent-based
+> • ISO Generation Script: https://github.com/nubenetes/openshift-4-20-installation-day0-day2/blob/main/scripts/generate-agent-iso.sh
+>
+> ⏱️ Duration: 6:32
+> #OpenShift #BareMetal #AgentBasedInstaller #Kubernetes #NMState #RedHat #DevOps #SRE #PlatformEngineering #Sysadmin
+
+#### 9. OpenShift 4.20 Installer Guide: All Provisioning Scenarios, Topologies and Platforms
+- 🔗 **Direct Link**: [https://www.youtube.com/watch?v=btCpgLINTZM](https://www.youtube.com/watch?v=btCpgLINTZM)
+- 🛠️ **YouTube Studio**: [https://studio.youtube.com/video/btCpgLINTZM/edit](https://studio.youtube.com/video/btCpgLINTZM/edit)
+- ⏱️ **Duration**: 9:10
+- 🏷️ **Domain**: Provisioning Paradigms, Multi-Platform & Topologies
+- 📝 **Full Description**:
+> 🏛️ Complete OpenShift 4.20 Installer Masterclass: All Provisioning Scenarios, Topologies and Platforms
+>
+> The definitive architectural masterclass comparing every installation paradigm, topology model, and infrastructure target in Red Hat OpenShift 4.20. Learn how enterprise platform architects choose the perfect deployment pattern based on operational complexity, latency requirements, and SLA tiers.
+>
+> 📌 Comprehensive Architectural Comparison Matrix:
+> • Provisioning Paradigms Deconstructed: Automated Installer-Provisioned Infrastructure (IPI), User-Provisioned Infrastructure (UPI), Assisted Installer, and Agent-Based Installer (ABI).
+> • Deployment Topologies Evaluated: Single Node OpenShift (SNO), 3-Node Compact Clusters, Standard High-Availability (3 Masters plus N Workers), and HyperShift Hosted Control Planes (HCP).
+> • HyperShift Architecture: Centralizing control planes as containerized pods to reduce infrastructure footprint and provision enterprise clusters in under 15 minutes.
+> • Multi-Target Support: Bare Metal direct deployments, VMware vSphere 8/9, Nutanix AHV, Microsoft Hyper-V, and Keyless Cloud IPI (AWS, GCP, Azure).
+> • Decision Framework: Balancing automated lifecycle management against custom enterprise network and storage requirements.
+>
+> 🔗 Complete Implementation Repository:
+> • Topologies Handbook: https://github.com/nubenetes/openshift-4-20-installation-day0-day2/tree/main/docs/01-architecture-topologies
+> • Provisioning Guides: https://github.com/nubenetes/openshift-4-20-installation-day0-day2/tree/main/docs/02-provisioning-paradigms
+> • Full Repository Blueprint: https://github.com/nubenetes/openshift-4-20-installation-day0-day2
+>
+> ⏱️ Duration: 9:10
+> #OpenShift #Kubernetes #HyperShift #BareMetal #VMware #IPI #UPI #AgentBasedInstaller #DevOps #SRE #PlatformEngineering #RedHat
+
 </details>
 
 <br/>
 
-### ⚡ Architecture & Automation Video Shorts (13 Shorts)
+### ⚡ Architecture & Automation Video Shorts (16 Shorts)
 
 <details open>
-<summary>📂 <strong>Technical Video Shorts Breakdown (13 Shorts)</strong></summary>
+<summary>📂 <strong>Technical Video Shorts Breakdown (16 Shorts)</strong></summary>
 
 <br/>
 
@@ -1710,6 +1765,78 @@ Below are the complete video overviews organized by original audio language and 
 > https://github.com/nubenetes/openshift-4-20-installation-day0-day2/tree/main/scripts
 >
 > #Shorts #OpenShift #AirGapped #ocmirror #IPMI #BareMetal #Sysadmin #DevOps #SRE #DisasterRecovery #Bash
+
+#### 14. How OpenShift Automates 10,000 Edge Deployments with Zero-Touch Provisioning
+- 🔗 **Direct Link**: [https://www.youtube.com/shorts/duGGOLqLB-A](https://www.youtube.com/shorts/duGGOLqLB-A)
+- 🛠️ **YouTube Studio**: [https://studio.youtube.com/video/duGGOLqLB-A/edit](https://studio.youtube.com/video/duGGOLqLB-A/edit)
+- 🌐 **Language**: English (Original Audio)
+- ⏱️ **Duration**: 1:30
+- 🏷️ **Domain**: Edge Automation & Zero-Touch Provisioning (ZTP)
+- 📝 **Full Description**:
+> 🌐 How OpenShift Automates 10,000 Edge Deployments with Zero-Touch Provisioning!
+>
+> How do telco operators and retail giants deploy, configure, and maintain thousands of remote Single Node OpenShift (SNO) clusters without dispatching field engineers to every site?
+>
+> The Zero-Touch Provisioning (ZTP) architecture:
+> • Declarative SiteConfigs: Every remote edge cluster is defined as a GitOps CRD containing network, BMC, and storage specs.
+> • Central Hub Management: Red Hat Advanced Cluster Management (RHACM) monitors Git and triggers automated deployments.
+> • BareMetal Operator & Assisted Installer: Powers on remote servers via IPMI/Redfish, boots discovery media, and automates installation.
+> • Scalable Edge Fleet: Standardizes security policies, zero-trust RBAC, and automated updates across 10,000 remote locations simultaneously.
+>
+> Scale your Kubernetes edge with GitOps precision!
+>
+> 🔗 Check Out Edge & Topology Docs:
+> https://github.com/nubenetes/openshift-4-20-installation-day0-day2/tree/main/docs/01-architecture-topologies
+>
+> #Shorts #OpenShift #EdgeComputing #SNO #Kubernetes #RHACM #GitOps #Telco #DevOps #PlatformEngineering
+
+#### 15. How OpenShift Agent-Based Installer Automates Bare Metal Installations
+- 🔗 **Direct Link**: [https://www.youtube.com/shorts/nhxRJz2dR8o](https://www.youtube.com/shorts/nhxRJz2dR8o)
+- 🛠️ **YouTube Studio**: [https://studio.youtube.com/video/nhxRJz2dR8o/edit](https://studio.youtube.com/video/nhxRJz2dR8o/edit)
+- 🌐 **Language**: English (Original Audio)
+- ⏱️ **Duration**: 1:17
+- 🏷️ **Domain**: Bare Metal Provisioning & Agent-Based Installer
+- 📝 **Full Description**:
+> ⚡ How OpenShift Agent-Based Installer Automates Bare Metal Installations!
+>
+> Installing Kubernetes on bare-metal enterprise servers used to require complex PXE servers, TFTP boots, and fragile DHCP configurations. OpenShift Agent-Based Installer (ABI) changes the game!
+>
+> How ABI powers bare-metal automation:
+> • Self-Contained Discovery ISO: Generates a single bootable image containing Ignition manifests and container images.
+> • Static NMState Integration: Pre-configures NIC bonding, VLANs, and static IPs directly in agent-config.yaml before boot.
+> • Local Hardware Discovery: Inspects CPUs, memory, disks, and network interfaces automatically during live memory boot.
+> • Zero Network Dependencies: Installs flawlessly in high-security air-gapped environments without external internet access.
+>
+> Say goodbye to legacy PXE servers forever!
+>
+> 🔗 Download Agent-Based Manifests:
+> https://github.com/nubenetes/openshift-4-20-installation-day0-day2/tree/main/configs/agent-based
+>
+> #Shorts #OpenShift #BareMetal #AgentBasedInstaller #Kubernetes #NMState #DevOps #SRE #Sysadmin
+
+#### 16. How OpenShift Eliminates Bootstrap VMs with the Rendezvous Node Pattern
+- 🔗 **Direct Link**: [https://www.youtube.com/shorts/1_tlji_6oxk](https://www.youtube.com/shorts/1_tlji_6oxk)
+- 🛠️ **YouTube Studio**: [https://studio.youtube.com/video/1_tlji_6oxk/edit](https://studio.youtube.com/video/1_tlji_6oxk/edit)
+- 🌐 **Language**: English (Original Audio)
+- ⏱️ **Duration**: 1:14
+- 🏷️ **Domain**: Rendezvous Node & Bootstrap-in-Place Architecture
+- 📝 **Full Description**:
+> 🚀 How OpenShift Eliminates Bootstrap VMs with the Rendezvous Node Pattern!
+>
+> In traditional OpenShift 4 IPI or UPI installs, an external bootstrap VM was required just to launch the temporary control plane. Once the cluster was alive, that VM was destroyed, wasting resources and adding friction!
+>
+> How the Rendezvous Node Pattern works:
+> • Designated Master in RAM: Node 0 is assigned as the Rendezvous Host and boots into a lightweight live environment.
+> • Temporary In-Memory Control Plane: Runs etcd and the temporary assisted-service in memory on bare metal.
+> • Control Plane Handoff: The permanent masters join the temporary cluster and take over active Raft consensus.
+> • Bootstrap Self-Destruction: Node 0 cleanly wipes its temporary bootstrap containers and pivots to a normal production master.
+>
+> Clean, elegant, and zero wasted infrastructure!
+>
+> 🔗 Explore the ABI Architecture:
+> https://github.com/nubenetes/openshift-4-20-installation-day0-day2/blob/main/docs/02-provisioning-paradigms/01-agent-based-installer.md
+>
+> #Shorts #OpenShift #Kubernetes #RendezvousNode #BareMetal #DevOps #SRE #PlatformEngineering #Sysadmin
 
 </details>
 
