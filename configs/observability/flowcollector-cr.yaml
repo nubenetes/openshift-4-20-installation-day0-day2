@@ -1,0 +1,58 @@
+apiVersion: flows.netobserv.io/v1beta2
+kind: FlowCollector
+metadata:
+  name: cluster
+  labels:
+    app.kubernetes.io/part-of: network-observability-operator
+spec:
+  namespace: netobserv
+  deploymentModel: Direct
+  agent:
+    type: eBPF
+    ebpf:
+      sampling: 50 # 1 in 50 packets sampled to bound network flow cardinality
+      logLevel: info
+      privileged: false
+      features:
+        - PacketDrop
+        - DNSTracking
+        - FlowRTT
+        - NetworkEvents
+  processor:
+    logLevel: info
+    resources:
+      limits:
+        memory: 1Gi
+      requests:
+        cpu: 100m
+        memory: 256Mi
+    metrics:
+      disableAlerts: false
+      ignoreTags:
+        - egress
+  loki:
+    enable: true
+    mode: LokiStack
+    lokiStack:
+      name: logging-loki
+      namespace: openshift-logging
+    tenant: "network"
+    batchWait: 1s
+    batchSize: 1048576 # 1MB
+  consolePlugin:
+    enable: true
+    register: true
+    portNaming:
+      enable: true
+    quickFilters:
+      - name: Applications
+        filter:
+          src_namespace!: 'openshift-,openshift'
+          dst_namespace!: 'openshift-,openshift'
+        default: true
+      - name: Infrastructure
+        filter:
+          src_namespace: 'openshift-,openshift'
+      - name: Packet Drops
+        filter:
+          drop_state: 'Dropped'

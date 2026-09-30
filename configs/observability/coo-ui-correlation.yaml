@@ -1,0 +1,78 @@
+apiVersion: observability.openshift.io/v1alpha1
+kind: UIPlugin
+metadata:
+  name: observability-ui
+  namespace: openshift-cluster-observability
+  labels:
+    app.kubernetes.io/part-of: cluster-observability-operator
+spec:
+  type: DistributedTracing
+  distributedTracing:
+    tempoStack:
+      name: simplest
+      namespace: openshift-tracing
+---
+apiVersion: observability.openshift.io/v1alpha1
+kind: UIPlugin
+metadata:
+  name: logging-ui
+  namespace: openshift-cluster-observability
+  labels:
+    app.kubernetes.io/part-of: cluster-observability-operator
+spec:
+  type: Logging
+  logging:
+    lokiStack:
+      name: logging-loki
+      namespace: openshift-logging
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: korrel8r-rules
+  namespace: openshift-cluster-observability
+  labels:
+    app.kubernetes.io/part-of: cluster-observability-operator
+data:
+  korrel8r.yaml: |
+    # Korrel8r Graph Correlation Rules for OpenShift 4.20
+    # Connects Kubernetes Resources, Prometheus Alerts, Loki Logs, and Tempo Traces
+    stores:
+      - domain: k8s
+      - domain: alert
+        spec:
+          metric: "https://thanos-querier.openshift-monitoring.svc:9091"
+      - domain: metric
+        spec:
+          metric: "https://thanos-querier.openshift-monitoring.svc:9091"
+      - domain: log
+        spec:
+          url: "https://logging-loki-gateway.openshift-logging.svc:8080/api/logs/v1/application"
+      - domain: trace
+        spec:
+          url: "https://simplest-gateway.openshift-tracing.svc:8090"
+    rules:
+      - name: AlertToDeployment
+        start: alert:Alert
+        goal: k8s:Deployment
+        apply: |
+          pod = rule.query("k8s:Pod", {"namespace": start.labels.namespace, "pod": start.labels.pod})
+          return pod.owner("Deployment")
+
+      - name: PodToLogs
+        start: k8s:Pod
+        goal: log:Log
+        apply: |
+          return "log:application:{kubernetes_namespace_name=\"" + start.namespace + "\", kubernetes_pod_name=\"" + start.name + "\"}"
+
+      - name: TraceToLogs
+        start: trace:Span
+        goal: log:Log
+        apply: |
+          return "log:application:{kubernetes_namespace_name=\"" + start.namespace + "\"} | json | trace_id=\"" + start.trace_id + "\""
+
+      - name: MetricExemplarToTrace
+        start: metric:Exemplar
+        goal: trace:Trace
+        apply: |
+          return "trace:Trace:" + start.trace_id

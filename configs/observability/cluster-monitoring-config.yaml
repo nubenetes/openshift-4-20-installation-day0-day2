@@ -1,0 +1,103 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cluster-monitoring-config
+  namespace: openshift-monitoring
+  labels:
+    app.kubernetes.io/part-of: openshift-monitoring
+data:
+  config.yaml: |
+    enableUserWorkload: true
+    prometheusK8s:
+      retention: 15d
+      retentionSize: 90Gi
+      enforceBodySizeLimit: 40MB
+      queryLogFile: /dev/stdout
+      nodeSelector:
+        node-role.kubernetes.io/infra: ""
+      tolerations:
+        - key: node-role.kubernetes.io/infra
+          operator: Exists
+          effect: NoSchedule
+      volumeClaimTemplate:
+        metadata:
+          name: prometheus-k8s-db
+        spec:
+          storageClassName: ocs-storagecluster-ceph-rbd
+          resources:
+            requests:
+              storage: 100Gi
+      # OpenMetrics Exemplar storage for native metric-to-trace correlation
+      exemplars:
+        maxSize: 100000
+    alertmanagerMain:
+      nodeSelector:
+        node-role.kubernetes.io/infra: ""
+      tolerations:
+        - key: node-role.kubernetes.io/infra
+          operator: Exists
+          effect: NoSchedule
+      volumeClaimTemplate:
+        metadata:
+          name: alertmanager-data
+        spec:
+          storageClassName: ocs-storagecluster-ceph-rbd
+          resources:
+            requests:
+              storage: 20Gi
+    thanosQuerier:
+      enableRequestLogging: true
+      nodeSelector:
+        node-role.kubernetes.io/infra: ""
+      tolerations:
+        - key: node-role.kubernetes.io/infra
+          operator: Exists
+          effect: NoSchedule
+    telemeterClient:
+      nodeSelector:
+        node-role.kubernetes.io/infra: ""
+      tolerations:
+        - key: node-role.kubernetes.io/infra
+          operator: Exists
+          effect: NoSchedule
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: user-workload-monitoring-config
+  namespace: openshift-user-workload-monitoring
+  labels:
+    app.kubernetes.io/part-of: openshift-monitoring
+data:
+  config.yaml: |
+    prometheus:
+      retention: 7d
+      retentionSize: 45Gi
+      enforceBodySizeLimit: 20MB
+      nodeSelector:
+        node-role.kubernetes.io/infra: ""
+      tolerations:
+        - key: node-role.kubernetes.io/infra
+          operator: Exists
+          effect: NoSchedule
+      volumeClaimTemplate:
+        metadata:
+          name: prometheus-user-workload-db
+        spec:
+          storageClassName: ocs-storagecluster-ceph-rbd
+          resources:
+            requests:
+              storage: 50Gi
+      # Enable exemplars on user workloads to capture trace IDs in latency histograms
+      exemplars:
+        maxSize: 100000
+      # Cardinality guardrail: default per-scrape limit on user-defined ServiceMonitors
+      scrapeSampleLimit: 10000
+      targetLimit: 200
+    thanosRuler:
+      nodeSelector:
+        node-role.kubernetes.io/infra: ""
+      tolerations:
+        - key: node-role.kubernetes.io/infra
+          operator: Exists
+          effect: NoSchedule

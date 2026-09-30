@@ -108,6 +108,7 @@ Every script adheres to rigorous enterprise software engineering standards:
 | **13** | [`replace-control-plane-node.sh`](#13-replace-control-plane-nodesh) | Bash | Admin Workstation | Emergency Triage | Yes | Purges failed master from etcd Raft consensus, deletes Node CR, and monitors reprovisioning CSRs. |
 | **14** | [`reinstall-worker-node.sh`](#14-reinstall-worker-nodesh) | Bash | Admin Workstation | Emergency Triage | Yes | Gracefully cordons, drains, deletes degraded worker node, and monitors replacement provisioning. |
 | **15** | [`emergency-etcd-single-member.sh`](#15-emergency-etcd-single-membersh) | Bash | Helper Node | Emergency Triage | No (Bypasses API) | Recovers from catastrophic multi-master quorum loss by forcing a single master into a 1-node etcd cluster. |
+| **16** | [`verify-observability-stack.sh`](#16-verify-observability-stacksh) | Bash | Admin Workstation | Day 2 Operations | Yes | Comprehensive health audit for CMO, UWM, Logging 6.x Vector, LokiStack, Tempo, and Korrel8r. |
 
 ---
 
@@ -694,6 +695,79 @@ SSH_KEY="/root/.ssh/id_rsa_ocp" \
 
 ---
 
+### 16. `verify-observability-stack.sh`
+
+#### Motivation & Operational Rationale
+In OpenShift 4.20, enterprise observability spans five interconnected operators, two object storage backends, and multiple telemetry collection daemons. A failure in any single layer (such as an expired S3 secret, an unready Vector DaemonSet, an unconfigured OpenMetrics exemplar store, or high-cardinality label explosions) breaks telemetry correlation and blinds platform SREs.
+
+`verify-observability-stack.sh` provides an end-to-end automated health audit across the complete native observability fabric:
+1. **Operator Health**: Validates CSV subscription status for Cluster Monitoring, OpenShift Logging 6.x, Loki Operator, OpenTelemetry, Tempo, COO, and Network Observability.
+2. **Namespace Inspection**: Verifies pod status across `openshift-monitoring`, `openshift-user-workload-monitoring`, `openshift-logging`, `openshift-tracing`, and `openshift-netobserv`.
+3. **Storage Fabric**: Confirms reachability of S3 object storage secrets (`logging-loki-s3`, `tempostack-s3`) and persistent volume claims.
+4. **Correlation & Exemplars**: Checks for OpenMetrics exemplar storage activation in `cluster-monitoring-config` and verifies console plugin registrations.
+5. **Cardinality Governance**: Directly inspects Prometheus TSDB active head series counts and alerts if series exceed safe thresholds (>3,000,000 active series).
+
+#### Workflow Diagram
+
+```mermaid
+flowchart TD
+    Start[Run Diagnostic] --> OpAudit["Audit 5 Operators<br/>CMO, Logging, Loki<br/>OTel, Tempo, COO"]
+    OpAudit --> PodHealth["Check Namespaces<br/>openshift-monitoring<br/>openshift-logging<br/>openshift-tracing"]
+    PodHealth --> S3Store["Verify Storage<br/>S3 Secrets & PVCs<br/>Loki & Tempo"]
+    S3Store --> TelemetryAudit["Query Telemetry<br/>Prometheus API<br/>Vector DaemonSet<br/>Tempo Gateway"]
+    TelemetryAudit --> CardAudit["Audit Cardinality<br/>TSDB Head Series<br/>Loki Active Streams"]
+    CardAudit --> Summary["Evaluate Health<br/>Errors & Warnings<br/>Exit 0 or Exit 1"]
+```
+
+```text
++-------------------------------------------------------+
+|        verify-observability-stack.sh Execution        |
++-------------------------------------------------------+
+                           |
+                           v
+   +-------------------------------------------------+
+   | Step 1: Audit 5 Core Observability Operators    |
+   | (CMO, Logging 6.x, Loki, OTel, Tempo, COO)      |
+   +-------------------------------------------------+
+                           |
+                           v
+   +-------------------------------------------------+
+   | Step 2: Namespace & Pod Health Inspections      |
+   | (openshift-monitoring, logging, tracing, netobs)|
+   +-------------------------------------------------+
+                           |
+                           v
+   +-------------------------------------------------+
+   | Step 3: Storage Fabric & S3 Bucket Verification |
+   | (logging-loki-s3, tempostack-s3, WAL PVCs)      |
+   +-------------------------------------------------+
+                           |
+                           v
+   +-------------------------------------------------+
+   | Step 4: Ingestion & Exemplar Verification       |
+   | (Prometheus UWM, Vector DaemonSets, Tempo OTLP) |
+   +-------------------------------------------------+
+                           |
+                           v
+   +-------------------------------------------------+
+   | Step 5: Cardinality & Series Analysis           |
+   | (Active TSDB head series, Loki streams count)   |
+   +-------------------------------------------------+
+                           |
+                           v
+   +-------------------------------------------------+
+   | Step 6: Summary Assessment (Exit 0 or Exit 1)   |
+   +-------------------------------------------------+
+```
+
+#### Hands-On CLI Execution
+```bash
+# Execute from Admin Workstation with cluster-admin credentials
+./scripts/verify-observability-stack.sh
+```
+
+---
+
 ## Cross-References & Architectural Documentation Mapping
 
 Each automation script maps directly to dedicated architectural documentation modules and production configuration manifests within this repository:
@@ -706,6 +780,7 @@ Each automation script maps directly to dedicated architectural documentation mo
 | **Hyper-V / Virtualization** | `deploy-hyperv-vms.ps1` | [`docs/04-platforms/08-microsoft-hyper-v.md`](../docs/04-platforms/08-microsoft-hyper-v.md) | [`configs/upi-vsphere/`](../configs/upi-vsphere/) |
 | **Post-Install Hardening** | `validate-cluster-health.sh` | [`docs/06-day1-baselining/01-cluster-operator-hardening.md`](../docs/06-day1-baselining/01-cluster-operator-hardening.md)<br/>[`docs/06-day1-baselining/04-machineconfigpools-tuning.md`](../docs/06-day1-baselining/04-machineconfigpools-tuning.md) | [`configs/day1/`](../configs/day1/) |
 | **Canary Upgrades & Lifecycle** | `pre-upgrade-health-check.sh`<br/>`automated-cluster-upgrade.sh` | [`docs/07-day2-operations/04-lifecycle-and-upgrades.md`](../docs/07-day2-operations/04-lifecycle-and-upgrades.md)<br/>[`docs/07-day2-operations/05-automated-upgrades.md`](../docs/07-day2-operations/05-automated-upgrades.md) | [`configs/day2/`](../configs/day2/) |
+| **Observability & Tracing** | `verify-observability-stack.sh` | [`docs/07-day2-operations/01-observability-stack.md`](../docs/07-day2-operations/01-observability-stack.md) | [`configs/observability/`](../configs/observability/) |
 | **Disaster Recovery & OADP** | `etcd-backup.sh`<br/>`test-oadp-restore.sh` | [`docs/08-backup-dr-and-rebuild/01-etcd-backup-restore.md`](../docs/08-backup-dr-and-rebuild/01-etcd-backup-restore.md)<br/>[`docs/08-backup-dr-and-rebuild/02-oadp-vs-velero-deepdive.md`](../docs/08-backup-dr-and-rebuild/02-oadp-vs-velero-deepdive.md) | [`configs/day2/oadp-dpa-cr.yaml`](../configs/day2/oadp-dpa-cr.yaml) |
 | **Emergency Runbooks** | `recover-expired-certs.sh`<br/>`helper-ssh-jump.sh`<br/>`replace-control-plane-node.sh`<br/>`reinstall-worker-node.sh`<br/>`emergency-etcd-single-member.sh` | [`docs/09-emergency-runbooks/README.md`](../docs/09-emergency-runbooks/README.md)<br/>[`docs/09-emergency-runbooks/01-expired-certs-recovery.md`](../docs/09-emergency-runbooks/01-expired-certs-recovery.md)<br/>[`docs/09-emergency-runbooks/02-helper-node-access-and-jumping.md`](../docs/09-emergency-runbooks/02-helper-node-access-and-jumping.md)<br/>[`docs/09-emergency-runbooks/03-node-reinstallation-and-replacement.md`](../docs/09-emergency-runbooks/03-node-reinstallation-and-replacement.md)<br/>[`docs/09-emergency-runbooks/04-etcd-quorum-loss-recovery.md`](../docs/09-emergency-runbooks/04-etcd-quorum-loss-recovery.md) | [`configs/helper-node/`](../configs/helper-node/) |
 

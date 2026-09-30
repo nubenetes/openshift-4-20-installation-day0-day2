@@ -8,7 +8,7 @@ Day 2 operations define the ongoing maintenance, observability, compliance enfor
 
 ```mermaid
 flowchart TD
-    D2[OpenShift 4.20 Day 2 Operations] --> Obs[1. Observability: Thanos, UWM, LokiStack, OpenTelemetry]
+    D2[OpenShift 4.20 Day 2 Operations] --> Obs["1. Native Observability<br/>• Thanos, UWM & Exemplars<br/>• Logging 6.x Vector & LokiStack<br/>• OpenTelemetry & TempoStack<br/>• COO & Korrel8r Correlation"]
     D2 --> Sec["2. Security & Compliance<br/>• Compliance Operator (CIS & NIST)<br/>• File Integrity Operator (AIDE)<br/>• Security Context Constraints"]
     D2 --> GitOps["3. GitOps Foundation<br/>• OpenShift GitOps (Argo CD 3.5+)<br/>• App-of-Apps Pattern<br/>• External Secrets Operator (ESO)"]
     D2 --> Upgrades["4. Lifecycle & Upgrades<br/>• EUS Channels (4.18 -> 4.20)<br/>• Paused MCP Canary Rollouts<br/>• Controlled Node Draining"]
@@ -19,7 +19,7 @@ flowchart TD
 ---
 
 ## Section Documents
-- [01. Enterprise Observability Stack](01-observability-stack.md)
+- [01. Enterprise Native Observability Stack (Metrics, Logs, Traces & Korrel8r)](01-observability-stack.md)
 - [02. Security, Governance & Compliance](02-security-and-compliance.md)
 - [03. GitOps Foundation (Argo CD 3.5+ & ESO)](03-gitops-foundation.md)
 - [04. Cluster Lifecycle & EUS Upgrades](04-lifecycle-and-upgrades.md)

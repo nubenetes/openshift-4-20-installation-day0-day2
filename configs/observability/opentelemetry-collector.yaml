@@ -1,0 +1,94 @@
+apiVersion: opentelemetry.io/v1beta1
+kind: OpenTelemetryCollector
+metadata:
+  name: cluster-collector
+  namespace: openshift-tracing
+  labels:
+    app.kubernetes.io/part-of: openshift-tracing
+spec:
+  mode: deployment
+  replicas: 2
+  nodeSelector:
+    node-role.kubernetes.io/infra: ""
+  tolerations:
+    - key: node-role.kubernetes.io/infra
+      operator: Exists
+      effect: NoSchedule
+  config:
+    receivers:
+      otlp:
+        protocols:
+          grpc:
+            endpoint: 0.0.0.0:4317
+          http:
+            endpoint: 0.0.0.0:4318
+      jaeger:
+        protocols:
+          grpc:
+            endpoint: 0.0.0.0:14250
+          thrift_http:
+            endpoint: 0.0.0.0:14268
+
+    processors:
+      memory_limiter:
+        check_interval: 1s
+        limit_percentage: 75
+        spike_limit_percentage: 20
+
+      batch:
+        send_batch_size: 8192
+        timeout: 500ms
+
+      # Tail-based sampling: Protects storage while capturing 100% of anomalies
+      tail_sampling:
+        decision_wait: 10s
+        num_traces: 100000
+        expected_new_traces_per_sec: 2000
+        policies:
+          - name: drop-health-probes
+            type: string_attribute
+            string_attribute:
+              key: http.target
+              values: ["/healthz", "/readyz", "/livez", "/metrics"]
+              enabled_regex_matching: false
+              invert_match: true
+          - name: sample-errors-100pct
+            type: status_code
+            status_code:
+              status_codes: [ERROR]
+          - name: sample-latency-outliers
+            type: numeric_attribute
+            numeric_attribute:
+              key: http.status_code
+              min_value: 500
+              max_value: 599
+          - name: probabilistic-sampling-normal
+            type: probabilistic
+            probabilistic:
+              sampling_percentage: 5.0
+
+    exporters:
+      otlp/tempo:
+        endpoint: "simplest-gateway.openshift-tracing.svc.cluster.local:8090"
+        tls:
+          insecure: false
+          ca_file: "/var/run/secrets/kubernetes.io/serviceaccount/service-ca.crt"
+        headers:
+          X-Scope-OrgID: "application"
+        auth:
+          authenticator: bearertokenauth
+
+    extensions:
+      bearertokenauth:
+        filename: "/var/run/secrets/kubernetes.io/serviceaccount/token"
+
+    service:
+      extensions: [bearertokenauth]
+      pipelines:
+        traces:
+          receivers: [otlp, jaeger]
+          processors: [memory_limiter, batch, tail_sampling]
+          exporters: [otlp/tempo]
+      telemetry:
+        metrics:
+          address: 0.0.0.0:8888

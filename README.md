@@ -22,6 +22,7 @@
 [![LLM Serving](https://img.shields.io/badge/LLM%20Serving-vLLM%20gRPC-0288D1.svg)](docs/07-day2-operations/07-openshift-ai-gpu.md)
 [![Emergency Runbooks](https://img.shields.io/badge/Emergency-Runbooks%20&%20Scripts-D32F2F.svg)](docs/09-emergency-runbooks/README.md)
 [![Security CIS](https://img.shields.io/badge/Security-CIS%20&%20NIST%20800--53-37474F.svg)](docs/07-day2-operations/03-compliance-cis-benchmark.md)
+[![Observability](https://img.shields.io/badge/Observability-Full%20Stack%20(COO%2C%20Loki%2C%20Tempo%2C%20UWM)-007ACC.svg?logo=opentelemetry&logoColor=white)](docs/07-day2-operations/01-observability-stack.md)
 
 An exhaustive, enterprise-grade reference architecture, installation engineering handbook, declarative automation toolkit, and Day 0/1/2 operational field manual for **Red Hat OpenShift Container Platform (OCP) 4.20** (Kubernetes 1.31–1.33, updated through **September/October 2026**).
 
@@ -29,8 +30,8 @@ Designed for Enterprise Platform Architects, Principal Site Reliability Engineer
 
 ### Key Repository Assets at a Glance:
 - 📚 **51 Exhaustive Engineering Modules (`docs/`)**: Organized across 9 operational domains covering every topology, hypervisor, public cloud, Gateway API, and incident scenario.
-- ⚙️ **37 Production Declarative Manifests (`configs/`)**: Validated Custom Resources for Agent-Based Installer, Keyless Cloud IPI, oc-mirror v2, Gateway API, Ingress PKI, GitOps root App-of-Apps, External Secrets Operator, cert-manager, OpenShift Virtualization, RHOAI, and vLLM ServingRuntime.
-- 🛠️ **15 Production Automation Scripts ([`scripts/`](scripts/README.md))**: Complete shell and PowerShell operational tools covering preflight validation, air-gap mirroring, automated etcd backups, canary cluster upgrades with Prometheus SLO gating, automated OADP restore drills, expired certificate recovery from the Helper Node, and single-member quorum restoration (documented in the [Scripts Manual](scripts/README.md)).
+- ⚙️ **44 Production Declarative Manifests (`configs/`)**: Validated Custom Resources for Agent-Based Installer, Keyless Cloud IPI, oc-mirror v2, Gateway API, Ingress PKI, Native Observability (UWM, LokiStack 3.x, Vector, TempoStack, OpenTelemetry, COO/Korrel8r, eBPF FlowCollector), GitOps root App-of-Apps, External Secrets Operator, cert-manager, OpenShift Virtualization, RHOAI, and vLLM ServingRuntime.
+- 🛠️ **16 Production Automation Scripts ([`scripts/`](scripts/README.md))**: Complete shell and PowerShell operational tools covering preflight validation, air-gap mirroring, automated etcd backups, canary cluster upgrades with Prometheus SLO gating, automated OADP restore drills, expired certificate recovery from the Helper Node, single-member quorum restoration, and end-to-end native observability stack verification (documented in the [Scripts Manual](scripts/README.md)).
 - 🎯 **10-Step Deterministic Implementation Workflow**: A unified sequence linking Day 0 readiness through to autonomous lifecycle operations across all infrastructure targets.
 
 ### Core Architecture & Technical Taxonomy Tags:
@@ -761,11 +762,19 @@ To navigate and utilize this enterprise repository effectively, the directory st
     - `├──` 📄 [`gpu-operator-clusterpolicy.yaml`](configs/ai/gpu-operator-clusterpolicy.yaml) — *NVIDIA GPU Operator ClusterPolicy*
     - `├──` 📄 [`rhoai-datasciencecluster.yaml`](configs/ai/rhoai-datasciencecluster.yaml) — *Red Hat OpenShift AI DataScienceCluster CR*
     - `└──` 📄 [`vllm-serving-runtime.yaml`](configs/ai/vllm-serving-runtime.yaml) — *vLLM high-throughput ServingRuntime for local LLM inference*
+  - `├──` 📁 **[`configs/observability/`](configs/observability/)** — *Full-stack native observability manifests*
+    - `├──` 📄 [`cluster-monitoring-config.yaml`](configs/observability/cluster-monitoring-config.yaml) — *UWM & OpenMetrics Exemplar storage activation*
+    - `├──` 📄 [`lokistack-cr.yaml`](configs/observability/lokistack-cr.yaml) — *Enterprise LokiStack 3.x CR with S3 storage & retention tiers*
+    - `├──` 📄 [`clusterlogforwarder-cr.yaml`](configs/observability/clusterlogforwarder-cr.yaml) — *Vector collector pipeline with structured metadata parsing*
+    - `├──` 📄 [`tempostack-cr.yaml`](configs/observability/tempostack-cr.yaml) — *TempoStack distributed trace storage & compactor CR*
+    - `├──` 📄 [`opentelemetry-collector.yaml`](configs/observability/opentelemetry-collector.yaml) — *OpenTelemetryCollector with tail-based sampling & OTLP gRPC*
+    - `├──` 📄 [`coo-ui-correlation.yaml`](configs/observability/coo-ui-correlation.yaml) — *Cluster Observability Operator UI Plugins & Korrel8r rules*
+    - `└──` 📄 [`flowcollector-cr.yaml`](configs/observability/flowcollector-cr.yaml) — *Network Observability eBPF FlowCollector CR*
   - `└──` 📁 **[`configs/helper-node/`](configs/helper-node/)** — *On-premises / Air-Gapped Helper Node daemon configurations*
     - `├──` 📄 [`haproxy.cfg`](configs/helper-node/haproxy.cfg) — *HAProxy Layer 4 load balancing for API (6443) & Apps (80/443)*
     - `└──` 📄 [`named.conf`](configs/helper-node/named.conf) — *Authoritative BIND9 DNS split-horizon zone configuration*
 - `└──` 📁 **[`scripts/`](scripts/README.md)** — *Production Automation Tooling & Operational Scripts*
-  - `├──` 📄 [`README.md`](scripts/README.md) — *Exhaustive operational & architectural manual for all 15 production scripts*
+  - `├──` 📄 [`README.md`](scripts/README.md) — *Exhaustive operational & architectural manual for all 16 production scripts*
   - `├──` 📄 [`preflight-check.sh`](scripts/preflight-check.sh) — *Day 0 DNS, PTR, NTP, MTU, proxy, and latency preflight audit*
   - `├──` 📄 [`generate-agent-iso.sh`](scripts/generate-agent-iso.sh) — *Agent-Based Installer boot ISO builder (SNO/Compact/Standard)*
   - `├──` 📄 [`mirror-ocp420-airgap.sh`](scripts/mirror-ocp420-airgap.sh) — *oc-mirror v2 automated mirroring to local Quay/Harbor registry*
@@ -780,7 +789,8 @@ To navigate and utilize this enterprise repository effectively, the directory st
   - `├──` 📄 [`helper-ssh-jump.sh`](scripts/helper-ssh-jump.sh) — *Out-of-band SSH jump & IPMI SOL console access utility*
   - `├──` 📄 [`replace-control-plane-node.sh`](scripts/replace-control-plane-node.sh) — *Control plane master node replacement assistant*
   - `├──` 📄 [`reinstall-worker-node.sh`](scripts/reinstall-worker-node.sh) — *Worker & infra node drain and reprovisioning orchestrator*
-  - `└──` 📄 [`emergency-etcd-single-member.sh`](scripts/emergency-etcd-single-member.sh) — *Emergency single-member etcd quorum restoration engine*
+  - `├──` 📄 [`emergency-etcd-single-member.sh`](scripts/emergency-etcd-single-member.sh) — *Emergency single-member etcd quorum restoration engine*
+  - `└──` 📄 [`verify-observability-stack.sh`](scripts/verify-observability-stack.sh) — *End-to-end native observability stack diagnostic engine*
 
 <details>
 <summary><b>Click to view Raw Plain-Text Monospace Directory Tree</b></summary>
@@ -909,6 +919,14 @@ openshift-4-20-installation-day0-day2/
 │   │   ├── gpu-operator-clusterpolicy.yaml
 │   │   ├── rhoai-datasciencecluster.yaml
 │   │   └── vllm-serving-runtime.yaml
+│   ├── observability/
+│   │   ├── cluster-monitoring-config.yaml
+│   │   ├── lokistack-cr.yaml
+│   │   ├── clusterlogforwarder-cr.yaml
+│   │   ├── tempostack-cr.yaml
+│   │   ├── opentelemetry-collector.yaml
+│   │   ├── coo-ui-correlation.yaml
+│   │   └── flowcollector-cr.yaml
 │   └── helper-node/
 │       ├── haproxy.cfg
 │       └── named.conf
@@ -927,7 +945,8 @@ openshift-4-20-installation-day0-day2/
     ├── helper-ssh-jump.sh
     ├── replace-control-plane-node.sh
     ├── reinstall-worker-node.sh
-    └── emergency-etcd-single-member.sh
+    ├── emergency-etcd-single-member.sh
+    └── verify-observability-stack.sh
 ```
 </details>
 
@@ -961,13 +980,14 @@ The `configs/` tree provides validated, production-grade YAML and daemon templat
 - **`configs/security/`**: cert-manager ClusterIssuers and External Secrets Operator ClusterSecretStore configurations.
 - **`configs/virt/`**: OpenShift Virtualization HyperConverged CR, MTV ForkliftController, and enterprise RHEL 9 VM templates.
 - **`configs/ai/`**: NVIDIA GPU Operator ClusterPolicy, RHOAI DataScienceCluster, and vLLM ServingRuntime inference manifests.
+- **`configs/observability/`**: Full-stack native observability Custom Resources (User Workload Monitoring, LokiStack 3.x with schema v13, Vector `ClusterLogForwarder`, TempoStack S3 trace storage, `OpenTelemetryCollector` with tail-based sampling, Cluster Observability Operator Korrel8r rules, and eBPF `FlowCollector`).
 - **`configs/helper-node/`**: Authoritative BIND9 DNS zones and HAProxy Layer 4 load balancer configurations ready to deploy on bastion infrastructure.
 
 #### 4. Automation Tooling & Operational Scripts ([`scripts/`](scripts/README.md))
-The [`scripts/`](scripts/README.md) directory houses 15 ready-to-run automation tools covering the complete lifecycle (see comprehensive engineering documentation in the [Operational Tooling Manual](scripts/README.md)):
+The [`scripts/`](scripts/README.md) directory houses 16 ready-to-run automation tools covering the complete lifecycle (see comprehensive engineering documentation in the [Operational Tooling Manual](scripts/README.md)):
 - **Preflight & Day 0**: [`scripts/preflight-check.sh`](scripts/preflight-check.sh) audits network prerequisites; [`scripts/generate-agent-iso.sh`](scripts/generate-agent-iso.sh) builds bootable media; [`scripts/mirror-ocp420-airgap.sh`](scripts/mirror-ocp420-airgap.sh) mirrors air-gapped images; [`scripts/deploy-hyperv-vms.ps1`](scripts/deploy-hyperv-vms.ps1) provisions Gen 2 Hyper-V VMs.
 - **Post-Install & Day 1**: [`scripts/validate-cluster-health.sh`](scripts/validate-cluster-health.sh) performs health auditing across all cluster operators, storage classes, and worker nodes.
-- **Day 2, Upgrades & DR**: [`scripts/etcd-backup.sh`](scripts/etcd-backup.sh) automates control plane snapshots; [`scripts/pre-upgrade-health-check.sh`](scripts/pre-upgrade-health-check.sh) enforces safety gating; [`scripts/automated-cluster-upgrade.sh`](scripts/automated-cluster-upgrade.sh) executes canary-controlled upgrades with Prometheus SLO gating; [`scripts/airgap-upgrade.sh`](scripts/airgap-upgrade.sh) manages disconnected release upgrades; [`scripts/test-oadp-restore.sh`](scripts/test-oadp-restore.sh) automates end-to-end disaster recovery drill verification.
+- **Day 2, Upgrades & DR**: [`scripts/etcd-backup.sh`](scripts/etcd-backup.sh) automates control plane snapshots; [`scripts/pre-upgrade-health-check.sh`](scripts/pre-upgrade-health-check.sh) enforces safety gating; [`scripts/automated-cluster-upgrade.sh`](scripts/automated-cluster-upgrade.sh) executes canary-controlled upgrades with Prometheus SLO gating; [`scripts/airgap-upgrade.sh`](scripts/airgap-upgrade.sh) manages disconnected release upgrades; [`scripts/test-oadp-restore.sh`](scripts/test-oadp-restore.sh) automates end-to-end disaster recovery drill verification; [`scripts/verify-observability-stack.sh`](scripts/verify-observability-stack.sh) audits the full-stack native observability fabric (UWM, Loki, Tempo, OTel, Korrel8r).
 - **Emergency Operations & Triage**: [`scripts/recover-expired-certs.sh`](scripts/recover-expired-certs.sh) restores expired certificates from the Helper Node; [`scripts/helper-ssh-jump.sh`](scripts/helper-ssh-jump.sh) provides out-of-band SSH and IPMI SOL jumping; [`scripts/replace-control-plane-node.sh`](scripts/replace-control-plane-node.sh) manages master node replacement; [`scripts/reinstall-worker-node.sh`](scripts/reinstall-worker-node.sh) drains and reprovisions workers; [`scripts/emergency-etcd-single-member.sh`](scripts/emergency-etcd-single-member.sh) recovers single-member etcd quorum.
 
 ### Lifecycle Alignment Matrix (Day 0, Day 1, Day 2)
@@ -1141,7 +1161,7 @@ All scripts and manifests are ready to execute from this repository:
 ### Shell Scripts (`scripts/`)
 
 > [!TIP]
-> **Complete Operational Manual**: For in-depth architectural breakdowns, motivation, hands-on recipes, ASCII/Mermaid flowcharts, parameter references, and failure triage protocols for all 15 tools, consult the **[Production Automation & Operational Tooling Manual (`scripts/README.md`)](scripts/README.md)**.
+> **Complete Operational Manual**: For in-depth architectural breakdowns, motivation, hands-on recipes, ASCII/Mermaid flowcharts, parameter references, and failure triage protocols for all 16 tools, consult the **[Production Automation & Operational Tooling Manual (`scripts/README.md`)](scripts/README.md)**.
 
 | Script | Description | Usage |
 | :--- | :--- | :--- |
@@ -1160,6 +1180,7 @@ All scripts and manifests are ready to execute from this repository:
 | [`scripts/replace-control-plane-node.sh`](scripts/replace-control-plane-node.sh) | Control plane node replacement: evicts failed member from etcd quorum, deletes node, auto-approves CSRs for replacement. | `./scripts/replace-control-plane-node.sh master-1.corp.local` |
 | [`scripts/reinstall-worker-node.sh`](scripts/reinstall-worker-node.sh) | Worker & infra node replacement: cordons, drains, deletes node, monitors reprovisioning, and auto-approves CSRs. | `./scripts/reinstall-worker-node.sh worker-2.corp.local` |
 | [`scripts/emergency-etcd-single-member.sh`](scripts/emergency-etcd-single-member.sh) | Catastrophic quorum recovery: forces a surviving master into a functional 1-node etcd cluster to restore API server. | `./scripts/emergency-etcd-single-member.sh master-0.corp.local` |
+| [`scripts/verify-observability-stack.sh`](scripts/verify-observability-stack.sh) | Full-stack observability audit: operators, S3 buckets, UWM exemplars, Vector daemon, Tempo gateway, and TSDB cardinality. | `./scripts/verify-observability-stack.sh` |
 
 ### Production Manifests (`configs/`)
 - **Agent-Based**: [`configs/agent-based/agent-config.yaml`](configs/agent-based/agent-config.yaml), [`agent-config-lacp-vlan.yaml`](configs/agent-based/agent-config-lacp-vlan.yaml), [`install-config-sno.yaml`](configs/agent-based/install-config-sno.yaml), [`install-config-compact.yaml`](configs/agent-based/install-config-compact.yaml), [`install-config-standard.yaml`](configs/agent-based/install-config-standard.yaml), [`install-config-airgap.yaml`](configs/agent-based/install-config-airgap.yaml), [`ipxe-boot.cfg`](configs/agent-based/ipxe-boot.cfg).
@@ -1173,6 +1194,7 @@ All scripts and manifests are ready to execute from this repository:
 - **Security & Secrets**: [`configs/security/cert-manager-clusterissuer.yaml`](configs/security/cert-manager-clusterissuer.yaml), [`configs/security/external-secrets-store.yaml`](configs/security/external-secrets-store.yaml).
 - **OpenShift Virtualization**: [`configs/virt/hyperconverged-cr.yaml`](configs/virt/hyperconverged-cr.yaml), [`configs/virt/mtv-forklift-controller.yaml`](configs/virt/mtv-forklift-controller.yaml), [`configs/virt/vm-rhel9-template.yaml`](configs/virt/vm-rhel9-template.yaml).
 - **Enterprise AI & GPU**: [`configs/ai/gpu-operator-clusterpolicy.yaml`](configs/ai/gpu-operator-clusterpolicy.yaml), [`configs/ai/rhoai-datasciencecluster.yaml`](configs/ai/rhoai-datasciencecluster.yaml), [`configs/ai/vllm-serving-runtime.yaml`](configs/ai/vllm-serving-runtime.yaml).
+- **Observability**: [`configs/observability/cluster-monitoring-config.yaml`](configs/observability/cluster-monitoring-config.yaml), [`lokistack-cr.yaml`](configs/observability/lokistack-cr.yaml), [`clusterlogforwarder-cr.yaml`](configs/observability/clusterlogforwarder-cr.yaml), [`tempostack-cr.yaml`](configs/observability/tempostack-cr.yaml), [`opentelemetry-collector.yaml`](configs/observability/opentelemetry-collector.yaml), [`coo-ui-correlation.yaml`](configs/observability/coo-ui-correlation.yaml), [`flowcollector-cr.yaml`](configs/observability/flowcollector-cr.yaml).
 
 ---
 

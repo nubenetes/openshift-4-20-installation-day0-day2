@@ -1,0 +1,76 @@
+apiVersion: logging.openshift.io/v1
+kind: ClusterLogging
+metadata:
+  name: instance
+  namespace: openshift-logging
+  labels:
+    app.kubernetes.io/part-of: openshift-logging
+spec:
+  managementState: Managed
+  logStore:
+    type: lokistack
+    lokistack:
+      name: logging-loki
+  collection:
+    type: vector
+    tolerations:
+      - key: node-role.kubernetes.io/master
+        operator: Exists
+        effect: NoSchedule
+      - key: node-role.kubernetes.io/infra
+        operator: Exists
+        effect: NoSchedule
+    resources:
+      limits:
+        memory: 2Gi
+      requests:
+        cpu: 200m
+        memory: 512Mi
+---
+apiVersion: logging.openshift.io/v1
+kind: ClusterLogForwarder
+metadata:
+  name: instance
+  namespace: openshift-logging
+  labels:
+    app.kubernetes.io/part-of: openshift-logging
+spec:
+  serviceAccountName: logcollector
+  outputs:
+    - name: default-lokistack
+      type: lokistack
+      lokistack:
+        authentication:
+          token:
+            from: serviceAccount
+        target:
+          name: logging-loki
+          namespace: openshift-logging
+  filters:
+    # Cardinality & Parsing Filter: Extracts trace context into structured metadata
+    # without inflating Loki stream index cardinality
+    - name: extract-trace-context
+      type: parse
+    - name: drop-noisy-healthchecks
+      type: drop
+      drop:
+        - test: '.kubernetes.container_name == "kube-rbac-proxy" && match(.message, "GET /healthz")'
+  pipelines:
+    - name: application-logs
+      inputRefs:
+        - application
+      filterRefs:
+        - drop-noisy-healthchecks
+        - extract-trace-context
+      outputRefs:
+        - default-lokistack
+    - name: infrastructure-logs
+      inputRefs:
+        - infrastructure
+      outputRefs:
+        - default-lokistack
+    - name: audit-logs
+      inputRefs:
+        - audit
+      outputRefs:
+        - default-lokistack
