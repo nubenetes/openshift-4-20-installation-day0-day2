@@ -6,27 +6,28 @@ As of **September/October 2026**, **Red Hat OpenShift Service Mesh 3.x (OSSM 3.0
 
 ```
 +---------------------------------------------------------------------------------------------------+
-|                        THE SERVICE MESH ARCHITECTURAL EVOLUTION                                   |
+|                             THE SERVICE MESH ARCHITECTURAL EVOLUTION                              |
 +---------------------------------------------------------------------------------------------------+
 |                                                                                                   |
 |  [ TRADITIONAL SIDECAR ARCHITECTURE (OSSM 2.x) ]                                                  |
 |    * Pod Spec Mutation: Injects Envoy proxy container into every application Pod.                 |
 |    * Coupling: Proxy lifecycle is tightly coupled to application containers.                      |
-|    * Heavy "Sidecar Tax": ~50MB RAM + 0.1 vCPU overhead multiplied by thousands of pods.         |
-|    * Operational Friction: Pod restarts required for proxy upgrades, CVE patches, or config.     |
+|    * Heavy "Sidecar Tax": ~50MB RAM + 0.1 vCPU overhead multiplied by thousands of pods.          |
+|    * Operational Friction: Pod restarts required for proxy upgrades, CVE patches, or config.      |
 |    * Broken Workloads: Kubernetes Jobs hang (proxy never terminates); init containers fail.       |
 |                                                                                                   |
-|                                         |                                                         |
-|                                         | EVOLUTION TO SIDECARLESS                                |
-|                                         v                                                         |
+|                                                 |                                                 |
+|                                                 |  EVOLUTION TO SIDECARLESS                       |
+|                                                 v                                                 |
 |                                                                                                   |
 |  [ ISTIO AMBIENT MESH ARCHITECTURE (OSSM 3.x / OpenShift 4.20) ]                                  |
 |    * Zero Pod Mutation: Workload pods remain 100% untouched. No sidecars injected.                |
 |    * Layer 4 Infrastructure (ztunnel): Per-node Rust DaemonSet handles zero-trust mTLS & HBONE.   |
 |    * Layer 7 On-Demand (Waypoint): Envoy proxies deployed outside pods, only where L7 is needed.  |
-|    * 90% Resource Reduction: Shared per-node ztunnels eliminate the per-pod sidecar overhead.    |
+|    * 90% Resource Reduction: Shared per-node ztunnels eliminate the per-pod sidecar overhead.     |
 |    * Non-Disruptive Adoption: Label a namespace to join the mesh with ZERO pod restarts.          |
 |    * Universal Workload Support: Native execution for Jobs, CronJobs, StatefulSets, and VMs.      |
+|                                                                                                   |
 +---------------------------------------------------------------------------------------------------+
 ```
 
