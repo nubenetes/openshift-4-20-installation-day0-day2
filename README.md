@@ -128,6 +128,8 @@ Architectural masterclasses, deep-dive podcasts, and focused technical video sho
 | **11** | [Podcast Arquitectura OpenShift 4.20: Guía Completa Day 0 a Day 2 y Resiliencia](https://www.youtube.com/watch?v=zFRMP6N0-Aw) | **Podcast Arquitectónico (Audio)**<br/>Visión holística Day 0 a Day 2, topologías SNO/HA, ABI, etcd quorum y automatización | 🇪🇸 ES | `16:03` | [▶️ Watch](https://www.youtube.com/watch?v=zFRMP6N0-Aw) |
 | **12** | [The OpenShift 4.20 Architecture Podcast: Complete Day 0 to Day 2 Enterprise Masterclass](https://www.youtube.com/watch?v=avJB3NqaEFg) | **Architecture Podcast (Audio)**<br/>Full 55-minute deep dive: platforms, ABI, Gateway API, hardening, DR & fleet ops | 🇺🇸 EN | `55:38` | [▶️ Watch](https://www.youtube.com/watch?v=avJB3NqaEFg) |
 | **13** | [OpenShift 4.20 Native Observability: Prometheus, LokiStack, Tempo and Korrel8r](https://www.youtube.com/watch?v=wAcbEyMQ76M) | **Native Observability Stack**<br/>Prometheus/UWM, Vector + LokiStack 3.x, OpenTelemetry, TempoStack & Korrel8r COO | 🇺🇸 EN | `6:46` | [▶️ Watch](https://www.youtube.com/watch?v=wAcbEyMQ76M) |
+| **14** | [Istio Ambient Mesh en OpenShift 4.20: Malla de Servicios sin Sidecars y Zero-Trust](https://www.youtube.com/watch?v=m0X1ANTHYLE) | **Istio Ambient Mesh & Zero-Trust**<br/>Arquitectura sin sidecars, proxy ztunnel L4 en Rust, Waypoint proxies L7 & Red Hat OSSM 3.0 | 🇪🇸 ES | `6:39` | [▶️ Watch](https://www.youtube.com/watch?v=m0X1ANTHYLE) |
+| **15** | [OpenShift 4.20 Ambient Mesh: Matriz de Decisión, 12 Escenarios y Redes Modernas](https://www.youtube.com/watch?v=PACqEYWuRQ8) | **Matriz de Decisión de Malla de Red**<br/>Comparativa Sidecar vs Ambient vs Gateway API, 12 escenarios de adopción empresarial & migración | 🇪🇸 ES | `7:59` | [▶️ Watch](https://www.youtube.com/watch?v=PACqEYWuRQ8) |
 
 ### 🎬 Video Shorts Matrix
 
@@ -153,6 +155,10 @@ Architectural masterclasses, deep-dive podcasts, and focused technical video sho
 | **18** | [How OpenShift Prevents Metric Explosions in Prometheus and Thanos](https://www.youtube.com/shorts/8832jzvfc_Q) | **Metric Explosion Defense**<br/>User Workload Monitoring (UWM), sample limits & metricRelabelings cardinality control | 🇺🇸 EN | `1:16` | [▶️ Watch](https://www.youtube.com/shorts/8832jzvfc_Q) |
 | **19** | [How Korrel8r Correlates Prometheus Metrics to Loki Logs and Tempo Traces](https://www.youtube.com/shorts/bffmO5yGGBA) | **Full-Stack COO Correlation**<br/>Cluster Observability Operator, Korrel8r graph rules & one-click drilldown in Web Console | 🇺🇸 EN | `1:24` | [▶️ Watch](https://www.youtube.com/shorts/bffmO5yGGBA) |
 | **20** | [How Tail Based Sampling Filters Trace Data in OpenTelemetry and Tempo](https://www.youtube.com/shorts/28vd1iD0sDI) | **Tail-Based Trace Sampling**<br/>OpenTelemetry Collector in-memory buffering, 100% error capture & TempoStack ingestion | 🇺🇸 EN | `1:25` | [▶️ Watch](https://www.youtube.com/shorts/28vd1iD0sDI) |
+| **21** | [La Evolución de las Redes en OpenShift 4.20: De Ingress a Gateway API y Ambient](https://www.youtube.com/shorts/T9Xv91o_awE) | **Evolución Redes Cloud-Native**<br/>De Ingress y Routes tradicionales a Kubernetes Gateway API e Istio Ambient Mesh | 🇪🇸 ES | `1:04` | [▶️ Watch](https://www.youtube.com/shorts/T9Xv91o_awE) |
+| **22** | [Cuándo Usar Istio Ambient Mesh en OpenShift 4.20: Batch Jobs, IA y Aislamiento](https://www.youtube.com/shorts/PN98rBaf0vM) | **Casos de Uso Ambient Mesh**<br/>Cargas batch, inferencia LLM sin latencia de sidecar y límites de aislamiento multi-tenant | 🇪🇸 ES | `1:09` | [▶️ Watch](https://www.youtube.com/shorts/PN98rBaf0vM) |
+| **23** | [Cómo ztunnel en Istio Ambient Elimina el Impuesto del Sidecar en OpenShift 4.20](https://www.youtube.com/shorts/EnJgbDC2bDI) | **Eliminación del Sidecar Tax**<br/>ztunnel en Rust por nodo de trabajo (~15 MB RAM) frente a cientos de contenedores proxy | 🇪🇸 ES | `1:11` | [▶️ Watch](https://www.youtube.com/shorts/EnJgbDC2bDI) |
+| **24** | [Cómo Funciona HBONE y mTLS en Puerto 15008 con Istio Ambient y Waypoint Proxies](https://www.youtube.com/shorts/ZnUcxt7ADN8) | **Protocolo HBONE & Waypoints L7**<br/>Túnel HTTP/2 mTLS en puerto 15008 a nivel L4 y delegación declarativa a Waypoints L7 | 🇪🇸 ES | `1:04` | [▶️ Watch](https://www.youtube.com/shorts/ZnUcxt7ADN8) |
 
 *For complete technical breakdowns, copy-paste ready descriptions, and YouTube Studio links, see [Section: Video Walkthroughs & Architecture References](#video-walkthroughs--architecture-references-youtube).*
 
@@ -1299,7 +1305,7 @@ Below are the complete video overviews organized by original audio language and 
 ### 🇪🇸 Vídeos en Español (Audio Original)
 
 <details open>
-<summary>📂 <strong>Recorridos Técnicos y Podcasts en Español (2 Vídeos)</strong></summary>
+<summary>📂 <strong>Recorridos Técnicos, Masterclasses y Podcasts en Español (4 Vídeos)</strong></summary>
 
 <br/>
 
@@ -1351,6 +1357,57 @@ Below are the complete video overviews organized by original audio language and 
 >
 > ⏱️ Duración: 16:03
 > #OpenShift #Podcast #Kubernetes #RedHat #ArquitecturaCloud #DevOps #SRE #PlatformEngineering #Sysadmin #CloudNative #GitOps
+
+#### 3. Istio Ambient Mesh en OpenShift 4.20: Malla de Servicios sin Sidecars y Zero-Trust
+- 🔗 **Enlace Directo**: [https://www.youtube.com/watch?v=m0X1ANTHYLE](https://www.youtube.com/watch?v=m0X1ANTHYLE)
+- 🛠️ **YouTube Studio**: [https://studio.youtube.com/video/m0X1ANTHYLE/edit](https://studio.youtube.com/video/m0X1ANTHYLE/edit)
+- ⏱️ **Duración**: 6:39
+- 🏷️ **Dominio**: Istio Ambient Mesh, Red Hat OSSM 3.0 & Zero-Trust
+- 📝 **Descripción completa**:
+> 🌐 Istio Ambient Mesh en Red Hat OpenShift 4.20: Malla de Servicios sin Sidecars y Zero-Trust
+>
+> Masterclass técnica y recorrido arquitectónico en profundidad sobre la revolución de las redes de servicios en Red Hat OpenShift 4.20 y Red Hat OpenShift Service Mesh 3.0 (OSSM 3.0): Istio Ambient Mesh. Descubre cómo eliminar por completo el "impuesto del sidecar" y desplegar una arquitectura de malla sin necesidad de inyectar proxies contenedores en los pods de aplicación.
+>
+> 📌 Puntos Clave de la Sesión:
+> • Del Sidecar Tradicional a Ambient Mesh: Análisis de las limitaciones operativas de OSSM 2.x, reinicio forzado de pods en parches de CVE y consumo excesivo de memoria por pod.
+> • Desacoplamiento de Capas L4 y L7: Separación de la seguridad de transporte (Capa 4 con ztunnel) del procesamiento avanzado de tráfico y políticas HTTP (Capa 7 con Waypoints).
+> • ztunnel (Zero Trust Tunnel): Demonio de alto rendimiento programado en Rust desplegado como DaemonSet por nodo de trabajo (~15 MB RAM por nodo), gestionando mTLS transparente e identidades SPIFFE/SPIRE.
+> • Protocolo HBONE: Encapsulación HTTP-Based Overlay Network en puerto 15008 para túneles mTLS seguros entre nodos sin descifrar tráfico de Capa 7.
+> • Waypoint Proxies y Gateway API: Instanciación bajo demanda de proxies Envoy dedicados declarados mediante Kubernetes Gateway API (gatewayClassName: istio-waypoint).
+> • Integración con Istio CNI y OVN-Kubernetes: Redirección transparente a nivel de kernel y Linux network namespaces cumpliendo el perfil restricted-v2 de Security Context Constraints (SCC).
+>
+> 🔗 Código Fuente y Manifiestos de Red:
+> • Repositorio Oficial: https://github.com/nubenetes/openshift-4-20-installation-day0-day2
+> • Guía Arquitectónica de Ambient: https://github.com/nubenetes/openshift-4-20-installation-day0-day2/tree/main/docs/03-network-and-connectivity/06-istio-ambient-service-mesh.md
+> • Manifiestos de Producción: https://github.com/nubenetes/openshift-4-20-installation-day0-day2/tree/main/configs/ambient
+>
+> ⏱️ Duración: 6:39
+> #OpenShift #Istio #AmbientMesh #ServiceMesh #Kubernetes #ZeroTrust #ztunnel #Networking #CloudNative #RedHat #DevOps #SRE
+
+#### 4. OpenShift 4.20 Ambient Mesh: Matriz de Decisión, 12 Escenarios y Redes Modernas
+- 🔗 **Enlace Directo**: [https://www.youtube.com/watch?v=PACqEYWuRQ8](https://www.youtube.com/watch?v=PACqEYWuRQ8)
+- 🛠️ **YouTube Studio**: [https://studio.youtube.com/video/PACqEYWuRQ8/edit](https://studio.youtube.com/video/PACqEYWuRQ8/edit)
+- ⏱️ **Duración**: 7:59
+- 🏷️ **Dominio**: Matriz de Decisión de Malla de Red & 12 Escenarios Empresariales
+- 📝 **Descripción completa**:
+> 🧭 OpenShift 4.20 Ambient Mesh: Matriz de Decisión, 12 Escenarios y Redes Modernas
+>
+> Masterclass arquitectónica y marco analítico de decisión sobre el ecosistema de red en Red Hat OpenShift 4.20. Realizamos una comparativa técnica de 3 vías entre OpenShift Routes tradicionales, Kubernetes Gateway API nativo e Istio Ambient Mesh (OSSM 3.0), evaluando cuándo implementar o evitar Ambient Mesh a través de una matriz exhaustiva de 12 escenarios empresariales.
+>
+> 📌 Puntos Clave de la Sesión:
+> • Comparativa Arquitectónica de 3 Vías: OpenShift Route (HAProxy norte-sur) vs Gateway API (desacoplamiento de roles y enrutamiento L4-L7) vs Istio Ambient Mesh (malla este-oeste con ztunnel y Waypoints).
+> • Matriz de Decisión de 12 Escenarios Corporativos: Evaluación técnica de adopción en microservicios brownfield, cargas de inferencia LLM e IA (vLLM, Triton), Jobs batch de CI/CD, bases de datos stateful y máquinas virtuales KubeVirt.
+> • Escenarios Ganadores de Ambient Mesh: Eliminación del bug de finalización en Kubernetes Jobs, soporte nativo de VMs sin agentes en el sistema operativo huésped y ahorro superior al 90 por ciento de memoria RAM.
+> • Cuándo Evitar Istio Ambient Mesh: Interfaces de red secundarias con Multus CNI (SR-IOV, DPDK), multi-inquilino hostil en el mismo nodo físico y filtros Wasm en proceso que requieran acceso local a memoria.
+> • Hoja de Ruta de Migración: Estrategia de adopción gradual desde Ingress tradicional hacia Gateway API e incorporación transparente a Ambient Mesh mediante etiquetas de namespace.
+>
+> 🔗 Repositorio Oficial y Documentación:
+> • Repositorio Completo: https://github.com/nubenetes/openshift-4-20-installation-day0-day2
+> • Matriz de Decisión Arquitectónica: https://github.com/nubenetes/openshift-4-20-installation-day0-day2/tree/main/docs/03-network-and-connectivity/06-istio-ambient-service-mesh.md
+> • Scripts de Validación: https://github.com/nubenetes/openshift-4-20-installation-day0-day2/tree/main/scripts
+>
+> ⏱️ Duración: 7:59
+> #OpenShift #Kubernetes #Istio #AmbientMesh #GatewayAPI #Networking #CloudArchitecture #RedHat #PlatformEngineering #DevOps #SRE #Microservicios
 
 </details>
 
@@ -1639,10 +1696,10 @@ Below are the complete video overviews organized by original audio language and 
 
 <br/>
 
-### ⚡ Architecture & Automation Video Shorts (20 Shorts)
+### ⚡ Architecture & Automation Video Shorts (24 Shorts)
 
 <details open>
-<summary>📂 <strong>Technical Video Shorts Breakdown (20 Shorts)</strong></summary>
+<summary>📂 <strong>Technical Video Shorts Breakdown (24 Shorts)</strong></summary>
 
 <br/>
 
@@ -2115,6 +2172,107 @@ Below are the complete video overviews organized by original audio language and 
 > https://github.com/nubenetes/openshift-4-20-installation-day0-day2/tree/main/configs/observability
 >
 > #Shorts #OpenTelemetry #Tempo #DistributedTracing #OpenShift #Kubernetes #Microservices #SRE #DevOps
+
+#### 21. La Evolución de las Redes en OpenShift 4.20: De Ingress a Gateway API y Ambient
+- 🔗 **Direct Link**: [https://www.youtube.com/shorts/T9Xv91o_awE](https://www.youtube.com/shorts/T9Xv91o_awE)
+- 🛠️ **YouTube Studio**: [https://studio.youtube.com/video/T9Xv91o_awE/edit](https://studio.youtube.com/video/T9Xv91o_awE/edit)
+- 🌐 **Language**: Spanish (Original Audio)
+- ⏱️ **Duration**: 1:04
+- 🏷️ **Domain**: Cloud-Native Networking Evolution & Ingress Modernization
+- 📝 **Full Description**:
+> 🌐 La Evolución de las Redes en OpenShift 4.20: De Ingress a Gateway API y Ambient!
+>
+> ¿Cómo ha evolucionado la conectividad en Kubernetes y OpenShift hasta llegar a Istio Ambient Mesh?
+>
+> Descubre las tres etapas de la arquitectura de red cloud-native:
+> • Etapa 1: Ingress y OpenShift Routes tradicionales. El router HAProxy centralizado resuelve el tráfico norte-sur, pero se vuelve frágil y saturado de anotaciones complejas al escalar.
+> • Etapa 2: Kubernetes Gateway API. Desacoplamiento real de roles entre infraestructura, operaciones de plataforma y desarrolladores con objetos nativos HTTPRoute, GRPCRoute y TLSRoute.
+> • Etapa 3: Istio Ambient Mesh y OSSM 3.0. Seguridad este-oeste sin sidecars. Cifrado mTLS transparente con ztunnel a nivel L4 y enrutamiento avanzado L7 bajo demanda con Waypoint proxies.
+>
+> Evoluciona tu plataforma hacia redes declarativas, seguras y de alto rendimiento!
+>
+> 🔗 Manifiestos de Red y Arquitectura:
+> https://github.com/nubenetes/openshift-4-20-installation-day0-day2/tree/main/docs/03-network-and-connectivity
+>
+> #Shorts #OpenShift #GatewayAPI #Istio #AmbientMesh #Kubernetes #Networking #RedHat #DevOps #CloudNative
+
+#### 22. Cuándo Usar Istio Ambient Mesh en OpenShift 4.20: Batch Jobs, IA y Aislamiento
+- 🔗 **Direct Link**: [https://www.youtube.com/shorts/PN98rBaf0vM](https://www.youtube.com/shorts/PN98rBaf0vM)
+- 🛠️ **YouTube Studio**: [https://studio.youtube.com/video/PN98rBaf0vM/edit](https://studio.youtube.com/video/PN98rBaf0vM/edit)
+- 🌐 **Language**: Spanish (Original Audio)
+- ⏱️ **Duration**: 1:09
+- 🏷️ **Domain**: Ambient Mesh Use Cases & Workload Compatibility
+- 📝 **Full Description**:
+> 🎯 Cuándo Usar Istio Ambient Mesh en OpenShift 4.20: Batch Jobs, IA y Aislamiento!
+>
+> ¿Es Istio Ambient Mesh adecuado para todos los entornos? Descubre cuándo implementarlo y cuándo evitarlo!
+>
+> Casos donde Ambient Mesh triunfa:
+> • Cargas Batch y CI/CD: Elimina el histórico bug de Kubernetes donde los Jobs se quedaban colgados porque el contenedor sidecar nunca terminaba.
+> • Cargas de IA y LLM: ztunnel procesa streaming gRPC a velocidad de cable con Rust sin la doble latencia del proxy L7.
+> • OpenShift Virtualization: Cifra tráfico entre VMs y Pods sin agentes dentro del sistema operativo invitado.
+>
+> Cuándo evitar Ambient Mesh:
+> • Interfaces secundarias Multus CNI (SR-IOV / DPDK): Ambient solo intercepta la interfaz eth0 por defecto.
+> • Multi-inquilino hostil en el mismo nodo: Si no puedes compartir el demonio ztunnel y las claves criptográficas a nivel de host.
+>
+> Diseña arquitecturas de malla de servicios con decisiones fundamentadas!
+>
+> 🔗 Explora la Matriz de Decisión de 12 Escenarios:
+> https://github.com/nubenetes/openshift-4-20-installation-day0-day2/tree/main/docs/03-network-and-connectivity/06-istio-ambient-service-mesh.md
+>
+> #Shorts #OpenShift #Istio #AmbientMesh #Kubernetes #ArtificialIntelligence #KubeVirt #DevOps #SRE #PlatformEngineering
+
+#### 23. Cómo ztunnel en Istio Ambient Elimina el Impuesto del Sidecar en OpenShift 4.20
+- 🔗 **Direct Link**: [https://www.youtube.com/shorts/EnJgbDC2bDI](https://www.youtube.com/shorts/EnJgbDC2bDI)
+- 🛠️ **YouTube Studio**: [https://studio.youtube.com/video/EnJgbDC2bDI/edit](https://studio.youtube.com/video/EnJgbDC2bDI/edit)
+- 🌐 **Language**: Spanish (Original Audio)
+- ⏱️ **Duration**: 1:11
+- 🏷️ **Domain**: Sidecar Tax Elimination & ztunnel Performance
+- 📝 **Full Description**:
+> ⚡ Cómo ztunnel en Istio Ambient Elimina el Impuesto del Sidecar en OpenShift 4.20!
+>
+> ¿Cuánto dinero gasta tu empresa manteniendo contenedores sidecar inactivos en miles de pods?
+>
+> El "Impuesto del Sidecar" tradicional:
+> • En un cluster con 3,000 pods, los sidecars consumen más de 150 GB de memoria RAM y 300 vCPUs solo para estar encendidos.
+> • Cada parche de seguridad o CVE de Envoy obliga a reiniciar miles de pods de aplicaciones en producción.
+>
+> La revolución de ztunnel en Ambient Mesh:
+> • Un único demonio ztunnel escrito en Rust por nodo de trabajo consume apenas ~15 MB de RAM.
+> • En un cluster de 30 nodos, pasas de 150 GB a solo 450 MB de RAM: más del 90 por ciento de reducción en coste de infraestructura!
+> • Y para unirte a la malla: solo aplica una etiqueta al namespace y obtén mTLS inmediato con cero reinicios de pods!
+>
+> Optimiza recursos y acelera tus clusters con Istio Ambient!
+>
+> 🔗 Manifiestos de ztunnel y Configuración:
+> https://github.com/nubenetes/openshift-4-20-installation-day0-day2/tree/main/configs/ambient
+>
+> #Shorts #OpenShift #Istio #ztunnel #AmbientMesh #Kubernetes #FinOps #DevOps #CloudCost #PlatformEngineering #SRE
+
+#### 24. Cómo Funciona HBONE y mTLS en Puerto 15008 con Istio Ambient y Waypoint Proxies
+- 🔗 **Direct Link**: [https://www.youtube.com/shorts/ZnUcxt7ADN8](https://www.youtube.com/shorts/ZnUcxt7ADN8)
+- 🛠️ **YouTube Studio**: [https://studio.youtube.com/video/ZnUcxt7ADN8/edit](https://studio.youtube.com/video/ZnUcxt7ADN8/edit)
+- 🌐 **Language**: Spanish (Original Audio)
+- ⏱️ **Duration**: 1:04
+- 🏷️ **Domain**: HBONE Protocol, Layer 4 mTLS & Waypoint Proxies
+- 📝 **Full Description**:
+> 🔒 Cómo Funciona HBONE y mTLS en Puerto 15008 con Istio Ambient y Waypoint Proxies!
+>
+> ¿Cómo logra Istio Ambient Mesh cifrar todo el tráfico entre nodos sin inyectar proxies en cada pod?
+>
+> Así funciona el flujo de paquetes con HBONE y Waypoints:
+> • Protocolo HBONE: HTTP-Based Overlay Network encapsula paquetes TCP dentro de túneles mTLS seguros en el puerto 15008.
+> • Transporte Capa 4 Ciega: ztunnel cifra y autentica las identidades SPIFFE de origen y destino sin inspeccionar ni tocar la capa de aplicación HTTP.
+> • Waypoint Proxies bajo demanda: Si necesitas división de tráfico Canary, métricas L7 o validación de tokens JWT, ztunnel redirige la petición a un Waypoint proxy dedicado fuera del pod.
+> • Desacoplamiento Total: Las aplicaciones se ejecutan sin permisos privilegiados ni NET_ADMIN, cumpliendo las SCC restricted-v2 de OpenShift.
+>
+> Máxima seguridad Zero-Trust con el mínimo impacto operativo!
+>
+> 🔗 Descarga los Manifiestos de HBONE y Waypoint:
+> https://github.com/nubenetes/openshift-4-20-installation-day0-day2/tree/main/configs/ambient
+>
+> #Shorts #OpenShift #Istio #HBONE #ZeroTrust #mTLS #CyberSecurity #GatewayAPI #Kubernetes #DevSecOps #SRE
 
 </details>
 
