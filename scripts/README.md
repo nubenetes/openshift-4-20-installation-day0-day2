@@ -24,6 +24,8 @@ This directory houses the production-tested shell and PowerShell automation scri
   - [8. `automated-cluster-upgrade.sh`](#8-automated-cluster-upgradesh)
   - [9. `airgap-upgrade.sh`](#9-airgap-upgradesh)
   - [10. `test-oadp-restore.sh`](#10-test-oadp-restoresh)
+  - [16. `verify-observability-stack.sh`](#16-verify-observability-stacksh)
+  - [17. `verify-ambient-mesh.sh`](#17-verify-ambient-meshsh)
 - [Day 2: Out-of-Band Emergency Triage & API-Less Recovery](#day-2-out-of-band-emergency-triage--api-less-recovery)
   - [11. `recover-expired-certs.sh`](#11-recover-expired-certssh)
   - [12. `helper-ssh-jump.sh`](#12-helper-ssh-jumpsh)
@@ -109,6 +111,7 @@ Every script adheres to rigorous enterprise software engineering standards:
 | **14** | [`reinstall-worker-node.sh`](#14-reinstall-worker-nodesh) | Bash | Admin Workstation | Emergency Triage | Yes | Gracefully cordons, drains, deletes degraded worker node, and monitors replacement provisioning. |
 | **15** | [`emergency-etcd-single-member.sh`](#15-emergency-etcd-single-membersh) | Bash | Helper Node | Emergency Triage | No (Bypasses API) | Recovers from catastrophic multi-master quorum loss by forcing a single master into a 1-node etcd cluster. |
 | **16** | [`verify-observability-stack.sh`](#16-verify-observability-stacksh) | Bash | Admin Workstation | Day 2 Operations | Yes | Comprehensive health audit for CMO, UWM, Logging 6.x Vector, LokiStack, Tempo, and Korrel8r. |
+| **17** | [`verify-ambient-mesh.sh`](#17-verify-ambient-meshsh) | Bash | Admin Workstation | Day 2 Operations / Mesh | Yes | Comprehensive health audit for Sail Operator, Istio CNI, ztunnel, Ambient namespaces, and Waypoints. |
 
 ---
 
@@ -768,6 +771,90 @@ flowchart TD
 
 ---
 
+### 17. `verify-ambient-mesh.sh`
+
+#### Motivation & Operational Rationale
+In OpenShift 4.20, Red Hat OpenShift Service Mesh 3.x (OSSM 3.0 / Istio Ambient) eliminates sidecars by decoupling Layer 4 transport encryption (handled by the node-level `ztunnel` DaemonSet) from Layer 7 traffic routing (handled by on-demand `Waypoint` proxies). Because application pods are not mutated and execute without sidecars, verifying mesh health requires inspecting the underlay CNI redirection, node-level ztunnel DaemonSets, namespace enrollment labels (`istio.io/dataplane-mode=ambient`), Kubernetes Gateway API Waypoint instances (`gatewayClassName: istio-waypoint`), and HBONE port 15008 listener readiness.
+
+`verify-ambient-mesh.sh` automates this multi-layer audit:
+1. **Operator Status**: Validates Sail Operator / OSSM 3 CSV subscriptions in `openshift-operators`.
+2. **Istio CNI Redirection**: Verifies `istio-cni-node` DaemonSet desired vs ready counts across all cluster worker nodes.
+3. **ztunnel Health**: Inspects `ztunnel` DaemonSet pods and probes internal readiness endpoints (`/healthz/ready`).
+4. **Workload Enrollment**: Scans namespaces for `istio.io/dataplane-mode=ambient` and counts secured pods.
+5. **Waypoint Proxies**: Audits Gateway API `Gateway` resources with `gatewayClassName: istio-waypoint`.
+6. **Zero-Trust Policies**: Audits active `AuthorizationPolicy` resources enforcing SPIFFE IDs.
+
+#### Workflow Diagram
+
+```mermaid
+flowchart TD
+    Start[Run Ambient Diagnostic] --> OpAudit["Audit Service Mesh Operators<br/>Sail Operator / OSSM 3"]
+    OpAudit --> CNIAudit["Verify Istio CNI<br/>eBPF / iptables Redirection"]
+    CNIAudit --> ZtunnelAudit["Verify ztunnel DaemonSet<br/>Healthz &amp; HBONE 15008"]
+    ZtunnelAudit --> NamespaceAudit["Scan Ambient Namespaces<br/>istio.io/dataplane-mode=ambient"]
+    NamespaceAudit --> WaypointAudit["Audit Waypoint Proxies<br/>Gateway API Gateways"]
+    WaypointAudit --> PolicyAudit["Audit AuthorizationPolicies<br/>L4 mTLS &amp; L7 Auth"]
+    PolicyAudit --> Summary["Evaluate Health<br/>Exit 0 or Exit 1"]
+```
+
+```text
++-------------------------------------------------------+
+|          verify-ambient-mesh.sh Execution             |
++-------------------------------------------------------+
+                           |
+                           v
+   +-------------------------------------------------+
+   | Step 1: Audit Service Mesh Operator Status      |
+   | (Sail Operator / OSSM 3 CSV in openshift-oper)  |
+   +-------------------------------------------------+
+                           |
+                           v
+   +-------------------------------------------------+
+   | Step 2: Istio CNI DaemonSet Redirection Audit   |
+   | (istio-cni-node readiness across worker nodes)  |
+   +-------------------------------------------------+
+                           |
+                           v
+   +-------------------------------------------------+
+   | Step 3: ztunnel DaemonSet Health & Probes       |
+   | (DaemonSet ready status, port 15021 healthz)    |
+   +-------------------------------------------------+
+                           |
+                           v
+   +-------------------------------------------------+
+   | Step 4: Ambient Namespace Enrollment Audit      |
+   | (istio.io/dataplane-mode=ambient label check)   |
+   +-------------------------------------------------+
+                           |
+                           v
+   +-------------------------------------------------+
+   | Step 5: Gateway API Waypoint Proxy Audit        |
+   | (gatewayClassName: istio-waypoint validation)   |
+   +-------------------------------------------------+
+                           |
+                           v
+   +-------------------------------------------------+
+   | Step 6: Zero-Trust AuthorizationPolicy Audit    |
+   | (L4 SPIFFE principal & L7 JWT validation rules) |
+   +-------------------------------------------------+
+                           |
+                           v
+   +-------------------------------------------------+
+   | Step 7: Summary Assessment (Exit 0 or Exit 1)   |
+   +-------------------------------------------------+
+```
+
+#### Hands-On CLI Execution
+```bash
+# Execute from Admin Workstation with cluster-admin credentials
+./scripts/verify-ambient-mesh.sh
+
+# Display full syntax and audit scope
+./scripts/verify-ambient-mesh.sh --help
+```
+
+---
+
 ## Cross-References & Architectural Documentation Mapping
 
 Each automation script maps directly to dedicated architectural documentation modules and production configuration manifests within this repository:
@@ -781,6 +868,7 @@ Each automation script maps directly to dedicated architectural documentation mo
 | **Post-Install Hardening** | `validate-cluster-health.sh` | [`docs/06-day1-baselining/01-cluster-operator-hardening.md`](../docs/06-day1-baselining/01-cluster-operator-hardening.md)<br/>[`docs/06-day1-baselining/04-machineconfigpools-tuning.md`](../docs/06-day1-baselining/04-machineconfigpools-tuning.md) | [`configs/day1/`](../configs/day1/) |
 | **Canary Upgrades & Lifecycle** | `pre-upgrade-health-check.sh`<br/>`automated-cluster-upgrade.sh` | [`docs/07-day2-operations/04-lifecycle-and-upgrades.md`](../docs/07-day2-operations/04-lifecycle-and-upgrades.md)<br/>[`docs/07-day2-operations/05-automated-upgrades.md`](../docs/07-day2-operations/05-automated-upgrades.md) | [`configs/day2/`](../configs/day2/) |
 | **Observability & Tracing** | `verify-observability-stack.sh` | [`docs/07-day2-operations/01-observability-stack.md`](../docs/07-day2-operations/01-observability-stack.md) | [`configs/observability/`](../configs/observability/) |
+| **Service Mesh & Zero Trust** | `verify-ambient-mesh.sh` | [`docs/03-network-and-connectivity/06-istio-ambient-service-mesh.md`](../docs/03-network-and-connectivity/06-istio-ambient-service-mesh.md) | [`configs/ambient/`](../configs/ambient/) |
 | **Disaster Recovery & OADP** | `etcd-backup.sh`<br/>`test-oadp-restore.sh` | [`docs/08-backup-dr-and-rebuild/01-etcd-backup-restore.md`](../docs/08-backup-dr-and-rebuild/01-etcd-backup-restore.md)<br/>[`docs/08-backup-dr-and-rebuild/02-oadp-vs-velero-deepdive.md`](../docs/08-backup-dr-and-rebuild/02-oadp-vs-velero-deepdive.md) | [`configs/day2/oadp-dpa-cr.yaml`](../configs/day2/oadp-dpa-cr.yaml) |
 | **Emergency Runbooks** | `recover-expired-certs.sh`<br/>`helper-ssh-jump.sh`<br/>`replace-control-plane-node.sh`<br/>`reinstall-worker-node.sh`<br/>`emergency-etcd-single-member.sh` | [`docs/09-emergency-runbooks/README.md`](../docs/09-emergency-runbooks/README.md)<br/>[`docs/09-emergency-runbooks/01-expired-certs-recovery.md`](../docs/09-emergency-runbooks/01-expired-certs-recovery.md)<br/>[`docs/09-emergency-runbooks/02-helper-node-access-and-jumping.md`](../docs/09-emergency-runbooks/02-helper-node-access-and-jumping.md)<br/>[`docs/09-emergency-runbooks/03-node-reinstallation-and-replacement.md`](../docs/09-emergency-runbooks/03-node-reinstallation-and-replacement.md)<br/>[`docs/09-emergency-runbooks/04-etcd-quorum-loss-recovery.md`](../docs/09-emergency-runbooks/04-etcd-quorum-loss-recovery.md) | [`configs/helper-node/`](../configs/helper-node/) |
 

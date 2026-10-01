@@ -9,7 +9,7 @@
 [![AI-Generated](https://img.shields.io/badge/Generated%20by-Gemini%203.8%20Flash-4285F4.svg?logo=google&logoColor=white)]()
 <br/>
 [![Gateway API](https://img.shields.io/badge/Gateway%20API-v1%20GA-4285F4.svg?logo=kubernetes&logoColor=white)](docs/03-network-and-connectivity/05-gateway-api-architecture.md)
-[![Service Mesh](https://img.shields.io/badge/Service%20Mesh-3.x%20Ambient-466BB0.svg?logo=istio&logoColor=white)](docs/03-network-and-connectivity/05-gateway-api-architecture.md)
+[![Service Mesh](https://img.shields.io/badge/Service%20Mesh-3.x%20Ambient-466BB0.svg?logo=istio&logoColor=white)](docs/03-network-and-connectivity/06-istio-ambient-service-mesh.md)
 [![CNI OVN](https://img.shields.io/badge/CNI-OVN--Kubernetes-1F618D.svg)](docs/03-network-and-connectivity/04-ovn-kubernetes-tuning.md)
 [![Air-Gap Standard](https://img.shields.io/badge/Air--Gap-oc--mirror%20v2-critical.svg)](docs/03-network-and-connectivity/02-air-gapped-oc-mirror-v2.md)
 [![Storage Ceph](https://img.shields.io/badge/Storage-ODF%20Ceph%204.16+-E03C11.svg?logo=ceph&logoColor=white)](docs/05-day0-readiness/03-storage-architecture-odf.md)
@@ -29,16 +29,16 @@ An exhaustive, enterprise-grade reference architecture, installation engineering
 Designed for Enterprise Platform Architects, Principal Site Reliability Engineers (SREs), and Hybrid Cloud Infrastructure Specialists, this repository bridges the complete operational continuum: from **Day 0** hardware/network capacity planning and preflight validation, to **Bootstrap-in-Place** media engineering, **Day 1** zero-trust security baselining, **Day 2** autonomous GitOps drift self-healing, **Modern Virtualization (KubeVirt/MTV)**, **Enterprise AI/GPU compute (RHOAI/vLLM)**, **Disaster Recovery (OADP/Metro-DR)**, and **Out-of-Band Emergency Runbooks** to resurrect dead clusters when the API server is unreachable.
 
 ### Key Repository Assets at a Glance:
-- 📚 **51 Exhaustive Engineering Modules (`docs/`)**: Organized across 9 operational domains covering every topology, hypervisor, public cloud, Gateway API, and incident scenario.
-- ⚙️ **44 Production Declarative Manifests (`configs/`)**: Validated Custom Resources for Agent-Based Installer, Keyless Cloud IPI, oc-mirror v2, Gateway API, Ingress PKI, Native Observability (UWM, LokiStack 3.x, Vector, TempoStack, OpenTelemetry, COO/Korrel8r, eBPF FlowCollector), GitOps root App-of-Apps, External Secrets Operator, cert-manager, OpenShift Virtualization, RHOAI, and vLLM ServingRuntime.
-- 🛠️ **16 Production Automation Scripts ([`scripts/`](scripts/README.md))**: Complete shell and PowerShell operational tools covering preflight validation, air-gap mirroring, automated etcd backups, canary cluster upgrades with Prometheus SLO gating, automated OADP restore drills, expired certificate recovery from the Helper Node, single-member quorum restoration, and end-to-end native observability stack verification (documented in the [Scripts Manual](scripts/README.md)).
+- 📚 **52 Exhaustive Engineering Modules (`docs/`)**: Organized across 9 operational domains covering every topology, hypervisor, public cloud, Gateway API, and incident scenario.
+- ⚙️ **50 Production Declarative Manifests (`configs/`)**: Validated Custom Resources for Agent-Based Installer, Keyless Cloud IPI, oc-mirror v2, Gateway API, Service Mesh & Ambient (ztunnel, Waypoint, CNI, strict L4/L7 policies), Ingress PKI, Native Observability (UWM, LokiStack 3.x, Vector, TempoStack, OpenTelemetry, COO/Korrel8r, eBPF FlowCollector), GitOps root App-of-Apps, External Secrets Operator, cert-manager, OpenShift Virtualization, RHOAI, and vLLM ServingRuntime.
+- 🛠️ **17 Production Automation Scripts ([`scripts/`](scripts/README.md))**: Complete shell and PowerShell operational tools covering preflight validation, air-gap mirroring, automated etcd backups, canary cluster upgrades with Prometheus SLO gating, automated OADP restore drills, expired certificate recovery from the Helper Node, single-member quorum restoration, full-stack native observability verification, and Istio Ambient service mesh diagnostics (documented in the [Scripts Manual](scripts/README.md)).
 - 🎯 **10-Step Deterministic Implementation Workflow**: A unified sequence linking Day 0 readiness through to autonomous lifecycle operations across all infrastructure targets.
 
 ### Core Architecture & Technical Taxonomy Tags:
 
 | Domain | Topic Tags & Architectural Components | Primary Reference Modules |
 | :--- | :--- | :--- |
-| **Ingress & Networking** | `gateway-api` `httproute` `grpcroute` `tlsroute` `service-mesh-3` `ovn-kubernetes` `geneve` `split-dns` `air-gapped` `oc-mirror-v2` | [`docs/03-network-and-connectivity/`](docs/03-network-and-connectivity/) |
+| **Ingress & Networking** | `gateway-api` `httproute` `grpcroute` `tlsroute` `service-mesh-3` `istio-ambient` `ztunnel` `waypoint` `hbone` `ovn-kubernetes` `geneve` `split-dns` `air-gapped` `oc-mirror-v2` | [`docs/03-network-and-connectivity/`](docs/03-network-and-connectivity/) |
 | **Topologies & Sizing** | `sno` `compact-3-node` `standard-ha` `remote-workers-wan` `hypershift` `hosted-control-planes` `ztp` `acm-2.12` | [`docs/01-architecture-topologies/`](docs/01-architecture-topologies/) |
 | **Datacenter & Cloud** | `bare-metal` `abi-bootstrap` `vsphere-8-9` `nutanix-ahv` `kvm-rhoso` `aws-sts-irsa` `azure-workload-id` `gcp-workload-id` `hyper-v` | [`docs/04-platforms/`](docs/04-platforms/) |
 | **Storage & Data Fabric**| `odf-ceph` `rook-ceph` `ceph-rbd` `cephfs` `rgw-s3` `fio-benchmarks` `local-storage-lso` | [`docs/05-day0-readiness/03-storage-architecture-odf.md`](docs/05-day0-readiness/03-storage-architecture-odf.md) |
@@ -222,6 +222,7 @@ Architectural masterclasses, deep-dive podcasts, and focused technical video sho
     - [Air-Gapped Core Services](docs/03-network-and-connectivity/03-air-gapped-core-services.md)
     - [OVN-Kubernetes Tuning](docs/03-network-and-connectivity/04-ovn-kubernetes-tuning.md)
     - [Kubernetes Gateway API Architecture](docs/03-network-and-connectivity/05-gateway-api-architecture.md)
+    - [Istio Ambient Service Mesh](docs/03-network-and-connectivity/06-istio-ambient-service-mesh.md)
   - [04. Platform Specific Deployment Guides](#04-platform-specific-deployment-guides)
     - [Bare Metal Physical Hardware](docs/04-platforms/01-bare-metal-physical.md)
     - [VMware vSphere 8.x / 9.x](docs/04-platforms/02-vmware-vsphere.md)
@@ -279,12 +280,15 @@ Architectural masterclasses, deep-dive podcasts, and focused technical video sho
     - [`replace-control-plane-node.sh`](scripts/replace-control-plane-node.sh) - Control Plane Master Node Replacement Assistant
     - [`reinstall-worker-node.sh`](scripts/reinstall-worker-node.sh) - Worker & Infra Node Drain and Reinstallation Engine
     - [`emergency-etcd-single-member.sh`](scripts/emergency-etcd-single-member.sh) - Single-Member etcd Quorum Recovery Tool
+    - [`verify-observability-stack.sh`](scripts/verify-observability-stack.sh) - Full-Stack Native Observability Fabric Diagnostic Engine
+    - [`verify-ambient-mesh.sh`](scripts/verify-ambient-mesh.sh) - Istio Ambient Service Mesh & ztunnel Verification Engine
   - [Production Manifests (`configs/`)](#production-manifests-configs)
     - [Agent-Based Installer (`configs/agent-based/`)](configs/agent-based/)
     - [Public Cloud IPI (`configs/ipi-cloud/`)](configs/ipi-cloud/)
     - [Virtualization UPI (`configs/upi-vsphere/`)](configs/upi-vsphere/)
     - [Air-Gapped & Registry (`configs/airgap/`)](configs/airgap/)
     - [Kubernetes Gateway API (`configs/gateway-api/`)](configs/gateway-api/)
+    - [Service Mesh & Ambient (`configs/ambient/`)](configs/ambient/)
     - [Day 1 Baselining & Hardening (`configs/day1/`)](configs/day1/)
     - [Day 2 Operations & DR (`configs/day2/`)](configs/day2/)
     - [GitOps App-of-Apps (`configs/gitops/`)](configs/gitops/)
@@ -1104,6 +1108,7 @@ Enterprise network design, proxy bypasses, air-gap mirroring, and CNI performanc
 - [Air-Gapped Core Services](docs/03-network-and-connectivity/03-air-gapped-core-services.md): Split-horizon DNS, Chrony NTP clock sync (<500ms), and internal enterprise PKI.
 - [OVN-Kubernetes Tuning](docs/03-network-and-connectivity/04-ovn-kubernetes-tuning.md): MTU sizing (Geneve 100-byte overhead), deterministic EgressIPs, and EgressFirewalls.
 - [Kubernetes Gateway API Architecture](docs/03-network-and-connectivity/05-gateway-api-architecture.md): Next-gen role-oriented ingress, weighted canary traffic splits, gRPC AI streaming, VM SNI passthrough, and migration from OpenShift Routes.
+- [Istio Ambient Service Mesh](docs/03-network-and-connectivity/06-istio-ambient-service-mesh.md): Sidecarless service mesh (OSSM 3.0), ztunnel L4 mTLS, HBONE encapsulation, Gateway API Waypoint proxies, 3-way comparative matrix, and non-disruptive zero-trust adoption.
 
 ### [04. Platform Specific Deployment Guides](docs/04-platforms/README.md)
 Exhaustive configuration blueprints across all physical and cloud infrastructures:
@@ -1186,6 +1191,7 @@ All scripts and manifests are ready to execute from this repository:
 | [`scripts/reinstall-worker-node.sh`](scripts/reinstall-worker-node.sh) | Worker & infra node replacement: cordons, drains, deletes node, monitors reprovisioning, and auto-approves CSRs. | `./scripts/reinstall-worker-node.sh worker-2.corp.local` |
 | [`scripts/emergency-etcd-single-member.sh`](scripts/emergency-etcd-single-member.sh) | Catastrophic quorum recovery: forces a surviving master into a functional 1-node etcd cluster to restore API server. | `./scripts/emergency-etcd-single-member.sh master-0.corp.local` |
 | [`scripts/verify-observability-stack.sh`](scripts/verify-observability-stack.sh) | Full-stack observability audit: operators, S3 buckets, UWM exemplars, Vector daemon, Tempo gateway, and TSDB cardinality. | `./scripts/verify-observability-stack.sh` |
+| [`scripts/verify-ambient-mesh.sh`](scripts/verify-ambient-mesh.sh) | Istio Ambient Mesh audit: Sail Operator, Istio CNI redirection, ztunnel DaemonSet, enrolled namespaces, Waypoints. | `./scripts/verify-ambient-mesh.sh` |
 
 ### Production Manifests (`configs/`)
 - **Agent-Based**: [`configs/agent-based/agent-config.yaml`](configs/agent-based/agent-config.yaml), [`agent-config-lacp-vlan.yaml`](configs/agent-based/agent-config-lacp-vlan.yaml), [`install-config-sno.yaml`](configs/agent-based/install-config-sno.yaml), [`install-config-compact.yaml`](configs/agent-based/install-config-compact.yaml), [`install-config-standard.yaml`](configs/agent-based/install-config-standard.yaml), [`install-config-airgap.yaml`](configs/agent-based/install-config-airgap.yaml), [`ipxe-boot.cfg`](configs/agent-based/ipxe-boot.cfg).
@@ -1193,6 +1199,7 @@ All scripts and manifests are ready to execute from this repository:
 - **Virtualization UPI**: [`configs/upi-vsphere/vsphere-install-config.yaml`](configs/upi-vsphere/vsphere-install-config.yaml).
 - **Air-Gapped**: [`configs/airgap/imageset-config-v2.yaml`](configs/airgap/imageset-config-v2.yaml), [`local-registry-quay.yaml`](configs/airgap/local-registry-quay.yaml).
 - **Kubernetes Gateway API**: [`configs/gateway-api/gatewayclass-openshift.yaml`](configs/gateway-api/gatewayclass-openshift.yaml), [`configs/gateway-api/enterprise-gateway.yaml`](configs/gateway-api/enterprise-gateway.yaml), [`configs/gateway-api/httproute-canary-split.yaml`](configs/gateway-api/httproute-canary-split.yaml), [`configs/gateway-api/grpcroute-ai-inference.yaml`](configs/gateway-api/grpcroute-ai-inference.yaml), [`configs/gateway-api/tlsroute-vm-passthrough.yaml`](configs/gateway-api/tlsroute-vm-passthrough.yaml).
+- **Service Mesh & Ambient**: [`configs/ambient/01-istio-cni-ambient.yaml`](configs/ambient/01-istio-cni-ambient.yaml), [`02-istio-controlplane-ambient.yaml`](configs/ambient/02-istio-controlplane-ambient.yaml), [`03-ztunnel-daemonset.yaml`](configs/ambient/03-ztunnel-daemonset.yaml), [`04-waypoint-gateway.yaml`](configs/ambient/04-waypoint-gateway.yaml), [`05-ambient-httproute-canary.yaml`](configs/ambient/05-ambient-httproute-canary.yaml), [`06-authorization-policy-strict.yaml`](configs/ambient/06-authorization-policy-strict.yaml).
 - **Day 1**: [`configs/day1/machineconfig-chrony.yaml`](configs/day1/machineconfig-chrony.yaml), [`cluster-proxy-trustedca.yaml`](configs/day1/cluster-proxy-trustedca.yaml), [`ingresscontroller-custom-tls.yaml`](configs/day1/ingresscontroller-custom-tls.yaml), [`idp-keycloak-oidc.yaml`](configs/day1/idp-keycloak-oidc.yaml), [`mcp-infra-nodes.yaml`](configs/day1/mcp-infra-nodes.yaml).
 - **Day 2**: [`configs/day2/oadp-dpa-cr.yaml`](configs/day2/oadp-dpa-cr.yaml), [`etcd-backup-cronjob.yaml`](configs/day2/etcd-backup-cronjob.yaml), [`compliance-suite-cis.yaml`](configs/day2/compliance-suite-cis.yaml), [`cluster-autoscaler.yaml`](configs/day2/cluster-autoscaler.yaml).
 - **GitOps & App-of-Apps**: [`configs/gitops/gitops-operator-sub.yaml`](configs/gitops/gitops-operator-sub.yaml), [`configs/gitops/root-app-of-apps.yaml`](configs/gitops/root-app-of-apps.yaml).

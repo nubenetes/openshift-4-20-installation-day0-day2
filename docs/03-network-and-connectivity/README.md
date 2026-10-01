@@ -22,6 +22,7 @@ Network architecture is the most common source of installation failure. OpenShif
 3. [`03-air-gapped-core-services.md`](03-air-gapped-core-services.md) — Split-horizon DNS, Chrony Stratum NTP sync, and internal enterprise PKI.
 4. [`04-ovn-kubernetes-tuning.md`](04-ovn-kubernetes-tuning.md) — OVN-Kubernetes CNI, MTU Geneve encapsulation sizing, EgressIPs, and EgressFirewalls.
 5. [`05-gateway-api-architecture.md`](05-gateway-api-architecture.md) — **Kubernetes Gateway API Standard (`gateway.networking.k8s.io`)**, OpenShift Ingress Operator, Service Mesh 3.x, canary routing, and migration from legacy Routes.
+6. [`06-istio-ambient-service-mesh.md`](06-istio-ambient-service-mesh.md) — **Istio Ambient Service Mesh (OSSM 3.0)**: Sidecarless data plane, ztunnel L4 mTLS, HBONE encapsulation, Gateway API Waypoint proxies, 3-way comparative matrix, and non-disruptive zero-trust adoption.
 
 ---
 

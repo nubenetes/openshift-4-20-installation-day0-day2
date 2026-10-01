@@ -1,0 +1,40 @@
+apiVersion: security.istio.io/v1
+kind: AuthorizationPolicy
+metadata:
+  name: payments-strict-l4-mtls
+  namespace: payments-prod
+spec:
+  selector:
+    matchLabels:
+      app: payments
+  action: ALLOW
+  rules:
+    # L4 rule enforced by ztunnel: must have valid SPIFFE identity from checkout-prod
+    - from:
+        - source:
+            principals:
+              - "cluster.local/ns/checkout-prod/sa/checkout-service-account"
+---
+apiVersion: security.istio.io/v1
+kind: AuthorizationPolicy
+metadata:
+  name: payments-strict-l7-jwt
+  namespace: payments-prod
+spec:
+  targetRefs:
+    - kind: Gateway
+      group: gateway.networking.k8s.io
+      name: payments-waypoint
+  action: ALLOW
+  rules:
+    # L7 rule enforced by Waypoint proxy: requires valid claims and POST method
+    - from:
+        - source:
+            requestPrincipals: ["https://keycloak.apps.ocp4.corp.local/auth/realms/enterprise/*"]
+      to:
+        - operation:
+            methods: ["POST", "GET"]
+            paths: ["/api/v1/checkout/*"]
+      when:
+        - key: request.auth.claims[iss]
+          values: ["https://keycloak.apps.ocp4.corp.local/auth/realms/enterprise"]

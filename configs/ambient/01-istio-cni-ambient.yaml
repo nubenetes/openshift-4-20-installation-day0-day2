@@ -1,0 +1,81 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: istio-cni
+  labels:
+    openshift.io/cluster-monitoring: "true"
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: istio-cni-node
+  namespace: istio-cni
+  labels:
+    k8s-app: istio-cni-node
+    app.kubernetes.io/name: istio-cni
+spec:
+  selector:
+    matchLabels:
+      k8s-app: istio-cni-node
+  template:
+    metadata:
+      labels:
+        k8s-app: istio-cni-node
+      annotations:
+        sidecar.istio.io/inject: "false"
+    spec:
+      nodeSelector:
+        kubernetes.io/os: linux
+      tolerations:
+        - operator: Exists
+          effect: NoSchedule
+        - operator: Exists
+          effect: NoExecute
+      priorityClassName: system-node-critical
+      serviceAccountName: istio-cni
+      hostNetwork: true
+      containers:
+        - name: install-cni
+          image: registry.redhat.io/openshift-service-mesh/istio-cni-rhel9:3.0.0
+          securityContext:
+            privileged: true
+          env:
+            - name: CNI_NETWORK_CONFIG
+              value: |-
+                {
+                  "cniVersion": "0.4.0",
+                  "name": "istio-cni",
+                  "type": "istio-cni",
+                  "log_level": "info",
+                  "ambient": {
+                    "enabled": true,
+                    "redirect-mode": "ebpf"
+                  },
+                  "cni_bin_dir": "/var/lib/cni/bin",
+                  "cni_conf_dir": "/etc/cni/net.d"
+                }
+            - name: AMBIENT_ENABLED
+              value: "true"
+            - name: CNI_NET_DIR
+              value: /etc/cni/net.d
+            - name: CNI_BIN_DIR
+              value: /var/lib/cni/bin
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 256Mi
+          volumeMounts:
+            - name: cni-bin-dir
+              mountPath: /var/lib/cni/bin
+            - name: cni-net-dir
+              mountPath: /etc/cni/net.d
+      volumes:
+        - name: cni-bin-dir
+          hostPath:
+            path: /var/lib/cni/bin
+        - name: cni-net-dir
+          hostPath:
+            path: /etc/kubernetes/cni/net.d
