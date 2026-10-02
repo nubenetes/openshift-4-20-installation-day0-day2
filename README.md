@@ -132,6 +132,8 @@ Architectural masterclasses, deep-dive podcasts, and focused technical video sho
 | **15** | [OpenShift 4.20 Ambient Mesh: Matriz de Decisión, 12 Escenarios y Redes Modernas](https://www.youtube.com/watch?v=PACqEYWuRQ8) | **Matriz de Decisión de Malla de Red**<br/>Comparativa Sidecar vs Ambient vs Gateway API, 12 escenarios de adopción empresarial & migración | 🇪🇸 ES | `7:59` | [▶️ Watch](https://www.youtube.com/watch?v=PACqEYWuRQ8) |
 | **16** | [OpenShift 4.20 Istio Ambient Mesh: Sidecarless Zero-Trust Architecture & OSSM 3.0](https://www.youtube.com/watch?v=3hY3betgu5w) | **Istio Ambient Mesh & Zero-Trust**<br/>Sidecarless architecture, Rust ztunnel L4 proxy, Waypoint L7 proxies & Red Hat OSSM 3.0 | 🇺🇸 EN | `8:23` | [▶️ Watch](https://www.youtube.com/watch?v=3hY3betgu5w) |
 | **17** | [OpenShift 4.20 Ambient Mesh Playbook: 12 Decision Scenarios & Routing Comparison](https://www.youtube.com/watch?v=NOu2lz5tgUM) | **Service Mesh Decision Playbook**<br/>3-way routing comparison (Route vs Gateway API vs Ambient), 12 enterprise scenarios | 🇺🇸 EN | `7:01` | [▶️ Watch](https://www.youtube.com/watch?v=NOu2lz5tgUM) |
+| **18** | [Podcast: How Math Keeps OpenShift 4.20 Alive: P99 Latency & etcd](https://www.youtube.com/watch?v=gJwSFyVvcBo) | **Queueing Theory & etcd Math**<br/>Queueing theory, etcd Raft fsync p99 under 10ms, CFS CPU throttling & canary rollback math | 🇺🇸 EN | `52:14` | [▶️ Watch](https://www.youtube.com/watch?v=gJwSFyVvcBo) |
+| **19** | [Podcast: Latencia P99, etcd y Observabilidad en OpenShift 4.20](https://www.youtube.com/watch?v=uvSIkUaHy0M) | **Latencia P99, etcd y Observabilidad**<br/>Benchmark FIO de disco, fsync p99 bajo 10ms en etcd, explosión de cardinalidad y muestreo en Tempo | 🇪🇸 ES | `26:20` | [▶️ Watch](https://www.youtube.com/watch?v=uvSIkUaHy0M) |
 
 ### 🎬 Video Shorts Matrix
 
@@ -165,6 +167,8 @@ Architectural masterclasses, deep-dive podcasts, and focused technical video sho
 | **26** | [When to Use Istio Ambient Mesh on OpenShift: AI Workloads, Batch Jobs and Limits](https://www.youtube.com/shorts/s_LzIY08-BI) | **Ambient Mesh Workload Sorting**<br/>AI streaming inference, clean batch job exit & Multus/multi-tenant limitations | 🇺🇸 EN | `1:20` | [▶️ Watch](https://www.youtube.com/shorts/s_LzIY08-BI) |
 | **27** | [How Istio Ambient Mesh Kills the Sidecar Tax on OpenShift 4.20 with Rust ztunnel](https://www.youtube.com/shorts/ZN2TuJ-nX0I) | **Sidecar Tax Elimination**<br/>Over 90% RAM reduction using per-node Rust ztunnel daemon (~15 MB) | 🇺🇸 EN | `1:20` | [▶️ Watch](https://www.youtube.com/shorts/ZN2TuJ-nX0I) |
 | **28** | [How HBONE and Waypoint Proxies Replace Envoy Sidecars in Istio Ambient Mesh](https://www.youtube.com/shorts/FVdgb3BHr1s) | **HBONE & Waypoint Architecture**<br/>mTLS tunneling on port 15008, L4 ztunnel delivery & on-demand L7 Waypoints | 🇺🇸 EN | `1:18` | [▶️ Watch](https://www.youtube.com/shorts/FVdgb3BHr1s) |
+| **29** | [OpenShift 4.20 Networking: Routes, Gateway API & Ambient Mesh](https://www.youtube.com/shorts/DPGv4GUOkCY) | **3-Tier Networking Convergence**<br/>Perimeter Routes, Gateway API role decoupling & Istio Ambient Mesh ztunnel | 🇺🇸 EN | `1:28` | [▶️ Watch](https://www.youtube.com/shorts/DPGv4GUOkCY) |
+| **30** | [When to Use Istio Ambient Mesh: Batch Jobs, AI & Node Limits](https://www.youtube.com/shorts/tPAB1gjn5lM) | **Ambient Mesh Workload Boundaries**<br/>AI streaming, clean batch job exit vs shared node keys & Multus bypass limits | 🇺🇸 EN | `1:23` | [▶️ Watch](https://www.youtube.com/shorts/tPAB1gjn5lM) |
 
 *For complete technical breakdowns, copy-paste ready descriptions, and YouTube Studio links, see [Section: Video Walkthroughs & Architecture References](#video-walkthroughs--architecture-references-youtube).*
 
@@ -1311,7 +1315,7 @@ Below are the complete video overviews organized by original audio language and 
 ### 🇪🇸 Vídeos en Español (Audio Original)
 
 <details open>
-<summary>📂 <strong>Recorridos Técnicos, Masterclasses y Podcasts en Español (4 Vídeos)</strong></summary>
+<summary>📂 <strong>Recorridos Técnicos, Masterclasses y Podcasts en Español (5 Vídeos)</strong></summary>
 
 <br/>
 
@@ -1415,6 +1419,35 @@ Below are the complete video overviews organized by original audio language and 
 > ⏱️ Duración: 7:59
 > #OpenShift #Kubernetes #Istio #AmbientMesh #GatewayAPI #Networking #CloudArchitecture #RedHat #PlatformEngineering #DevOps #SRE #Microservicios
 
+#### 5. Podcast: Latencia P99, etcd y Observabilidad en OpenShift 4.20
+- 🔗 **Enlace Directo**: [https://www.youtube.com/watch?v=uvSIkUaHy0M](https://www.youtube.com/watch?v=uvSIkUaHy0M)
+- 🛠️ **YouTube Studio**: [https://studio.youtube.com/video/uvSIkUaHy0M/edit](https://studio.youtube.com/video/uvSIkUaHy0M/edit)
+- ⏱️ **Duración**: 26:20
+- 🏷️ **Dominio**: Arquitectura OpenShift 4.20, etcd, Latencia P99 y Observabilidad
+- 📝 **Descripción completa**:
+> 🎙️ Podcast de Arquitectura Técnica: Latencia P99, etcd y Observabilidad en Red Hat OpenShift 4.20
+>
+> Episodio completo en formato podcast técnico en español analizando a fondo los cimientos matemáticos y operativos que garantizan la resiliencia en Red Hat OpenShift Container Platform 4.20.
+>
+> Una conversación exhaustiva para arquitectos de plataforma, líderes de infraestructura y SREs sobre cómo los SLOs y las métricas de cola funcionan como el sistema inmunológico autónomo del cluster.
+>
+> 📌 Puntos Clave de la Sesión:
+> • El Umbral Crítico de 10ms en etcd: Cómo un micro-retraso de 10 milisegundos en la escritura fsync del disco del plano de control colapsa el algoritmo de consenso Raft y paraliza clusters bancarios.
+> • Validación Pre-flight con FIO: Examen físico obligatorio de hardware para descartar discos lentos antes de iniciar el despliegue del cluster.
+> • El Peligro de las Medias Aritméticas: Por qué los promedios ocultan la degradación del servicio y cómo el percentil 99 (P99) expone el impacto real en el usuario final.
+> • Límites Automáticos en Despliegues Canary: Aborto y rollback inmediato de actualizaciones en la flota si los errores HTTP 5xx en Ingress superan el 2 por ciento.
+> • La Trampa de la Alta Cardinalidad: Prevención de caídas por OOMKill en Prometheus mediante control estricto de etiquetas dinámicas.
+> • Muestreo Tail-Based en OpenTelemetry: Captura del 100 por ciento de trazas con error 5xx o latencias fuera de SLO mientras se descarta la telemetría inocua.
+> • Correlación con Korrel8r: Salto directo en un solo clic desde alertas de Prometheus hacia logs estructurados en Loki y trazas distribuidas en Tempo.
+>
+> 🔗 Repositorio Oficial y Manifiestos de Producción:
+> • Repositorio Completo: https://github.com/nubenetes/openshift-4-20-installation-day0-day2
+> • Guía de Observabilidad Day 2: https://github.com/nubenetes/openshift-4-20-installation-day0-day2/tree/main/docs/07-day2-operations
+> • Scripts de Automatización: https://github.com/nubenetes/openshift-4-20-installation-day0-day2/tree/main/scripts
+>
+> ⏱️ Duración: 26:20
+> #OpenShift #Podcast #Kubernetes #RedHat #SRE #DevOps #Observabilidad #etcd #Prometheus #Loki #Tempo #PlatformEngineering
+
 </details>
 
 <br/>
@@ -1422,7 +1455,7 @@ Below are the complete video overviews organized by original audio language and 
 ### 🇬🇧 Videos in English (Original Audio)
 
 <details open>
-<summary>📂 <strong>Full-Length Technical Deep Dives & Architecture Masterclasses (13 Videos)</strong></summary>
+<summary>📂 <strong>Full-Length Technical Deep Dives & Architecture Masterclasses (14 Videos)</strong></summary>
 
 <br/>
 
@@ -1751,14 +1784,42 @@ Below are the complete video overviews organized by original audio language and 
 > ⏱️ Duration: 7:01
 > #OpenShift #Kubernetes #Istio #AmbientMesh #GatewayAPI #Networking #CloudArchitecture #RedHat #PlatformEngineering #DevOps #SRE #Microservices #KubeVirt
 
+#### 14. Podcast: How Math Keeps OpenShift 4.20 Alive: P99 Latency & etcd
+- 🔗 **Direct Link**: [https://www.youtube.com/watch?v=gJwSFyVvcBo](https://www.youtube.com/watch?v=gJwSFyVvcBo)
+- 🛠️ **YouTube Studio**: [https://studio.youtube.com/video/gJwSFyVvcBo/edit](https://studio.youtube.com/video/gJwSFyVvcBo/edit)
+- ⏱️ **Duration**: 52:14
+- 🏷️ **Domain**: Queueing Theory, Raft Consensus & SRE Math
+- 📝 **Full Description**:
+> 🎙️ Podcast: How Math Keeps OpenShift 4.20 Alive: P99 Latency, etcd Raft & SRE Mathematics
+>
+> An exhaustive 52-minute architectural podcast masterclass deconstructing the mathematical foundations and operational realities of running enterprise Red Hat OpenShift Container Platform 4.20 at scale.
+>
+> Designed for Principal Platform Architects and Senior SREs, this deep dive explores why system reliability is governed by queueing theory, statistical distributions, and kernel scheduling physics rather than arbitrary dashboard thresholds.
+>
+> 📌 Architectural & Mathematical Topics Deconstructed:
+> • The 10ms etcd Threshold: Why a 1% micro-hiccup in disk fsync latency destroys Raft consensus, causing cascading leader elections and freezing banking infrastructure.
+> • The Arithmetic Mean Lie: Why averaging P99 latencies is mathematically invalid, and how percentile distributions reveal catastrophic hidden tail latency.
+> • Linux CFS Quota Throttling: How Completely Fair Scheduler CPU limits cause microsecond stalls that cascade through synchronous microservice chains.
+> • SRE Error Budgeting & Canary Gates: Mathematical abort conditions that automatically halt cluster rollouts when Ingress HTTP 5xx rates exceed 2 percent.
+> • OpenShift 4.20 Hardware Baselines: Enforcing non-negotiable FIO disk benchmarking during Day 0 preflight checks before etcd provisioning.
+> • High Cardinality & Telemetry Health: Preventing Prometheus OOMKills with strict metric relabelings and tail-based distributed trace sampling in OpenTelemetry.
+>
+> 🔗 Complete Architecture Documentation & Production Runbooks:
+> • Blueprint Repository: https://github.com/nubenetes/openshift-4-20-installation-day0-day2
+> • Day 2 Operations & Observability: https://github.com/nubenetes/openshift-4-20-installation-day0-day2/tree/main/docs/07-day2-operations
+> • Automated Health Scripts: https://github.com/nubenetes/openshift-4-20-installation-day0-day2/tree/main/scripts
+>
+> ⏱️ Duration: 52:14
+> #OpenShift #Kubernetes #Podcast #SRE #PlatformEngineering #DevOps #etcd #Latency #Observability #CloudNative #RedHat
+
 </details>
 
 <br/>
 
-### ⚡ Architecture & Automation Video Shorts (28 Shorts)
+### ⚡ Architecture & Automation Video Shorts (30 Shorts)
 
 <details open>
-<summary>📂 <strong>Technical Video Shorts Breakdown (28 Shorts)</strong></summary>
+<summary>📂 <strong>Technical Video Shorts Breakdown (30 Shorts)</strong></summary>
 
 <br/>
 
@@ -2434,6 +2495,56 @@ Below are the complete video overviews organized by original audio language and 
 > https://github.com/nubenetes/openshift-4-20-installation-day0-day2/tree/main/configs/ambient
 >
 > #Shorts #OpenShift #Istio #HBONE #ZeroTrust #mTLS #CyberSecurity #GatewayAPI #Kubernetes #DevSecOps #SRE
+
+#### 29. OpenShift 4.20 Networking: Routes, Gateway API & Ambient Mesh
+- 🔗 **Direct Link**: [https://www.youtube.com/shorts/DPGv4GUOkCY](https://www.youtube.com/shorts/DPGv4GUOkCY)
+- 🛠️ **YouTube Studio**: [https://studio.youtube.com/video/DPGv4GUOkCY/edit](https://studio.youtube.com/video/DPGv4GUOkCY/edit)
+- 🌐 **Language**: English (Original Audio)
+- ⏱️ **Duration**: 1:28
+- 🏷️ **Domain**: Converged Networking, Gateway API & Istio Ambient Mesh
+- 📝 **Full Description**:
+> ⚡ OpenShift 4.20 Converged Networking: Routes, Gateway API & Istio Ambient Mesh!
+>
+> Platform teams often face a brutal trade-off: keep access simple at the perimeter or bog down the entire cluster with heavy internal security.
+>
+> Red Hat OpenShift 4.20 solves this dilemma by converging three networking layers into one lightweight stack:
+> • Cluster Edge: Traditional OpenShift Routes via HAProxy provide simple north-south ingress.
+> • Modernized Ingress: Kubernetes Gateway API decouples infrastructure admin roles from developer routing rules, enabling seamless traffic splitting and AI streaming without messy annotations.
+> • Sidecarless Zero-Trust: Istio Ambient Mesh replaces resource-heavy sidecars with a single node-level Rust ztunnel daemon, adding on-demand Waypoint proxies only when advanced Layer 7 policies are required.
+>
+> Gateway API handles external rules, ztunnel secures internal hops, and Waypoints manage complex routing: enterprise zero-trust networking completely free of the sidecar tax!
+>
+> 🔗 Explore OpenShift 4.20 Network Manifests:
+> https://github.com/nubenetes/openshift-4-20-installation-day0-day2/tree/main/configs/ambient
+>
+> #Shorts #OpenShift #Kubernetes #GatewayAPI #Istio #AmbientMesh #Networking #ZeroTrust #CloudNative #PlatformEngineering #DevOps
+
+#### 30. When to Use Istio Ambient Mesh: Batch Jobs, AI & Node Limits
+- 🔗 **Direct Link**: [https://www.youtube.com/shorts/tPAB1gjn5lM](https://www.youtube.com/shorts/tPAB1gjn5lM)
+- 🛠️ **YouTube Studio**: [https://studio.youtube.com/video/tPAB1gjn5lM/edit](https://studio.youtube.com/video/tPAB1gjn5lM/edit)
+- 🌐 **Language**: English (Original Audio)
+- ⏱️ **Duration**: 1:23
+- 🏷️ **Domain**: Workload Decision Guide, Batch Jobs, AI & Node Limits
+- 📝 **Full Description**:
+> ⚡ When to Use Istio Ambient Mesh on Kubernetes & OpenShift 4.20!
+>
+> Istio Ambient Mesh radically changes which Kubernetes workloads you can safely secure without forcing a heavy proxy into every single container.
+>
+> Where Ambient Mesh Wins:
+> • High-Density Microservices: Slashes memory overhead by handling security through a single node-level daemon (ztunnel).
+> • Batch Jobs & CI/CD: Solves the notorious sidecar deadlock bug, allowing pods to terminate cleanly.
+> • AI & Streaming Workloads: High-throughput AI inference flows straight through the node without Layer 7 proxy buffering.
+>
+> Where to AVOID Ambient Mesh:
+> • Hostile Multi-Tenancy: The shared ztunnel holds private encryption keys for all workloads on the worker node. If strict per-pod cryptographic isolation is required, use traditional sidecars.
+> • Secondary Network Interfaces: Workloads using Multus CNI (such as SR-IOV or DPDK) bypass the node proxy entirely, leaving traffic unencrypted.
+>
+> Map your trust boundaries and choose the right mesh architecture!
+>
+> 🔗 Download Ambient Mesh Architecture Guide:
+> https://github.com/nubenetes/openshift-4-20-installation-day0-day2/tree/main/docs/03-network-and-connectivity/06-istio-ambient-service-mesh.md
+>
+> #Shorts #Istio #AmbientMesh #Kubernetes #OpenShift #ZeroTrust #Microservices #CloudNative #DevOps #SRE #PlatformEngineering
 
 </details>
 
