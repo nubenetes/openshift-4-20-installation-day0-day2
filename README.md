@@ -52,9 +52,11 @@ Designed for Enterprise Platform Architects, Principal Site Reliability Engineer
 
 ---
 
-## Enterprise OpenShift 4.20: The Day 0 to Day 2 Operational Blueprint
+## Enterprise Visual Architecture Blueprints
 
-![Enterprise OpenShift 4.20: The Day 0 to Day 2 Operational Blueprint](assets/enterprise-openshift-4-20-day0-to-day2-blueprint.jpg)
+### Blueprint 1: Enterprise OpenShift 4.20: The Day 0 to Day 2 Operational Blueprint
+
+[![Enterprise OpenShift 4.20: The Day 0 to Day 2 Operational Blueprint](assets/enterprise-openshift-4-20-day0-to-day2-blueprint.jpg)](assets/enterprise-openshift-4-20-day0-to-day2-blueprint.jpg)
 
 ### Comprehensive Blueprint Breakdown & Architectural Mechanics
 
@@ -104,6 +106,169 @@ This operational blueprint synthesizes the complete architectural lifecycle of a
 * **Out-of-Band Emergency Runbooks**:
   * Battle-tested operational runbooks and automated shell scripts designed to resurrect clusters when the Kubernetes API server is unreachable.
   * Features out-of-band single-member etcd quorum revival (forcing surviving masters into a 1-node etcd cluster) and automated recovery of expired kubelet TLS certificates via SSH jump tunneling and IPMI Serial-Over-LAN (SOL) directly from the Helper Node.
+
+---
+
+### Blueprint 2: OpenShift 4.20 Native Observability in Air-Gapped Environments
+
+[![OpenShift 4.20 Native Observability in Air-Gapped Environments](assets/openshift-4-20-native-observability-airgap.png)](assets/openshift-4-20-native-observability-airgap.png)
+
+#### Architectural Breakdown & Implementation Dimensions
+
+| Architecture Dimension | Engineering Specification & Component Details |
+| :--- | :--- |
+| **Metrics Architecture (Prometheus & UWM)** | • **Separation of Concerns**: Dual-tier Prometheus architecture separating platform monitoring (`openshift-monitoring`) from tenant applications (`openshift-user-workload-monitoring`).<br/>• **Thanos Federation**: In-cluster Thanos Querier unifies global metric queries and connects to S3 object storage for long-term retention.<br/>• **Cardinality Control & Defense**: Strict `sampleLimit: 5000` enforced per scrape target, with `metricRelabelings` dropping volatile client IPs, UUIDs, and timestamps at the collection edge. |
+| **High-Speed Logging Fabric (Vector & LokiStack 3.x)** | • **Vector Collector**: High-performance Rust daemon replacing legacy Fluentd, cutting agent CPU consumption by ~70% and eliminating garbage collection pauses.<br/>• **ClusterLogForwarder API**: Declaratively routes `application`, `infrastructure`, and `audit` log streams to dedicated destinations.<br/>• **LokiStack 3.x with Schema v13**: TSDB index format with structured metadata, persisting compressed log chunks directly to S3/ODF Ceph with fine-grained namespace-level RBAC. |
+| **Distributed Tracing (OpenTelemetry & TempoStack)** | • **OpenTelemetry Collector**: Auto-instruments Java, Python, Go, and Node.js runtimes; receives spans over OTLP/gRPC (4317) and OTLP/HTTP (4318).<br/>• **Tail-Based Sampling**: Retains 100% of HTTP 5xx errors and latency spikes (>300ms) while dynamically sampling 2xx traces down to 1–5% to optimize object storage.<br/>• **TempoStack**: High-throughput distributed tracing backend storing immutable trace blocks on object storage with zero indexing overhead. |
+| **Single-Pane Correlation (COO & Korrel8r)** | • **Cluster Observability Operator (COO)**: Integrates native logging and tracing UI plugins directly into the OpenShift Web Console.<br/>• **Korrel8r Graph Engine**: Automatically navigates relationships between Prometheus alerts, OpenMetrics exemplars, Loki log lines, and Tempo trace IDs in a single unified workflow. |
+| **eBPF Network Observability** | • **NetObserv Operator**: Kernel-level eBPF probes capturing pod-to-pod and node-to-node network traffic without application sidecars.<br/>• **FlowCollector**: Enriches raw network flows with Kubernetes pod/service topology, tracking latency (RTT), packet loss, and inter-zone bandwidth. |
+| **Air-Gapped Sovereign Compliance** | • **Zero Outbound Egress**: Operates entirely within disconnected enclaves backed by on-premises OpenShift Data Foundation (ODF Ceph) object storage.<br/>• **Offline Mirroring**: All operator images mirrored locally via `oc-mirror` v2 with strict cryptographic digest verification. |
+
+#### Detailed Engineering Blueprint Breakdown (Bullet Points)
+
+- **Metrics Architecture (Prometheus, Thanos & User Workload Monitoring - UWM)**:
+  - **Decoupled Multi-Tenant Architecture**:
+    - Implements the Red Hat Cluster Monitoring Operator (CMO) with two isolated Prometheus stacks: `prometheus-k8s` in `openshift-monitoring` for core platform components, and `prometheus-user-workload` in `openshift-user-workload-monitoring` for business applications.
+    - Prevents runaway tenant scrape targets from exhausting platform monitoring memory or jeopardizing cluster alert evaluation.
+  - **Thanos Cross-Cluster Querying & Long-Term Storage**:
+    - Deploys the Thanos Querier component to aggregate and deduplicate metric time-series across both Prometheus instances into a single unified PromQL API endpoint.
+    - Integrates with Thanos Sidecar and Compact components to flush TSDB blocks into on-premises S3 object storage (ODF Ceph), enabling years of historical metric retention with automated downsampling (5m and 1h resolutions).
+  - **Metric Explosion Defense & Cardinality Control**:
+    - Enforces strict target-level cardinality guardrails using `sampleLimit: 5000` inside `ServiceMonitor` and `PodMonitor` Custom Resources, rejecting scrape jobs that exceed cardinality limits before they destabilize Prometheus memory.
+    - Implements automated `metricRelabelings` configurations to strip volatile, non-aggregated labels (e.g., dynamic client IP addresses, random request IDs, and nanosecond timestamps) at the scrape boundary.
+
+- **High-Speed Logging Fabric (Vector & LokiStack 3.x)**:
+  - **Rust-Based Vector DaemonSet (OpenShift Logging 6.x Standard)**:
+    - Standardizes exclusively on the high-performance, memory-safe Vector collector running as a DaemonSet across all OpenShift nodes.
+    - Replaces legacy Ruby-based Fluentd collectors, slashing daemon CPU utilization by ~70% and memory footprint by over 60%, while completely eliminating Ruby runtime garbage collection stalls during high log volume bursts.
+  - **Declarative Log Routing (`ClusterLogForwarder`)**:
+    - Utilizes the `ClusterLogForwarder` CRD to establish distinct pipeline policies for the three core log categories: `application` (container stdout/stderr), `infrastructure` (journald system logs, CRI-O, Kubelet), and `audit` (Kubernetes API server, OpenShift OAuth, OVN network audit logs).
+    - Enables selective filtering, log dropping, and parallel routing to internal LokiStack storage and external SIEM platforms.
+  - **LokiStack 3.x with Schema v13 & Storage Optimization**:
+    - Deploys LokiStack 3.x leveraging the high-efficiency TSDB index format with structured metadata (Schema v13).
+    - Writes immutable, gzip/snappy-compressed log chunks directly into S3-compatible object storage (ODF Ceph Object Store / MinIO).
+    - Enforces enterprise multi-tenant isolation via the `openshift-logging` authentication proxy, restricting log visibility so tenant developers can only query logs belonging to their authorized Kubernetes namespaces.
+
+- **Distributed Tracing (OpenTelemetry & TempoStack)**:
+  - **Red Hat build of OpenTelemetry Collector**:
+    - Deployed declaratively via the OpenTelemetry Operator with auto-instrumentation injection for Java (JVM agent), Node.js, Python, and Go binaries.
+    - Ingests telemetry across standardized OpenTelemetry Protocol (OTLP) endpoints: OTLP/gRPC on port `4317` and OTLP/HTTP on port `4318`.
+  - **Tail-Based Sampling Governance**:
+    - Implements intelligent tail-sampling processors inside the OpenTelemetry Collector gateway: Evaluates completed distributed traces after all spans arrive.
+    - Guarantees 100% retention for critical diagnostic data: retains all traces containing HTTP 5xx responses, error status codes, or spans exceeding duration thresholds (e.g., latency >300ms), while sampling high-volume successful 2xx HTTP transactions down to 1–5%.
+  - **Red Hat build of TempoStack**:
+    - The next-generation distributed tracing storage engine on OpenShift, officially superseding deprecated Jaeger.
+    - Employs an index-free block storage architecture on S3 object storage (ODF Ceph), achieving massive ingestion throughput, near-zero maintenance overhead, and eliminating complex Elasticsearch cluster management.
+
+- **Single-Pane UI Correlation via COO & Korrel8r**:
+  - **Cluster Observability Operator (COO) Web Console Integration**:
+    - Extends the native OpenShift Web Console by dynamically injecting unified observability navigation tabs, distributed trace waterfall drawers, and log inspection consoles directly into the Administrator and Developer perspectives.
+    - Eliminates operational friction and "swivel-chair" context switching between disparate third-party web portals.
+  - **Korrel8r Graph Engine (Contextual Telemetry Correlation)**:
+    - Operates as a declarative correlation engine maintaining graph rules connecting Kubernetes resources, Prometheus alerts, OpenMetrics exemplars, Loki log streams, and Tempo trace IDs.
+    - Enables 1-click drilldowns: Clicking a Prometheus firing alert or a high-latency metric exemplar in the console instantly navigates SREs to the corresponding distributed trace waterfall and correlated Loki container logs with matching trace IDs.
+
+- **eBPF Network Observability FlowCollector**:
+  - **Sidecar-Free Kernel-Level Probes**:
+    - Deployed via the Network Observability Operator (`NetObserv`), running a lightweight eBPF probe directly inside the Linux kernel on each node.
+    - Captures complete L3/L4 network flows across pod-to-pod, pod-to-service, and egress gateway communications with negligible CPU overhead (<1%) and without injecting sidecar proxies into user application pods.
+  - **Topology Mapping & Security Analysis**:
+    - Enriches raw network flow records with Kubernetes contextual metadata (source/destination namespace, pod, service, node, zone) and streams flow logs to LokiStack.
+    - Renders real-time network traffic topology maps inside the OpenShift console, tracking round-trip time (RTT) latency, socket buffer drops, packet retransmissions, and verifying NetworkPolicy enforcement.
+
+- **Air-Gapped Sovereign Enclave Operations**:
+  - **100% Autonomous On-Premises Telemetry Fabric**:
+    - The entire observability ecosystem (Prometheus, Thanos, Vector, LokiStack, OpenTelemetry, TempoStack, Korrel8r, NetObserv) runs fully self-contained within the disconnected cluster perimeter.
+    - Backed by an on-premises OpenShift Data Foundation (ODF Ceph) object storage cluster, ensuring zero telemetry egress to external public clouds and satisfying strict sovereign compliance mandates.
+  - **Offline Operator Lifecycle Management**:
+    - All observability operator catalogs, container images, and helm charts are mirrored into the local disconnected Quay/Harbor registry using `oc-mirror` v2 with cryptographic digest verification.
+
+---
+
+### Blueprint 3: Enterprise Observability Telemetry: Key Metrics & Service Performance Frameworks
+
+[![Enterprise Observability Telemetry: Key Metrics & Service Performance Frameworks](assets/enterprise-observability-telemetry-frameworks.png)](assets/enterprise-observability-telemetry-frameworks.png)
+
+#### Architectural Breakdown & Implementation Dimensions
+
+| Architecture Dimension | Engineering Specification & Component Details |
+| :--- | :--- |
+| **Core Metric Frameworks** | • **RED Method (Applications)**: Standardized for microservice endpoints — **Rate** (throughput in req/sec), **Errors** (HTTP 5xx / failed operations), and **Duration** (P50, P90, P99 latency percentiles).<br/>• **USE Method (Infrastructure)**: Standardized for physical & virtual resources — **Utilization** (% time active), **Saturation** (run queues / thread contention), and **Errors** (hardware / kernel error counters).<br/>• **High-Frequency Telemetry**: Sub-second to 1-second streaming resolution capturing micro-bursts and ephemeral CFS throttling invisible to traditional 15s/60s polling. |
+| **Application & Middleware Indicators** | • **JVM Execution (JFR)**: Stop-The-World (STW) GC pause duration/frequency, Heap vs. Non-Heap (Metaspace, native) allocation, and thread lock contention.<br/>• **Apache Kafka**: Consumer group lag (unprocessed records), under-replicated partitions (URP), topic partition throughput, and producer queue latency.<br/>• **Microsoft SQL Server**: Connection pool saturation, lock/latch waits, deadlock rates, buffer cache hit ratio (>99%), and DMV wait state categorization (`PAGEIOLATCH`, `ASYNC_NETWORK_IO`, `LCK_M_X`). |
+| **Continuous Profiling & Flame Graphs** | • **Kernel-Level eBPF Probes**: Non-intrusive whole-system sampling (<1–2% CPU overhead) attributing CPU cycles and heap allocations directly to code paths without bytecode instrumentation.<br/>• **Production Flame Graphs**: Interactive hierarchical stack visualizations pinpointing runtime hotspot methods and memory leaks in production. |
+| **Network, Infrastructure & UX (RUM)** | • **Kernel eBPF Network**: TCP retransmissions, socket buffer latency, and CoreDNS query/failure rates.<br/>• **VMware vSphere**: ESXi host CPU contention, CPU Ready (% RDY >5%), hypervisor memory ballooning (`vmmemctl`), and datastore I/O latency (>20ms).<br/>• **Real User Monitoring (RUM)**: Google Core Web Vitals (Largest Contentful Paint `<2.5s`, Interaction to Next Paint `<200ms`, Cumulative Layout Shift `<0.1`), client JS errors, and HTTP network waterfall timings. |
+| **Self-Hosted Comparison Matrix** | • **Dynatrace Managed**: Fully automated full-stack AI topology, high-fidelity eBPF/profiling, zero SRE maintenance overhead, commercial on-prem license.<br/>• **Instana Self-Hosted**: 1-second metric streaming, automated AutoTrace microservice discovery, medium SRE maintenance, commercial on-prem license.<br/>• **Elastic Stack (ECK)**: Unified logging/search/profiling with eBPF Universal Profiling, high storage/SRE maintenance overhead, open-source/elastic license.<br/>• **Grafana OSS (LGTM)**: Modular, composable Prometheus/Loki/Tempo/Pyroscope stack, highly scalable, zero software licensing, high operational SRE toil.<br/>• **Zabbix**: Host/infra-centric monitoring, strong SNMP/vSphere integration, lacks native distributed tracing and continuous profiling, low cost but legacy architecture. |
+
+#### Detailed Engineering Blueprint Breakdown (Bullet Points)
+
+- **Core Metric Frameworks (RED, USE & High-Frequency Streaming)**:
+  - **The RED Method (Application Microservice Performance)**:
+    - **Rate (Throughput)**: Measures incoming workload demand in requests per second (`req/s`) across REST endpoints, gRPC methods, and messaging consumers to establish baseline traffic capacity.
+    - **Errors (Failure Ratio)**: Tracks explicit HTTP 5xx responses, unhandled exceptions, and gRPC status errors. Drives SLO error budgets and immediate incident triggering.
+    - **Duration (Latency Distributions)**: Measures end-to-end request duration across percentiles (**P50** median, **P90**, **P99** tail latency). Captures tail latency degradation experienced by 1% of users that average metrics completely conceal.
+  - **The USE Method (Infrastructure & Host Resource Governance)**:
+    - **Utilization (% Time Busy)**: Measures the proportion of time a physical or virtual resource is actively serving work (e.g., CPU core busy time, memory consumption, storage device active time).
+    - **Saturation (Queued Work & Backlog)**: Measures extra work that cannot be serviced immediately and is forced to wait in line. Key indicators include Linux run queue length (`loadavg`), container CFS CPU quota throttling (`container_cpu_cfs_throttled_periods_total`), and storage I/O queue depth.
+    - **Errors (Hardware & OS Events)**: Audits hardware device error counters, interface packet drops (`eth0` rx/tx drops), and storage controller retries before they trigger catastrophic subsystem failures.
+  - **High-Frequency & Streaming Telemetry**:
+    - Replaces legacy 15-second or 60-second polling intervals with sub-second / 1-second metric streaming resolution for critical data paths.
+    - Unmasks transient micro-bursts, instantaneous container thread freezes, and rapid queue spikes that average polling intervals flatten and overlook.
+
+- **Application & Middleware Performance Indicators**:
+  - **JVM Execution (Java Flight Recorder & Runtime Metrics)**:
+    - **Garbage Collection (GC) Mechanics**: Monitors Stop-The-World (STW) pause frequency, total GC pause duration, and generational transitions (Eden, Survivor, Tenured/Old Gen) across modern collectors (G1GC, ZGC, Shenandoah).
+    - **Memory Pool Segmentation**: Tracks Heap utilization against Non-Heap allocations (Metaspace, CodeCache, off-heap DirectByteBuffers) to prevent catastrophic container out-of-memory (`OOMKilled`) termination.
+    - **Thread Lock Contention**: Detects synchronized block lock wait times, blocked thread counts, and active Java thread deadlocks via JFR sampling.
+  - **Apache Kafka Telemetry**:
+    - **Consumer Group Lag**: Measures the absolute delta between topic partition log end offset and consumer offset. The primary leading indicator of downstream microservice bottlenecks and ingestion backpressure.
+    - **Under-Replicated Partitions (URP)**: Identifies topic partitions where follower replicas fail to mirror the leader broker. An urgent cluster health alert signaling risk of permanent data loss or broker storage failure.
+    - **Topic & Partition Throughput**: Audits message ingestion rate, bytes in/out per second, and partition distribution to eliminate uneven hot-broker skews.
+    - **Producer Latency & Network Buffers**: Tracks producer request latency, batch queue hold times, and broker ack response times.
+  - **Microsoft SQL Server Indicators**:
+    - **Connection Pool Sizing & Starvation**: Monitors active vs. idle connections and tracks connection pool acquisition wait times from application runtimes.
+    - **Locks, Latches & Deadlocks**: Records lock wait time (ms), lock request rates, latch contention, and deadlock events per second.
+    - **Buffer Cache Hit Ratio & Page Life Expectancy (PLE)**: Enforces `>99%` buffer cache hit ratio and tracks PLE (seconds a database page stays in memory without being flushed, with `<300s` signaling severe memory pressure).
+    - **Dynamic Management Views (DMV) Wait States**: Analyzes SQL Server wait types: `PAGEIOLATCH_SH/UP` (disk storage subsystem bottleneck), `ASYNC_NETWORK_IO` (slow client application consuming query results), `LCK_M_X` (exclusive write lock blocking), and `CXPACKET` (parallel query coordination).
+
+- **Continuous Profiling & Flame Graphs**:
+  - **Zero-Bytecode Overhead Production Sampling**:
+    - Deploys whole-system, kernel-level eBPF continuous profiling agents maintaining runtime CPU overhead strictly below `<1–2%`.
+    - Eliminates invasive JVM byte-code instrumentation agents and runtime restarts, making profiling safe for mission-critical production clusters.
+  - **Code-Level CPU & Memory Attribution**:
+    - Generates interactive hierarchical Flame Graphs mapping CPU consumption, thread execution, and object memory allocations directly to package names, class names, method signatures, and code line numbers.
+    - Pinpoints expensive CPU burn (e.g., inefficient regular expressions, JSON deserialization loops, crypto hashing) and memory leaks directly in production.
+
+- **Network, Infrastructure & Real User Monitoring (RUM)**:
+  - **Kernel-Level eBPF Network Probes**:
+    - Inspects Linux socket buffers directly to measure TCP handshake latency, TCP window starvation, and connection establishment delays.
+    - Tracks TCP retransmissions in real-time, providing immediate visibility into network congestion, inter-switch packet loss, and MTU misconfigurations.
+    - Measures CoreDNS resolution latency and audits NXDOMAIN / ServFail spikes within Kubernetes clusters.
+  - **VMware vSphere & Enterprise Storage Health**:
+    - **ESXi CPU Contention**: Monitors CPU Ready percentage (`% RDY` >5% indicating hypervisor CPU overcommitment) and hyperthread co-scheduling wait times.
+    - **Hypervisor Memory Pressure**: Audits memory ballooning (`vmmemctl`) and hypervisor-level swap activity, protecting virtualized databases from devastating memory paging latency.
+    - **Datastore I/O Latency**: Tracks read/write latency (>20ms) and SCSI queue aborts on vSAN, NFS, or Fibre Channel SAN arrays.
+  - **Real User Monitoring (RUM) & Core Web Vitals**:
+    - **Largest Contentful Paint (LCP)**: Measures perceived page loading speed (benchmark: `<2.5s`).
+    - **Interaction to Next Paint (INP)**: Measures frontend responsiveness to user input and event loop stalls (benchmark: `<200ms`).
+    - **Cumulative Layout Shift (CLS)**: Quantifies unexpected visual movement and UI instability (benchmark: `<0.1`).
+    - Tracks frontend JavaScript unhandled exceptions, client browser versions, and end-user geographic telemetry.
+
+- **Self-Hosted Observability Platform Comparison Matrix**:
+  - **Dynatrace Managed**:
+    - *Coverage*: Native automated OpenShift pod injection, deep VMware vSphere discovery, integrated eBPF, continuous profiling, and AI root cause detection (Davis AI).
+    - *Operations*: Enterprise on-premises self-hosted appliance with automated zero-touch updates and lowest SRE operational maintenance toil.
+  - **Instana Self-Hosted**:
+    - *Coverage*: 1-second metric streaming resolution, automated AutoTrace microservice discovery, deep JVM/Kafka/SQL middleware sensors, and vSphere infrastructure monitoring.
+    - *Operations*: On-prem single/multi-node backend requiring medium SRE maintenance with commercial enterprise licensing.
+  - **Elastic Stack (ECK)**:
+    - *Coverage*: Powerful log aggregation, search analytics, APM tracing, and eBPF Universal Profiling across Kubernetes and bare metal.
+    - *Operations*: High SRE maintenance burden (index lifecycle management, shard tuning, hot/warm/cold storage tiering, node scaling).
+  - **Grafana OSS (LGTM Stack)**:
+    - *Coverage*: Best-in-class modular visualization, Prometheus/Mimir metrics, Loki logs, Tempo traces, and Pyroscope continuous profiling.
+    - *Operations*: Pure open-source ($0 license), but demands high SRE operational engineering to build, tune, scale, and maintain high availability across distributed microservices.
+  - **Zabbix**:
+    - *Coverage*: Robust traditional SNMP/agent-based infrastructure, network, and VMware vSphere monitoring.
+    - *Operations*: Simple infrastructure maintenance, but completely lacks modern cloud-native distributed tracing, APM code profiling, and automated microservice correlation.
 
 ---
 
@@ -176,7 +341,10 @@ Architectural masterclasses, deep-dive podcasts, and focused technical video sho
 
 ## Table of Contents
 
-- [Enterprise OpenShift 4.20: The Day 0 to Day 2 Operational Blueprint](#enterprise-openshift-420-the-day-0-to-day-2-operational-blueprint)
+- [Enterprise Visual Architecture Blueprints](#enterprise-visual-architecture-blueprints)
+  - [Blueprint 1: The Day 0 to Day 2 Operational Blueprint](#blueprint-1-enterprise-openshift-420-the-day-0-to-day-2-operational-blueprint)
+  - [Blueprint 2: OpenShift 4.20 Native Observability in Air-Gapped Environments](#blueprint-2-openshift-420-native-observability-in-air-gapped-environments)
+  - [Blueprint 3: Enterprise Observability Telemetry Frameworks](#blueprint-3-enterprise-observability-telemetry-key-metrics--service-performance-frameworks)
 - [AI-Generated Multimedia Series (YouTube)](#ai-generated-multimedia-series-youtube)
 - [Video Walkthroughs & Architecture References (YouTube)](#video-walkthroughs--architecture-references-youtube)
 - [Executive Architecture Summary](#executive-architecture-summary)
@@ -737,7 +905,9 @@ To navigate and utilize this enterprise repository effectively, the directory st
     - `├──` 📄 [`04-etcd-quorum-loss-recovery.md`](docs/09-emergency-runbooks/04-etcd-quorum-loss-recovery.md) — *Emergency etcd single-member restoration & split-brain recovery*
     - `├──` 📄 [`05-machineconfig-and-storage-recovery.md`](docs/09-emergency-runbooks/05-machineconfig-and-storage-recovery.md) — *Unsticking degraded MCPs & container storage overlay exhaustion*
 - `├──` 📁 **[`assets/`](assets/)** — *Visual Architecture Blueprints & Infographics*
-  - `└──` 🖼️ [`enterprise-openshift-4-20-day0-to-day2-blueprint.jpg`](assets/enterprise-openshift-4-20-day0-to-day2-blueprint.jpg) — *The Day 0 to Day 2 Enterprise Operational Blueprint*
+  - `├──` 🖼️ [`enterprise-openshift-4-20-day0-to-day2-blueprint.jpg`](assets/enterprise-openshift-4-20-day0-to-day2-blueprint.jpg) — *The Day 0 to Day 2 Enterprise Operational Blueprint*
+  - `├──` 🖼️ [`openshift-4-20-native-observability-airgap.png`](assets/openshift-4-20-native-observability-airgap.png) — *OpenShift 4.20 Native Observability in Air-Gapped Environments Blueprint*
+  - `└──` 🖼️ [`enterprise-observability-telemetry-frameworks.png`](assets/enterprise-observability-telemetry-frameworks.png) — *Enterprise Observability Telemetry & Key Service Performance Frameworks*
 - `├──` 📁 **[`configs/`](configs/)** — *Production Declarative Manifests & Configurations*
   - `├──` 📁 **[`configs/agent-based/`](configs/agent-based/)** — *Declarative Agent-Based Installer (ABI) manifests*
     - `├──` 📄 [`agent-config.yaml`](configs/agent-based/agent-config.yaml) — *Static NMState host IP bonding and Rendezvous node config*
@@ -894,7 +1064,9 @@ openshift-4-20-installation-day0-day2/
 │       ├── 05-machineconfig-and-storage-recovery.md
 │       └── README.md
 ├── assets/
-│   └── enterprise-openshift-4-20-day0-to-day2-blueprint.jpg
+│   ├── enterprise-openshift-4-20-day0-to-day2-blueprint.jpg
+│   ├── openshift-4-20-native-observability-airgap.png
+│   └── enterprise-observability-telemetry-frameworks.png
 ├── configs/
 │   ├── agent-based/
 │   │   ├── agent-config.yaml
@@ -991,7 +1163,9 @@ The `docs/` tree contains **51 exhaustive, production-grade architectural bluepr
 
 #### 2. Visual Architecture Blueprints (`assets/`)
 The `assets/` directory houses visual architecture blueprints and infographic references:
-- **`assets/`**: High-resolution operational architecture blueprints and visual synthesis infographics ([`enterprise-openshift-4-20-day0-to-day2-blueprint.jpg`](assets/enterprise-openshift-4-20-day0-to-day2-blueprint.jpg)) detailing topology sizing, provisioning matrices, Day 1 hardening, Day 2 AI/GitOps operations, and emergency resilience.
+- **`assets/enterprise-openshift-4-20-day0-to-day2-blueprint.jpg`**: High-resolution operational architecture blueprint detailing topology sizing, provisioning matrices, Day 1 hardening, Day 2 AI/GitOps operations, and emergency resilience.
+- **`assets/openshift-4-20-native-observability-airgap.png`**: Complete OpenShift 4.20 native observability architecture in air-gapped enclaves (UWM, Thanos, Vector, LokiStack 3.x, OTel, TempoStack, Korrel8r, and eBPF NetObserv).
+- **`assets/enterprise-observability-telemetry-frameworks.png`**: Enterprise telemetry key metrics and service performance frameworks (RED/USE methods, JVM, Kafka, SQL Server, eBPF continuous profiling, vSphere, and RUM Core Web Vitals).
 
 #### 3. Declarative Configurations (`configs/`)
 The `configs/` tree provides validated, production-grade YAML and daemon templates:

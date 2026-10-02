@@ -6,6 +6,14 @@ This module provides the definitive reference architecture, production manifests
 
 ---
 
+## Visual Architecture Blueprint
+
+[![OpenShift 4.20 Native Observability in Air-Gapped Environments](../../assets/openshift-4-20-native-observability-airgap.png)](../../assets/openshift-4-20-native-observability-airgap.png)
+
+*For service performance metrics and telemetry frameworks (RED/USE, JVM, Kafka, SQL Server), see the [Enterprise Observability Telemetry Frameworks Blueprint](../../assets/enterprise-observability-telemetry-frameworks.png).*
+
+---
+
 ## Observability Architecture & Telemetry Pipeline
 
 ```mermaid
